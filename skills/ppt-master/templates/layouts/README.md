@@ -1,4 +1,4 @@
-# Page Layout Template Library (17 Templates)
+# Page Layout Template Library (18 Templates)
 
 Pre-built PPT page layout templates supporting multiple styles and use cases.
 
@@ -17,6 +17,7 @@ Pre-built PPT page layout templates supporting multiple styles and use cases.
 | `academic_defense` | General | Thesis defense, academic presentations, research progress reports, grant applications | `#003366` | Professional, rigorous, research-oriented, clear hierarchy |
 | `ai_ops` | General | Telecom AI operations architecture, IT system overviews, digital transformation proposals, smart infrastructure reports | `#C00000` | Information-dense, structured, modular zoning, telecom/enterprise style |
 | `anthropic` | General | AI tech talks, developer conferences, technical training, product launches | `#D97757` | Tech-forward, professional, modern, conclusion-first |
+| `BIT` | Brand | 北理工毕业答辩、论文开题、中期汇报、学术研究汇报、校园品牌展示 | `#006C39` | Campus-branded, formal, restrained, academic defense style |
 | `china_telecom_template` | General | China Telecom related briefings, 政企数字化方案, 转型规划, 内部汇报 | `#C00000` | Authoritative, structured, restrained, enterprise-government hybrid |
 | `google_style` | General | Annual work reports, technical sharing, project showcases, data-driven presentations | `#4285F4` | Professional, modern, clean and restrained, data-driven, generous whitespace |
 | `government_blue` | General | Key project briefings, Five-Year Plan presentations, work summaries, investment promotion, policy interpretation | `#0050B3` | Grand, tech-forward, modern, professional government style |

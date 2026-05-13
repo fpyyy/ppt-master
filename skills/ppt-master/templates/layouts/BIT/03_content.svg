@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1280" height="720" viewBox="0 0 1280 720">
+  <g id="background">
+    <rect x="0" y="0" width="1280" height="720" fill="#FFFFFF"/>
+    <rect x="0" y="0" width="1280" height="86" fill="#006C39"/>
+    <rect x="0" y="86" width="1280" height="8" fill="#A13F0B"/>
+  </g>
+  <g id="header">
+    <image href="header_logo.png" x="1060" y="23" width="172" height="38" preserveAspectRatio="xMidYMid meet"/>
+    <text x="64" y="54" font-family="Microsoft YaHei, Arial, sans-serif" font-size="32" font-weight="bold" fill="#FFFFFF">{{PAGE_TITLE}}</text>
+  </g>
+  <g id="key-message">
+    <rect x="64" y="118" width="1152" height="52" fill="#F5F7FA"/>
+    <rect x="64" y="118" width="8" height="52" fill="#A13F0B"/>
+    <text x="88" y="151" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" font-weight="bold" fill="#006C39">{{KEY_MESSAGE}}</text>
+  </g>
+  <g id="content-area">
+    <rect x="64" y="196" width="1152" height="406" fill="#FFFFFF" stroke="#D9D9D9" stroke-width="1.5"/>
+    <text x="640" y="410" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" fill="#A2A2A2">{{CONTENT_AREA}}</text>
+  </g>
+  <g id="footer">
+    <line x1="64" y1="644" x2="1216" y2="644" stroke="#006C39" stroke-width="1.5" stroke-opacity="0.28"/>
+    <text x="64" y="675" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" fill="#A2A2A2">{{SECTION_NAME}}</text>
+    <text x="1216" y="675" text-anchor="end" font-family="Century Gothic, Arial, sans-serif" font-size="16" fill="#A2A2A2">{{PAGE_NUM}}</text>
+  </g>
+</svg>
+
