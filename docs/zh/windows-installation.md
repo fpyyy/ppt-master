@@ -50,10 +50,12 @@ cd ppt-master
 
 ```powershell
 cd C:\Users\你的用户名\ppt-master   # ← 替换为你的实际路径
-pip install -r requirements.txt
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade pip
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-> 如果 `pip` 无法识别，用 `python -m pip install -r requirements.txt`。
+> 如果 `pip` 无法识别，用 `.\.venv\Scripts\python.exe -m pip install -r requirements.txt`。
 
 等待安装完成，最后看到 `Successfully installed ...` 就行。
 
@@ -62,7 +64,7 @@ pip install -r requirements.txt
 ## Step 4 — 验证安装
 
 ```powershell
-python -c "import pptx; import fitz; print('All core dependencies OK')"
+.\.venv\Scripts\python.exe -c "import pptx; import fitz; print('All core dependencies OK')"
 ```
 
 ✅ 输出 `All core dependencies OK` → 核心环境没问题。
@@ -89,7 +91,7 @@ python -c "import pptx; import fitz; print('All core dependencies OK')"
 
 | 增强项 | 只在以下情况才装 | 安装方式 | 验证 |
 |--------|-----------------|---------|------|
-| **CairoSVG** — 更高质量 PNG 后备图 | 你希望在不原生支持 SVG 的 Office 版本下获得更清晰的 PNG 后备图。`svglib`（已默认安装）足够大多数场景。 | 安装 [GTK3 Runtime](https://github.com/nickvdp/gtk3/releases) 后 `pip install cairosvg` | `python -c "import cairosvg"` |
+| **CairoSVG** — 更高质量 PNG 后备图 | 你希望在不原生支持 SVG 的 Office 版本下获得更清晰的 PNG 后备图。`svglib`（已默认安装）足够大多数场景。 | 安装 [GTK3 Runtime](https://github.com/nickvdp/gtk3/releases) 后 `.\.venv\Scripts\python.exe -m pip install cairosvg` | `.\.venv\Scripts\python.exe -c "import cairosvg"` |
 | **Pandoc** — 旧格式文档 | 你需要转 `.doc`、`.odt`、`.rtf`、`.tex`、`.rst`、`.org`、`.typ`。`.docx`/`.html`/`.epub`/`.ipynb` 已由 Python 原生处理。 | [pandoc.org](https://pandoc.org/installing.html) 下载 `.msi` 安装 | `pandoc --version` |
 
 ---
@@ -112,34 +114,34 @@ python -c "import pptx; import fitz; print('All core dependencies OK')"
    ```
 4. 确定，**重启 PowerShell**
 
-**方法 3** — 试试 `python3` 或 `py` 命令。
+**方法 3** — 只在创建虚拟环境时尝试 `py -m venv .venv`；之后统一使用 `.\.venv\Scripts\python.exe`。
 
-### `pip install` 报权限错误
+### `.\.venv\Scripts\python.exe -m pip install` 报权限错误
 
 ```powershell
-pip install --user -r requirements.txt
+.\.venv\Scripts\python.exe -m pip install --user -r requirements.txt
 ```
 
 或以管理员身份运行 PowerShell。
 
-### `pip install` 网络问题
+### `.\.venv\Scripts\python.exe -m pip install` 网络问题
 
 ```powershell
 # 清华镜像（国内推荐）
-pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 # 代理
-pip install -r requirements.txt --proxy http://your-proxy:port
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt --proxy http://your-proxy:port
 ```
 
 ### `ModuleNotFoundError`
 
-`pip` 装到了另一个 Python 环境。用 `python -m pip install -r requirements.txt` 确保对应同一个。
+`pip` 装到了另一个 Python 环境。用 `.\.venv\Scripts\python.exe -m pip install -r requirements.txt` 确保对应同一个。
 
 ### `import fitz` 失败
 
-1. 升级 pip：`python -m pip install --upgrade pip`
-2. 预编译包：`pip install PyMuPDF --only-binary :all:`
+1. 升级 pip：`.\.venv\Scripts\python.exe -m pip install --upgrade pip`
+2. 预编译包：`.\.venv\Scripts\python.exe -m pip install PyMuPDF --only-binary :all:`
 3. 仍失败 → 安装 [Visual C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
 
 ### PowerShell「脚本运行被禁用」

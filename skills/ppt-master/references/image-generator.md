@@ -222,7 +222,7 @@ C (AI-generated) supports three implementation modes sharing one `image_prompts.
 #### Path A — `image_gen.py` CLI (Default)
 
 ```bash
-python3 scripts/image_gen.py "your prompt" \
+.\.venv\Scripts\python.exe scripts/image_gen.py "your prompt" \
   --aspect_ratio 16:9 --image_size 1K \
   --output project/images --filename cover_bg
 ```

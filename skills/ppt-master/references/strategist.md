@@ -241,7 +241,7 @@ Selection is automatic in Step 5 (A → B → Manual). Detailed contract: [`imag
 
 Selections may be mixed at the row level — e.g. a deck can use C for hero illustrations while sourcing D for supporting team photos.
 
-**When selection includes B**, you must run `python3 scripts/analyze_images.py <project_path>/images` before outputting the spec, and integrate scan results into the image resource list.
+**When selection includes B**, you must run `.\.venv\Scripts\python.exe scripts/analyze_images.py <project_path>/images` before outputting the spec, and integrate scan results into the image resource list.
 
 **When B / C / D / E is selected**, add an image resource list to the spec:
 
@@ -513,7 +513,7 @@ Templates are starting points. The Strategist may adjust based on content and au
 Project folder must exist before Strategist runs. If not, execute:
 
 ```bash
-python3 scripts/project_manager.py init <project_name> --format <canvas_format>
+.\.venv\Scripts\python.exe scripts/project_manager.py init <project_name> --format <canvas_format>
 ```
 
 Save outputs to `projects/<project_name>_<format>_<YYYYMMDD>/design_spec.md`.

@@ -5,7 +5,7 @@
 1. Run:
 
 ```bash
-python3 scripts/project_manager.py validate <project_path>
+.\.venv\Scripts\python.exe scripts/project_manager.py validate <project_path>
 ```
 
 2. Fix missing files or invalid directories reported by the validator.
@@ -18,7 +18,7 @@ python3 scripts/project_manager.py validate <project_path>
 3. Preview via a local server if browser file loading is inconsistent:
 
 ```bash
-python3 -m http.server --directory <svg_output_path> 8000
+.\.venv\Scripts\python.exe -m http.server --directory <svg_output_path> 8000
 ```
 
 ## Speaker Notes Do Not Split
@@ -31,7 +31,7 @@ Check `total.md`:
 Then rerun:
 
 ```bash
-python3 scripts/total_md_split.py <project_path>
+.\.venv\Scripts\python.exe scripts/total_md_split.py <project_path>
 ```
 
 ## PPT Export Quality Issues
@@ -39,9 +39,9 @@ python3 scripts/total_md_split.py <project_path>
 Preferred sequence:
 
 ```bash
-python3 scripts/total_md_split.py <project_path>
-python3 scripts/finalize_svg.py <project_path>
-python3 scripts/svg_to_pptx.py <project_path>
+.\.venv\Scripts\python.exe scripts/total_md_split.py <project_path>
+.\.venv\Scripts\python.exe scripts/finalize_svg.py <project_path>
+.\.venv\Scripts\python.exe scripts/svg_to_pptx.py <project_path>
 ```
 
 Do not export directly from `svg_output/` when `svg_final/` exists.
@@ -52,8 +52,8 @@ Do not export directly from `svg_output/` when `svg_final/` exists.
 2. Export with the project-relative audio directory:
 
 ```bash
-python3 scripts/notes_to_audio.py <project_path> --voice zh-CN-XiaoxiaoNeural
-python3 scripts/svg_to_pptx.py <project_path> --recorded-narration audio
+.\.venv\Scripts\python.exe scripts/notes_to_audio.py <project_path> --voice zh-CN-XiaoxiaoNeural
+.\.venv\Scripts\python.exe scripts/svg_to_pptx.py <project_path> --recorded-narration audio
 ```
 
 `--recorded-narration` prepares PowerPoint recorded timings and narrations. If it fails, check:
@@ -68,7 +68,7 @@ Use `--narration-audio-dir audio` only when you intentionally want lower-level, 
 Most tools use the standard library. Install extra dependencies only when needed:
 
 ```bash
-pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
 Important optional packages:

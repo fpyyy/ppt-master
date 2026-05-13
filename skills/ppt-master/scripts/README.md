@@ -18,22 +18,22 @@ This directory contains user-facing scripts for conversion, project setup, SVG p
 Typical end-to-end workflow:
 
 ```bash
-python3 scripts/source_to_md/pdf_to_md.py <file.pdf>
+.\.venv\Scripts\python.exe scripts/source_to_md/pdf_to_md.py <file.pdf>
 # or
-python3 scripts/source_to_md/ppt_to_md.py <deck.pptx>
-python3 scripts/source_to_md/excel_to_md.py <workbook.xlsx>
-python3 scripts/project_manager.py init <project_name> --format ppt169
-python3 scripts/project_manager.py import-sources <project_path> <source_files...> --move
-python3 scripts/total_md_split.py <project_path>
-python3 scripts/finalize_svg.py <project_path>
-python3 scripts/animation_config.py scaffold <project_path>  # optional object-level animation overrides
-python3 scripts/svg_to_pptx.py <project_path>
+.\.venv\Scripts\python.exe scripts/source_to_md/ppt_to_md.py <deck.pptx>
+.\.venv\Scripts\python.exe scripts/source_to_md/excel_to_md.py <workbook.xlsx>
+.\.venv\Scripts\python.exe scripts/project_manager.py init <project_name> --format ppt169
+.\.venv\Scripts\python.exe scripts/project_manager.py import-sources <project_path> <source_files...> --move
+.\.venv\Scripts\python.exe scripts/total_md_split.py <project_path>
+.\.venv\Scripts\python.exe scripts/finalize_svg.py <project_path>
+.\.venv\Scripts\python.exe scripts/animation_config.py scaffold <project_path>  # optional object-level animation overrides
+.\.venv\Scripts\python.exe scripts/svg_to_pptx.py <project_path>
 ```
 
 Repository update:
 
 ```bash
-python3 scripts/update_repo.py
+.\.venv\Scripts\python.exe scripts/update_repo.py
 ```
 
 ## Script Index
@@ -53,50 +53,50 @@ python3 scripts/update_repo.py
 Conversion:
 
 ```bash
-python3 scripts/source_to_md/pdf_to_md.py <file.pdf>
-python3 scripts/source_to_md/ppt_to_md.py <deck.pptx>
-python3 scripts/source_to_md/doc_to_md.py <file.docx>
-python3 scripts/source_to_md/excel_to_md.py <workbook.xlsx>
-python3 scripts/source_to_md/web_to_md.py <url>
+.\.venv\Scripts\python.exe scripts/source_to_md/pdf_to_md.py <file.pdf>
+.\.venv\Scripts\python.exe scripts/source_to_md/ppt_to_md.py <deck.pptx>
+.\.venv\Scripts\python.exe scripts/source_to_md/doc_to_md.py <file.docx>
+.\.venv\Scripts\python.exe scripts/source_to_md/excel_to_md.py <workbook.xlsx>
+.\.venv\Scripts\python.exe scripts/source_to_md/web_to_md.py <url>
 ```
 
 Project setup:
 
 ```bash
-python3 scripts/project_manager.py init <project_name> --format ppt169
-python3 scripts/project_manager.py import-sources <project_path> <source_files...> --move
-python3 scripts/project_manager.py validate <project_path>
+.\.venv\Scripts\python.exe scripts/project_manager.py init <project_name> --format ppt169
+.\.venv\Scripts\python.exe scripts/project_manager.py import-sources <project_path> <source_files...> --move
+.\.venv\Scripts\python.exe scripts/project_manager.py validate <project_path>
 ```
 
 Template source import:
 
 ```bash
-python3 scripts/pptx_template_import.py <template.pptx>
-python3 scripts/pptx_template_import.py <template.pptx> --manifest-only
-python3 scripts/pptx_template_import.py <template.pptx> --inheritance-mode both
+.\.venv\Scripts\python.exe scripts/pptx_template_import.py <template.pptx>
+.\.venv\Scripts\python.exe scripts/pptx_template_import.py <template.pptx> --manifest-only
+.\.venv\Scripts\python.exe scripts/pptx_template_import.py <template.pptx> --inheritance-mode both
 ```
 
 Post-processing and export:
 
 ```bash
-python3 scripts/total_md_split.py <project_path>
-python3 scripts/finalize_svg.py <project_path>
-python3 scripts/svg_to_pptx.py <project_path>
+.\.venv\Scripts\python.exe scripts/total_md_split.py <project_path>
+.\.venv\Scripts\python.exe scripts/finalize_svg.py <project_path>
+.\.venv\Scripts\python.exe scripts/svg_to_pptx.py <project_path>
 ```
 
 Image generation:
 
 ```bash
-python3 scripts/image_gen.py "A modern futuristic workspace"
-python3 scripts/image_gen.py --list-backends
-python3 scripts/analyze_images.py <project_path>/images
+.\.venv\Scripts\python.exe scripts/image_gen.py "A modern futuristic workspace"
+.\.venv\Scripts\python.exe scripts/image_gen.py --list-backends
+.\.venv\Scripts\python.exe scripts/analyze_images.py <project_path>/images
 ```
 
 Repository update:
 
 ```bash
-python3 scripts/update_repo.py
-python3 scripts/update_repo.py --skip-pip
+.\.venv\Scripts\python.exe scripts/update_repo.py
+.\.venv\Scripts\python.exe scripts/update_repo.py --skip-pip
 ```
 
 ## Recommendations

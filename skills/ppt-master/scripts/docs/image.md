@@ -9,23 +9,23 @@ Image tools cover prompt-based AI generation, web image search, image inspection
 Unified image generation entry point.
 
 ```bash
-python3 scripts/image_gen.py "A modern futuristic workspace"
-python3 scripts/image_gen.py "Abstract tech background" --aspect_ratio 16:9 --image_size 4K
-python3 scripts/image_gen.py "Concept car" -o projects/demo/images
-python3 scripts/image_gen.py "Beautiful landscape" -n "low quality, blurry, watermark"
-python3 scripts/image_gen.py --list-backends
+.\.venv\Scripts\python.exe scripts/image_gen.py "A modern futuristic workspace"
+.\.venv\Scripts\python.exe scripts/image_gen.py "Abstract tech background" --aspect_ratio 16:9 --image_size 4K
+.\.venv\Scripts\python.exe scripts/image_gen.py "Concept car" -o projects/demo/images
+.\.venv\Scripts\python.exe scripts/image_gen.py "Beautiful landscape" -n "low quality, blurry, watermark"
+.\.venv\Scripts\python.exe scripts/image_gen.py --list-backends
 ```
 
-Backends are grouped into Core / Extended / Experimental tiers. Run `python3 scripts/image_gen.py --list-backends` for the current list.
+Backends are grouped into Core / Extended / Experimental tiers. Run `.\.venv\Scripts\python.exe scripts/image_gen.py --list-backends` for the current list.
 
 Backend selection:
 
 ```bash
-python3 scripts/image_gen.py "A cat" --backend openai
-python3 scripts/image_gen.py "A cinematic portrait" --backend minimax
-python3 scripts/image_gen.py "A product launch hero image" --backend qwen
-python3 scripts/image_gen.py "科技感背景图" --backend zhipu
-python3 scripts/image_gen.py "A product KV in cinematic style" --backend volcengine
+.\.venv\Scripts\python.exe scripts/image_gen.py "A cat" --backend openai
+.\.venv\Scripts\python.exe scripts/image_gen.py "A cinematic portrait" --backend minimax
+.\.venv\Scripts\python.exe scripts/image_gen.py "A product launch hero image" --backend qwen
+.\.venv\Scripts\python.exe scripts/image_gen.py "科技感背景图" --backend zhipu
+.\.venv\Scripts\python.exe scripts/image_gen.py "A product KV in cinematic style" --backend volcengine
 ```
 
 Configuration sources:
@@ -100,7 +100,7 @@ MINIMAX_API_KEY=your-api-key
 Analyze images in a project directory before writing the design spec or composing slide layouts.
 
 ```bash
-python3 scripts/analyze_images.py <project_path>/images
+.\.venv\Scripts\python.exe scripts/analyze_images.py <project_path>/images
 ```
 
 Use this instead of opening image files directly when following the project workflow.
@@ -110,7 +110,7 @@ Use this instead of opening image files directly when following the project work
 Zero-config web image search across openly-licensed providers. Sister tool to `image_gen.py` — used when the resource list row has `Acquire Via: web`.
 
 ```bash
-python3 scripts/image_search.py "offshore wind farm" \
+.\.venv\Scripts\python.exe scripts/image_search.py "offshore wind farm" \
   --filename cover_bg.jpg --slide 01_cover \
   --orientation landscape -o projects/demo/images
 ```
@@ -145,12 +145,12 @@ Pin a provider, refuse attribution, or override the manifest path:
 
 ```bash
 # Pin Wikimedia
-python3 scripts/image_search.py "Olympics opening ceremony" \
+.\.venv\Scripts\python.exe scripts/image_search.py "Olympics opening ceremony" \
   --filename event.jpg --provider wikimedia \
   --orientation landscape -o projects/demo/images
 
 # Strict mode — refuse CC BY / CC BY-SA
-python3 scripts/image_search.py "abstract gradient" \
+.\.venv\Scripts\python.exe scripts/image_search.py "abstract gradient" \
   --filename hero.jpg --strict-no-attribution \
   -o projects/demo/images
 ```
@@ -170,9 +170,9 @@ The full role-level reference (intent → query translation, on-slide attributio
 Remove Gemini watermark assets after manual download.
 
 ```bash
-python3 scripts/gemini_watermark_remover.py <image_path>
-python3 scripts/gemini_watermark_remover.py <image_path> -o output_path.png
-python3 scripts/gemini_watermark_remover.py <image_path> -q
+.\.venv\Scripts\python.exe scripts/gemini_watermark_remover.py <image_path>
+.\.venv\Scripts\python.exe scripts/gemini_watermark_remover.py <image_path> -o output_path.png
+.\.venv\Scripts\python.exe scripts/gemini_watermark_remover.py <image_path> -q
 ```
 
 Notes:
@@ -182,5 +182,5 @@ Notes:
 Dependencies:
 
 ```bash
-pip install Pillow numpy
+.\.venv\Scripts\python.exe -m pip install Pillow numpy
 ```

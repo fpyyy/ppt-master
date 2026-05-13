@@ -9,15 +9,15 @@ Source conversion tools turn PDFs, documents, slide decks, and web pages into Ma
 Recommended first choice for native PDFs.
 
 ```bash
-python3 scripts/source_to_md/pdf_to_md.py book.pdf
-python3 scripts/source_to_md/pdf_to_md.py book.pdf -o output.md
-python3 scripts/source_to_md/pdf_to_md.py ./pdfs
-python3 scripts/source_to_md/pdf_to_md.py ./pdfs -o ./markdown
+.\.venv\Scripts\python.exe scripts/source_to_md/pdf_to_md.py book.pdf
+.\.venv\Scripts\python.exe scripts/source_to_md/pdf_to_md.py book.pdf -o output.md
+.\.venv\Scripts\python.exe scripts/source_to_md/pdf_to_md.py ./pdfs
+.\.venv\Scripts\python.exe scripts/source_to_md/pdf_to_md.py ./pdfs -o ./markdown
 
 # Image extraction control (default: filtered)
-python3 scripts/source_to_md/pdf_to_md.py book.pdf --images filtered  # size/quality filters applied
-python3 scripts/source_to_md/pdf_to_md.py book.pdf --images all       # extract all images, no filtering
-python3 scripts/source_to_md/pdf_to_md.py book.pdf --images none      # skip all images (text only)
+.\.venv\Scripts\python.exe scripts/source_to_md/pdf_to_md.py book.pdf --images filtered  # size/quality filters applied
+.\.venv\Scripts\python.exe scripts/source_to_md/pdf_to_md.py book.pdf --images all       # extract all images, no filtering
+.\.venv\Scripts\python.exe scripts/source_to_md/pdf_to_md.py book.pdf --images none      # skip all images (text only)
 ```
 
 Use cases:
@@ -33,7 +33,7 @@ Prefer MinerU or another OCR/layout tool when:
 Dependency:
 
 ```bash
-pip install PyMuPDF
+.\.venv\Scripts\python.exe -m pip install PyMuPDF
 ```
 
 ## `source_to_md/doc_to_md.py`
@@ -50,17 +50,17 @@ Pandoc fallback (only if you need these):
 - `.doc`, `.odt`, `.rtf`, `.tex`/`.latex`, `.rst`, `.org`, `.typ`
 
 ```bash
-python3 scripts/source_to_md/doc_to_md.py lecture.docx
-python3 scripts/source_to_md/doc_to_md.py lecture.docx -o output.md
-python3 scripts/source_to_md/doc_to_md.py notes.epub
-python3 scripts/source_to_md/doc_to_md.py paper.tex -o paper.md  # uses pandoc
+.\.venv\Scripts\python.exe scripts/source_to_md/doc_to_md.py lecture.docx
+.\.venv\Scripts\python.exe scripts/source_to_md/doc_to_md.py lecture.docx -o output.md
+.\.venv\Scripts\python.exe scripts/source_to_md/doc_to_md.py notes.epub
+.\.venv\Scripts\python.exe scripts/source_to_md/doc_to_md.py paper.tex -o paper.md  # uses pandoc
 ```
 
 Dependencies:
 
 ```bash
 # Native path — always required
-pip install mammoth markdownify ebooklib nbconvert beautifulsoup4
+.\.venv\Scripts\python.exe -m pip install mammoth markdownify ebooklib nbconvert beautifulsoup4
 
 # Fallback path — only for .doc/.odt/.rtf/.tex/.rst/.org/.typ
 # macOS:   brew install pandoc
@@ -82,9 +82,9 @@ Unsupported by default:
 - `.xls` — resave as `.xlsx` first
 
 ```bash
-python3 scripts/source_to_md/excel_to_md.py report.xlsx
-python3 scripts/source_to_md/excel_to_md.py report.xlsx -o output.md
-python3 scripts/source_to_md/excel_to_md.py report.xlsm --max-rows 200 --max-cols 40
+.\.venv\Scripts\python.exe scripts/source_to_md/excel_to_md.py report.xlsx
+.\.venv\Scripts\python.exe scripts/source_to_md/excel_to_md.py report.xlsx -o output.md
+.\.venv\Scripts\python.exe scripts/source_to_md/excel_to_md.py report.xlsm --max-rows 200 --max-cols 40
 ```
 
 Behavior:
@@ -97,7 +97,7 @@ Behavior:
 Dependency:
 
 ```bash
-pip install openpyxl
+.\.venv\Scripts\python.exe -m pip install openpyxl
 ```
 
 CSV/TSV files are already plain-text table sources and do not require this converter.
@@ -112,11 +112,11 @@ Supported formats include:
 - `.potx`, `.potm`
 
 ```bash
-python3 scripts/source_to_md/ppt_to_md.py sales_deck.pptx
-python3 scripts/source_to_md/ppt_to_md.py sales_deck.pptx -o output.md
-python3 scripts/source_to_md/ppt_to_md.py ./decks
-python3 scripts/source_to_md/ppt_to_md.py ./decks -o ./markdown
-python3 scripts/source_to_md/ppt_to_md.py template.ppsx -o notes/template.md
+.\.venv\Scripts\python.exe scripts/source_to_md/ppt_to_md.py sales_deck.pptx
+.\.venv\Scripts\python.exe scripts/source_to_md/ppt_to_md.py sales_deck.pptx -o output.md
+.\.venv\Scripts\python.exe scripts/source_to_md/ppt_to_md.py ./decks
+.\.venv\Scripts\python.exe scripts/source_to_md/ppt_to_md.py ./decks -o ./markdown
+.\.venv\Scripts\python.exe scripts/source_to_md/ppt_to_md.py template.ppsx -o notes/template.md
 ```
 
 Behavior:
@@ -128,7 +128,7 @@ Behavior:
 Dependency:
 
 ```bash
-pip install python-pptx
+.\.venv\Scripts\python.exe -m pip install python-pptx
 ```
 
 Legacy `.ppt` is not parsed directly. Resave it as `.pptx` or export it to PDF first.
@@ -138,10 +138,10 @@ Legacy `.ppt` is not parsed directly. Resave it as `.pptx` or export it to PDF f
 Convert web pages to Markdown and download images locally.
 
 ```bash
-python3 scripts/source_to_md/web_to_md.py https://example.com/article
-python3 scripts/source_to_md/web_to_md.py https://url1.com https://url2.com
-python3 scripts/source_to_md/web_to_md.py -f urls.txt
-python3 scripts/source_to_md/web_to_md.py https://example.com -o output.md
+.\.venv\Scripts\python.exe scripts/source_to_md/web_to_md.py https://example.com/article
+.\.venv\Scripts\python.exe scripts/source_to_md/web_to_md.py https://url1.com https://url2.com
+.\.venv\Scripts\python.exe scripts/source_to_md/web_to_md.py -f urls.txt
+.\.venv\Scripts\python.exe scripts/source_to_md/web_to_md.py https://example.com -o output.md
 ```
 
 When `curl_cffi` is installed (included in `requirements.txt`), this script
@@ -156,9 +156,9 @@ block Python's default TLS fingerprint. No extra flags needed. If
 Fix image EXIF orientation in downloaded or imported assets.
 
 ```bash
-python3 scripts/rotate_images.py auto projects/xxx_files
-python3 scripts/rotate_images.py gen projects/xxx_files
-python3 scripts/rotate_images.py fix fixes.json
+.\.venv\Scripts\python.exe scripts/rotate_images.py auto projects/xxx_files
+.\.venv\Scripts\python.exe scripts/rotate_images.py gen projects/xxx_files
+.\.venv\Scripts\python.exe scripts/rotate_images.py fix fixes.json
 ```
 
 Use this when extracted photos appear sideways after conversion or import.

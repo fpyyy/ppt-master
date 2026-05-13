@@ -18,10 +18,10 @@ PPT Master - Short Tool Name
 One-paragraph description of what this script does.
 
 Usage:
-    python3 scripts/<name>.py <required_arg> [options]
+    .\.venv\Scripts\python.exe scripts/<name>.py <required_arg> [options]
 
 Examples:
-    python3 scripts/<name>.py projects/<project_name> -o output_dir
+    .\.venv\Scripts\python.exe scripts/<name>.py projects/<project_name> -o output_dir
 
 Dependencies:
     None (only uses standard library)        <-- or list third-party deps
@@ -33,6 +33,8 @@ Dependencies:
 | Shebang | `#!/usr/bin/env python3` (always — even for non-CLI helper modules) |
 | Module docstring | Tool name + purpose + Usage + Examples + Dependencies |
 | Internal helper modules | May add an early `--help` short-circuit (see §4) |
+
+**Hard rule**: Run scripts with `.\.venv\Scripts\python.exe ...` from the repository root. Do not run PPT Master scripts with system `python`, `python3`, `py`, or bare `pip`.
 
 ---
 
@@ -257,7 +259,7 @@ def classify_license(
 
 **Use instead**:
 
-- Inline smoke commands via `python3 -c "..."` against real project samples; show the output in the conversation / PR description
+- Inline smoke commands via `.\.venv\Scripts\python.exe -c "..."` against real project samples; show the output in the conversation / PR description
 - Manual verification steps in the runbook
 - Live-API smoke runs against `projects/_smoke_*` directories (gitignored)
 

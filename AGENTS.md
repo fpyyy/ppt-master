@@ -31,6 +31,7 @@ PPT Master is an AI-driven presentation generation system. Multi-role collaborat
 - Canvas choices live in [`skills/ppt-master/references/canvas-formats.md`](skills/ppt-master/references/canvas-formats.md).
 - Icon library details live in [`skills/ppt-master/templates/icons/README.md`](skills/ppt-master/templates/icons/README.md).
 - Before editing prompt files under `skills/ppt-master/references/` or Python under `skills/ppt-master/scripts/`, consult the matching style rule in [`docs/rules/`](docs/rules/).
+- Run project Python commands from the repository root with `.\.venv\Scripts\python.exe`; do not use system `python`, `python3`, `py`, or bare `pip` for PPT Master scripts.
 
 ## Compatibility Boundary
 
@@ -44,28 +45,28 @@ Convenience summary only — full workflow in [`skills/ppt-master/SKILL.md`](ski
 
 ```bash
 # Source content conversion
-python3 skills/ppt-master/scripts/source_to_md/pdf_to_md.py <PDF_file>
-python3 skills/ppt-master/scripts/source_to_md/doc_to_md.py <DOCX_or_other_file>
-python3 skills/ppt-master/scripts/source_to_md/excel_to_md.py <XLSX_or_XLSM_file>
-python3 skills/ppt-master/scripts/source_to_md/ppt_to_md.py <PPTX_file>
-python3 skills/ppt-master/scripts/source_to_md/web_to_md.py <URL>
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/source_to_md/pdf_to_md.py <PDF_file>
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/source_to_md/doc_to_md.py <DOCX_or_other_file>
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/source_to_md/excel_to_md.py <XLSX_or_XLSM_file>
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/source_to_md/ppt_to_md.py <PPTX_file>
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/source_to_md/web_to_md.py <URL>
 
 # Project management
-python3 skills/ppt-master/scripts/project_manager.py init <project_name> --format ppt169
-python3 skills/ppt-master/scripts/project_manager.py import-sources <project_path> <source_files_or_URLs...> --move
-python3 skills/ppt-master/scripts/project_manager.py validate <project_path>
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/project_manager.py init <project_name> --format ppt169
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/project_manager.py import-sources <project_path> <source_files_or_URLs...> --move
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/project_manager.py validate <project_path>
 
 # Image tools and SVG quality check
-python3 skills/ppt-master/scripts/analyze_images.py <project_path>/images
-python3 skills/ppt-master/scripts/image_gen.py "prompt" --aspect_ratio 16:9 --image_size 1K -o <project_path>/images
-python3 skills/ppt-master/scripts/svg_quality_checker.py <project_path>
-python3 skills/ppt-master/scripts/animation_config.py scaffold <project_path>  # optional, only for custom object-level animation
-python3 skills/ppt-master/scripts/animation_config.py validate <project_path>  # optional, before re-export
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/analyze_images.py <project_path>/images
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/image_gen.py "prompt" --aspect_ratio 16:9 --image_size 1K -o <project_path>/images
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_quality_checker.py <project_path>
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/animation_config.py scaffold <project_path>  # optional, only for custom object-level animation
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/animation_config.py validate <project_path>  # optional, before re-export
 
 # Post-processing pipeline: run sequentially, one command at a time
-python3 skills/ppt-master/scripts/total_md_split.py <project_path>
-python3 skills/ppt-master/scripts/finalize_svg.py <project_path>
-python3 skills/ppt-master/scripts/svg_to_pptx.py <project_path>
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/total_md_split.py <project_path>
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/finalize_svg.py <project_path>
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_to_pptx.py <project_path>
 ```
 
 ## Core Directories

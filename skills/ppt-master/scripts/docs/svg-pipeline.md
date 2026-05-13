@@ -9,9 +9,9 @@ These tools cover post-processing, SVG validation, speaker notes, recorded narra
 Run these steps in order:
 
 ```bash
-python3 scripts/total_md_split.py <project_path>
-python3 scripts/finalize_svg.py <project_path>
-python3 scripts/svg_to_pptx.py <project_path>
+.\.venv\Scripts\python.exe scripts/total_md_split.py <project_path>
+.\.venv\Scripts\python.exe scripts/finalize_svg.py <project_path>
+.\.venv\Scripts\python.exe scripts/svg_to_pptx.py <project_path>
 ```
 
 ## `finalize_svg.py`
@@ -31,16 +31,16 @@ It aggregates:
 Convert project SVGs into PPTX.
 
 ```bash
-python3 scripts/svg_to_pptx.py <project_path>
-python3 scripts/svg_to_pptx.py <project_path> --only native
-python3 scripts/svg_to_pptx.py <project_path> --only legacy
-python3 scripts/svg_to_pptx.py <template_import_output> --only native -s svg-flat
-python3 scripts/svg_to_pptx.py <project_path> --no-notes
-python3 scripts/svg_to_pptx.py <project_path> -t none
-python3 scripts/svg_to_pptx.py <project_path> --auto-advance 3
-python3 scripts/svg_to_pptx.py <project_path> --animation mixed --animation-duration 0.8
-python3 scripts/notes_to_audio.py <project_path> --voice zh-CN-XiaoxiaoNeural
-python3 scripts/svg_to_pptx.py <project_path> --recorded-narration audio
+.\.venv\Scripts\python.exe scripts/svg_to_pptx.py <project_path>
+.\.venv\Scripts\python.exe scripts/svg_to_pptx.py <project_path> --only native
+.\.venv\Scripts\python.exe scripts/svg_to_pptx.py <project_path> --only legacy
+.\.venv\Scripts\python.exe scripts/svg_to_pptx.py <template_import_output> --only native -s svg-flat
+.\.venv\Scripts\python.exe scripts/svg_to_pptx.py <project_path> --no-notes
+.\.venv\Scripts\python.exe scripts/svg_to_pptx.py <project_path> -t none
+.\.venv\Scripts\python.exe scripts/svg_to_pptx.py <project_path> --auto-advance 3
+.\.venv\Scripts\python.exe scripts/svg_to_pptx.py <project_path> --animation mixed --animation-duration 0.8
+.\.venv\Scripts\python.exe scripts/notes_to_audio.py <project_path> --voice zh-CN-XiaoxiaoNeural
+.\.venv\Scripts\python.exe scripts/svg_to_pptx.py <project_path> --recorded-narration audio
 ```
 
 Behavior:
@@ -65,7 +65,7 @@ Behavior:
   - `--narration-audio-dir audio` is the lower-level embedding path: it embeds whatever files match and allows partial audio coverage
   - This is intended for direct PowerPoint video export with "Use recorded timings and narrations"
   - Long-audio import and automatic long-audio splitting are not supported; keep narration assets page-level
-  - Voice choices can be listed with `python3 scripts/notes_to_audio.py --list-common-voices`, `python3 scripts/notes_to_audio.py --list-voices --locale zh-CN`, or provider-specific `--provider <name> --list-voices`
+  - Voice choices can be listed with `.\.venv\Scripts\python.exe scripts/notes_to_audio.py --list-common-voices`, `.\.venv\Scripts\python.exe scripts/notes_to_audio.py --list-voices --locale zh-CN`, or provider-specific `--provider <name> --list-voices`
 - Page transitions are controlled by `-t/--transition`; per-element entrance animations are controlled by `-a/--animation`
 - Per-element animation applies to top-level SVG `<g id="...">` groups in z-order; aim for 3–8 content groups per slide. Page chrome (background / header / footer / decorations / watermark / page number, by id token) is skipped automatically
 - Start mode is set by `--animation-trigger`, mirroring PowerPoint's Start dropdown: `after-previous` (default, cascade with `--animation-stagger` spacing on slide entry), `on-click` (presenter-paced), `with-previous` (all together on slide entry)
@@ -78,7 +78,7 @@ Behavior:
 Dependency:
 
 ```bash
-pip install python-pptx
+.\.venv\Scripts\python.exe -m pip install python-pptx
 ```
 
 ## `total_md_split.py`
@@ -86,9 +86,9 @@ pip install python-pptx
 Split `total.md` into per-slide note files.
 
 ```bash
-python3 scripts/total_md_split.py <project_path>
-python3 scripts/total_md_split.py <project_path> -o <output_directory>
-python3 scripts/total_md_split.py <project_path> -q
+.\.venv\Scripts\python.exe scripts/total_md_split.py <project_path>
+.\.venv\Scripts\python.exe scripts/total_md_split.py <project_path> -o <output_directory>
+.\.venv\Scripts\python.exe scripts/total_md_split.py <project_path> -q
 ```
 
 Requirements:
@@ -101,12 +101,12 @@ Requirements:
 Validate SVG technical compliance.
 
 ```bash
-python3 scripts/svg_quality_checker.py examples/project/svg_output/01_cover.svg
-python3 scripts/svg_quality_checker.py examples/project/svg_output
-python3 scripts/svg_quality_checker.py examples/project
-python3 scripts/svg_quality_checker.py examples/project --format ppt169
-python3 scripts/svg_quality_checker.py --all examples
-python3 scripts/svg_quality_checker.py examples/project --export
+.\.venv\Scripts\python.exe scripts/svg_quality_checker.py examples/project/svg_output/01_cover.svg
+.\.venv\Scripts\python.exe scripts/svg_quality_checker.py examples/project/svg_output
+.\.venv\Scripts\python.exe scripts/svg_quality_checker.py examples/project
+.\.venv\Scripts\python.exe scripts/svg_quality_checker.py examples/project --format ppt169
+.\.venv\Scripts\python.exe scripts/svg_quality_checker.py --all examples
+.\.venv\Scripts\python.exe scripts/svg_quality_checker.py examples/project --export
 ```
 
 Checks include:
@@ -124,10 +124,10 @@ Use this after `svg_quality_checker.py` passes, and only for chart types support
 ### Calculate expected coordinates
 
 ```bash
-python3 scripts/svg_position_calculator.py calc bar --data "A:185,B:142" --area "130,155,1200,480" --bar-width 120
-python3 scripts/svg_position_calculator.py calc line --data "0:50,10:80,20:120" --area "120,120,1200,600" --y-range "0,150"
-python3 scripts/svg_position_calculator.py calc pie --data "A:35,B:25,C:20" --center "420,400" --radius 200
-python3 scripts/svg_position_calculator.py calc grid --rows 2 --cols 3 --area "50,150,1230,670"
+.\.venv\Scripts\python.exe scripts/svg_position_calculator.py calc bar --data "A:185,B:142" --area "130,155,1200,480" --bar-width 120
+.\.venv\Scripts\python.exe scripts/svg_position_calculator.py calc line --data "0:50,10:80,20:120" --area "120,120,1200,600" --y-range "0,150"
+.\.venv\Scripts\python.exe scripts/svg_position_calculator.py calc pie --data "A:35,B:25,C:20" --center "420,400" --radius 200
+.\.venv\Scripts\python.exe scripts/svg_position_calculator.py calc grid --rows 2 --cols 3 --area "50,150,1230,670"
 ```
 
 For an area chart, use the line output as the top boundary:
@@ -141,7 +141,7 @@ Manually compare the calculator output with the coordinates already present in t
 ### Analyze (inspect existing SVG)
 
 ```bash
-python3 scripts/svg_position_calculator.py analyze <svg_file>
+.\.venv\Scripts\python.exe scripts/svg_position_calculator.py analyze <svg_file>
 ```
 
 Use this after SVG generation to inspect existing SVG geometry when manual comparison needs more context.
@@ -151,16 +151,16 @@ Use this after SVG generation to inspect existing SVG geometry when manual compa
 ### `flatten_tspan.py`
 
 ```bash
-python3 scripts/svg_finalize/flatten_tspan.py examples/<project>/svg_output
-python3 scripts/svg_finalize/flatten_tspan.py path/to/input.svg path/to/output.svg
+.\.venv\Scripts\python.exe scripts/svg_finalize/flatten_tspan.py examples/<project>/svg_output
+.\.venv\Scripts\python.exe scripts/svg_finalize/flatten_tspan.py path/to/input.svg path/to/output.svg
 ```
 
 ### `svg_rect_to_path.py`
 
 ```bash
-python3 scripts/svg_finalize/svg_rect_to_path.py <project_path>
-python3 scripts/svg_finalize/svg_rect_to_path.py <project_path> -s final
-python3 scripts/svg_finalize/svg_rect_to_path.py path/to/file.svg
+.\.venv\Scripts\python.exe scripts/svg_finalize/svg_rect_to_path.py <project_path>
+.\.venv\Scripts\python.exe scripts/svg_finalize/svg_rect_to_path.py <project_path> -s final
+.\.venv\Scripts\python.exe scripts/svg_finalize/svg_rect_to_path.py path/to/file.svg
 ```
 
 Use when rounded corners must survive PowerPoint shape conversion.
@@ -168,9 +168,9 @@ Use when rounded corners must survive PowerPoint shape conversion.
 ### `fix_image_aspect.py`
 
 ```bash
-python3 scripts/svg_finalize/fix_image_aspect.py path/to/slide.svg
-python3 scripts/svg_finalize/fix_image_aspect.py 01_cover.svg 02_toc.svg
-python3 scripts/svg_finalize/fix_image_aspect.py --dry-run path/to/slide.svg
+.\.venv\Scripts\python.exe scripts/svg_finalize/fix_image_aspect.py path/to/slide.svg
+.\.venv\Scripts\python.exe scripts/svg_finalize/fix_image_aspect.py 01_cover.svg 02_toc.svg
+.\.venv\Scripts\python.exe scripts/svg_finalize/fix_image_aspect.py --dry-run path/to/slide.svg
 ```
 
 Use when embedded images stretch after PowerPoint shape conversion.
@@ -178,9 +178,9 @@ Use when embedded images stretch after PowerPoint shape conversion.
 ### `embed_icons.py`
 
 ```bash
-python3 scripts/svg_finalize/embed_icons.py output.svg
-python3 scripts/svg_finalize/embed_icons.py svg_output/*.svg
-python3 scripts/svg_finalize/embed_icons.py --dry-run svg_output/*.svg
+.\.venv\Scripts\python.exe scripts/svg_finalize/embed_icons.py output.svg
+.\.venv\Scripts\python.exe scripts/svg_finalize/embed_icons.py svg_output/*.svg
+.\.venv\Scripts\python.exe scripts/svg_finalize/embed_icons.py --dry-run svg_output/*.svg
 ```
 
 Replaces `<use data-icon="chunk-filled/name" .../>`, `<use data-icon="tabler-filled/name" .../>` and `<use data-icon="tabler-outline/name" .../>` placeholders with actual SVG path elements. Use for manual icon embedding checks outside `finalize_svg.py`.

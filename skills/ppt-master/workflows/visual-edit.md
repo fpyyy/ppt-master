@@ -24,7 +24,7 @@ This workflow is **independent**: it operates on `<project_path>/svg_output/` an
 ## Step 1: Start the editor
 
 ```bash
-python3 ${SKILL_DIR}/scripts/svg_editor/server.py <project_path> --no-browser
+.\.venv\Scripts\python.exe ${SKILL_DIR}/scripts/svg_editor/server.py <project_path> --no-browser
 ```
 
 The server binds to `127.0.0.1:5050` and edits `<project_path>/svg_output/` in place. `svg_to_pptx` already snapshots `svg_output` into `backup/<timestamp>/` on every export, so prior versions are recoverable from there.
@@ -55,7 +55,7 @@ Triggered when the user signals (in any wording) that they have submitted annota
 1. If the server is somehow still running, kill the process.
 2. Discover annotations:
    ```bash
-   python3 ${SKILL_DIR}/scripts/check_annotations.py <project_path>
+   .\.venv\Scripts\python.exe ${SKILL_DIR}/scripts/check_annotations.py <project_path>
    ```
 3. If no annotations are found, tell the user and stop.
 4. For each annotated SVG in `<project_path>/svg_output/`:
@@ -64,8 +64,8 @@ Triggered when the user signals (in any wording) that they have submitted annota
    - Strip `data-edit-target` and `data-edit-annotation` from the modified element.
 5. Re-run post-processing:
    ```bash
-   python3 ${SKILL_DIR}/scripts/finalize_svg.py <project_path>
-   python3 ${SKILL_DIR}/scripts/svg_to_pptx.py <project_path>
+   .\.venv\Scripts\python.exe ${SKILL_DIR}/scripts/finalize_svg.py <project_path>
+   .\.venv\Scripts\python.exe ${SKILL_DIR}/scripts/svg_to_pptx.py <project_path>
    ```
 6. Restart the editor (same command as Step 1).
 7. Tell the user (in their language) that annotations have been applied, the PPT is updated, and the editor is running again at `http://localhost:5050`.

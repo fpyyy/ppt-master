@@ -47,10 +47,12 @@ cd ppt-master
 
 ```powershell
 cd C:\Users\YourName\ppt-master   # ← adjust to your actual path
-pip install -r requirements.txt
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade pip
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-> If `pip` is not recognized, try `python -m pip install -r requirements.txt`.
+> After `.venv` is created, use `.\.venv\Scripts\python.exe` for all PPT Master Python commands. Do not use system `python`, `python3`, `py`, or bare `pip` for project scripts.
 
 Wait for it to finish. You should see `Successfully installed ...` at the end.
 
@@ -59,7 +61,7 @@ Wait for it to finish. You should see `Successfully installed ...` at the end.
 ## Step 4 — Verify Your Setup
 
 ```powershell
-python -c "import pptx; import fitz; print('All core dependencies OK')"
+.\.venv\Scripts\python.exe -c "import pptx; import fitz; print('All core dependencies OK')"
 ```
 
 ✅ Output: `All core dependencies OK` → you're good.
@@ -82,11 +84,11 @@ If a `.pptx` file appears in `exports/` that opens in PowerPoint — **you're do
 
 ## Step 6 — Optional Enhancements (most users can skip this)
 
-With Python and `requirements.txt` installed, you already have everything needed to generate presentations. The items below are **edge-case fallbacks and enhancements** — install only if you hit the specific scenario.
+With `.venv` and `requirements.txt` installed, you already have everything needed to generate presentations. The items below are **edge-case fallbacks and enhancements** — install only if you hit the specific scenario.
 
 | Enhancement | Install only if… | How to install | Verify |
 |-------------|-----------------|----------------|--------|
-| **CairoSVG** — higher quality PNG fallbacks | You want crisper PNG fallbacks for Office versions that don't render SVG natively. `svglib` (already installed) is fine for most cases. | Install [GTK3 Runtime](https://github.com/nickvdp/gtk3/releases), then `pip install cairosvg` | `python -c "import cairosvg"` |
+| **CairoSVG** — higher quality PNG fallbacks | You want crisper PNG fallbacks for Office versions that don't render SVG natively. `svglib` (already installed) is fine for most cases. | Install [GTK3 Runtime](https://github.com/nickvdp/gtk3/releases), then `.\.venv\Scripts\python.exe -m pip install cairosvg` | `.\.venv\Scripts\python.exe -c "import cairosvg"` |
 | **Pandoc** — legacy document formats | You need to convert `.doc`, `.odt`, `.rtf`, `.tex`, `.rst`, `.org`, or `.typ`. `.docx`/`.html`/`.epub`/`.ipynb` work natively in Python. | Download `.msi` from [pandoc.org](https://pandoc.org/installing.html) | `pandoc --version` |
 
 ---
@@ -109,30 +111,30 @@ With Python and `requirements.txt` installed, you already have everything needed
    ```
 4. Click OK, then **restart PowerShell**
 
-**Fix 3** — Try `python3` or `py` instead.
+**Fix 3** — Try `py -m venv .venv` only to create the virtual environment; after that, use `.\.venv\Scripts\python.exe`.
 
-### `pip install` fails with permission errors
+### `.\.venv\Scripts\python.exe -m pip install` fails with permission errors
 
 ```powershell
-pip install --user -r requirements.txt
+.\.venv\Scripts\python.exe -m pip install --user -r requirements.txt
 ```
 
 Or run PowerShell as Administrator.
 
-### `pip install` fails due to network issues
+### `.\.venv\Scripts\python.exe -m pip install` fails due to network issues
 
 ```powershell
-pip install -r requirements.txt --proxy http://your-proxy:port
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt --proxy http://your-proxy:port
 ```
 
 ### `ModuleNotFoundError`
 
-`pip` installed to a different Python. Use `python -m pip install -r requirements.txt` to match.
+`pip` installed to a different Python. Use `.\.venv\Scripts\python.exe -m pip install -r requirements.txt` to match.
 
 ### `import fitz` fails
 
-1. Upgrade pip: `python -m pip install --upgrade pip`
-2. Pre-built wheel: `pip install PyMuPDF --only-binary :all:`
+1. Upgrade pip: `.\.venv\Scripts\python.exe -m pip install --upgrade pip`
+2. Pre-built wheel: `.\.venv\Scripts\python.exe -m pip install PyMuPDF --only-binary :all:`
 3. Still failing → install [Visual C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
 
 ### PowerShell says "running scripts is disabled"
