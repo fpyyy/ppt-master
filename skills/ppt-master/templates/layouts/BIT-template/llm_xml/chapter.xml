@@ -1,0 +1,28 @@
+<ns0:svg xmlns:ns0="http://www.w3.org/2000/svg" xmlns:ns1="http://www.w3.org/1999/xlink" width="1280" height="720" overflow="hidden" viewBox="0 0 1280 720" data-llm-sanitized="true" data-llm-omitted-paths="3" data-llm-omitted-base64-images="2">
+  <ns0:defs>
+    <ns0:clipPath id="clip0">
+      <ns0:rect x="0" y="0" width="1280" height="720" />
+    </ns0:clipPath>
+    <ns0:clipPath id="clip1">
+      <ns0:rect x="0" y="0" width="12192000" height="2286000" />
+    </ns0:clipPath>
+    <ns0:image width="1467" height="605" ns1:href="data:image/jpeg;base64,BASE64_IMAGE_OMITTED(chars=401152)" preserveAspectRatio="none" id="img2" data-llm-omitted="base64-image" />
+    <ns0:clipPath id="clip3">
+      <ns0:rect x="0" y="777611" width="12119460" height="2286000" />
+    </ns0:clipPath>
+    <ns0:clipPath id="ppt_crop_chapter">
+      <ns0:rect x="0" y="0" width="1280" height="240.000282" />
+    </ns0:clipPath>
+  </ns0:defs>
+  <ns0:g>
+    <ns0:rect x="0" y="0" width="1280" height="720" fill="#FFFFFF" />
+    <ns0:image x="0" y="-81.639046" width="1280.007246" height="524.739824" preserveAspectRatio="none" clip-path="url(#ppt_crop_chapter)" ns1:href="data:image/jpeg;base64,BASE64_IMAGE_OMITTED(chars=401152)" data-llm-omitted="base64-image" />
+    <ns0:rect x="0" y="-1" width="1280" height="241" fill="#057748" fill-opacity="0.901961" />
+    <ns0:rect x="0" y="240" width="1280" height="21" fill="#A13F0B" />
+    <ns0:path d="VECTOR_PATH_OMITTED(chars=19, commands='M')" stroke="#FFFFFF" stroke-width="2" stroke-miterlimit="8" fill="none" fill-rule="evenodd" />
+    <ns0:path d="VECTOR_PATH_OMITTED(chars=108183, commands='M C Z L')" fill="#FFFFFF" fill-rule="evenodd" />
+    <ns0:path d="VECTOR_PATH_OMITTED(chars=137, commands='M C Z')" fill="#A13F0B" fill-rule="evenodd" />
+    <ns0:text fill="#FFFFFF" font-family="Century Gothic,Century Gothic_MSFontService,sans-serif" font-weight="700" font-size="58.6667" transform="translate(409.202 514)">{{SectionNumber}}</ns0:text>
+    <ns0:text font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="700" font-size="48" transform="translate(504.827 506)">{{SectionTitle}}</ns0:text>
+  </ns0:g>
+</ns0:svg>

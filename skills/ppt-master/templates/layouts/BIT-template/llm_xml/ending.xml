@@ -1,0 +1,26 @@
+<ns0:svg xmlns:ns0="http://www.w3.org/2000/svg" width="1280" height="720" overflow="hidden" viewBox="0 0 1280 720" data-llm-sanitized="true" data-llm-omitted-paths="4" data-llm-omitted-base64-images="0">
+  <ns0:g>
+    <ns0:rect x="0" y="0" width="1280" height="720" fill="#FFFFFF" />
+    <ns0:rect x="0" y="0" width="1280" height="720" fill="#057748" />
+    <ns0:path d="VECTOR_PATH_OMITTED(chars=96, commands='M')" stroke="#FFFFFF" stroke-width="6" stroke-miterlimit="8" fill="none" fill-rule="evenodd" />
+    <ns0:path d="VECTOR_PATH_OMITTED(chars=32, commands='M')" stroke="#FFFFFF" stroke-width="6" stroke-miterlimit="8" fill="none" fill-rule="evenodd" />
+    <ns0:path d="VECTOR_PATH_OMITTED(chars=16, commands='M Z')" stroke="#FFFFFF" stroke-width="0.666667" stroke-miterlimit="8" fill="#FFFFFF" fill-rule="evenodd" transform="matrix(1 0 0 -1 631.5 418.5)" />
+    <ns0:path d="VECTOR_PATH_OMITTED(chars=107920, commands='M C Z L')" fill="#FFFFFF" fill-rule="evenodd" />
+    <ns0:text fill="#FFFFFF" font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="700" font-size="48" transform="translate(522.5 300)">谢</ns0:text>
+    <ns0:text fill="#FFFFFF" font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="700" font-size="48" transform="translate(584.833 300)">谢</ns0:text>
+    <ns0:text fill="#FFFFFF" font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="700" font-size="48" transform="translate(647.167 300)">观</ns0:text>
+    <ns0:text fill="#FFFFFF" font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="700" font-size="48" transform="translate(709.5 300)">看</ns0:text>
+    <ns0:text fill="#FFFFFF" font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="700" font-size="48" transform="translate(335.5 374)">敬</ns0:text>
+    <ns0:text fill="#FFFFFF" font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="700" font-size="48" transform="translate(397.833 374)">请</ns0:text>
+    <ns0:text fill="#FFFFFF" font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="700" font-size="48" transform="translate(460.167 374)">各</ns0:text>
+    <ns0:text fill="#FFFFFF" font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="700" font-size="48" transform="translate(522.5 374)">位</ns0:text>
+    <ns0:text fill="#FFFFFF" font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="700" font-size="48" transform="translate(584.833 374)">老</ns0:text>
+    <ns0:text fill="#FFFFFF" font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="700" font-size="48" transform="translate(647.167 374)">师</ns0:text>
+    <ns0:text fill="#FFFFFF" font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="700" font-size="48" transform="translate(709.5 374)">批</ns0:text>
+    <ns0:text fill="#FFFFFF" font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="700" font-size="48" transform="translate(771.833 374)">评</ns0:text>
+    <ns0:text fill="#FFFFFF" font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="700" font-size="48" transform="translate(834.167 374)">指</ns0:text>
+    <ns0:text fill="#FFFFFF" font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="700" font-size="48" transform="translate(896.5 374)">正</ns0:text>
+    <ns0:text fill="#FFFFFF" font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="400" font-size="16" transform="translate(580.058 453)">答辩人：{{PresenterNames}}</ns0:text>
+    <ns0:text fill="#FFFFFF" font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="400" font-size="16" transform="translate(580.058 478)">导    师：{{TeacherNames}}</ns0:text>
+  </ns0:g>
+</ns0:svg>

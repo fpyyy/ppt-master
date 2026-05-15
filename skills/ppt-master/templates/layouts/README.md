@@ -20,5 +20,5 @@ See `skills/ppt-master/workflows/create-template.md` for the full SVG-only creat
 <!-- quick-index:begin -->
 | Template Name | Engine | Pages | Contract |
 |---------------|--------|-------|----------|
-| `ai-template` | locked_svg | `chapter.svg`, `content.svg`, `ending.svg`, `title.svg`, `toc.svg` | `template_contract.json` |
+| `BIT-template` | locked_svg | `chapter.svg`, `content.svg`, `ending.svg`, `title.svg`, `toc.svg` | `template_contract.json` |
 <!-- quick-index:end -->
