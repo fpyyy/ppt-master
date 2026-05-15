@@ -65,9 +65,9 @@ def _parse_placeholders_fallback(block: str) -> Dict[str, Tuple[str, ...]]:
     .. code-block:: yaml
 
         placeholders:
-          01_cover: ["{{PPTTitle}}", "{{PPTLogo}}"]
-          03_content: []
-          03a_content_two_col:
+          title: ["{{PPTTitle}}", "{{PPTLogo}}"]
+          content: []
+          content_variant:
             - "{{LEFT_TITLE}}"
             - "{{RIGHT_TITLE}}"
 
@@ -149,15 +149,21 @@ class SVGQualityChecker:
     # `{{THANK_YOU}}` for `{{CLOSING_MESSAGE}}`, omit `{{DATE}}` when irrelevant,
     # or build content variants with bespoke slot vocabularies.
     #
-    # Variants reuse the parent type's expectation (`03a_content_two_col.svg`
-    # is matched by the same `03_content` rules as `03_content.svg`).
+    # Locked SVG templates use five standard page stems. Older numbered stems
+    # are still tolerated by the lookup helper for legacy validation runs.
     DEFAULT_PLACEHOLDER_CONVENTION = {
-        "01_cover": ("{{PPTTitle}}",),  # only the title is universally expected
+        "title": ("{{PPTTitle}}",),  # only the title is universally expected
+        "chapter": ("{{ChapterTitle}}",),
+        "toc": (),  # TOC layouts vary too widely to assert anything
+        "content": ("{{PageTitle}}",),
+        "ending": (),  # ending pages legitimately use varied vocabularies
+        "01_cover": ("{{PPTTitle}}",),
         "02_chapter": ("{{ChapterTitle}}",),
-        "02_toc": (),  # TOC layouts vary too widely to assert anything
+        "02_toc": (),
         "03_content": ("{{PageTitle}}",),
-        "04_ending": (),  # ending pages legitimately use varied vocabularies
+        "04_ending": (),
     }
+    REQUIRED_TEMPLATE_STEMS = ("title", "toc", "chapter", "content", "ending")
 
     def __init__(self, *, template_mode: bool = False):
         self.template_mode = template_mode
@@ -929,9 +935,9 @@ class SVGQualityChecker:
                 f"{spec_path.name} not found — required for every library template",
             ))
 
-        # Per-file placeholder coverage. Variants reuse the parent type's set
-        # (e.g. 03a_content_two_col.svg ↔ 03_content rules) unless the spec
-        # frontmatter overrides that page (custom_contract takes precedence).
+        # Per-file placeholder coverage. The five standard locked-template
+        # stems use DEFAULT_PLACEHOLDER_CONVENTION unless the spec frontmatter
+        # overrides that page (custom_contract takes precedence).
         for svg_file in svg_files:
             expected = self._lookup_template_contract(
                 svg_file.stem, overrides=custom_contract,
@@ -987,6 +993,26 @@ class SVGQualityChecker:
             return
 
         on_disk = {p.stem: p for p in svg_files}
+        required = set(self.REQUIRED_TEMPLATE_STEMS)
+        missing_stems = sorted(required - set(on_disk))
+        extra_stems = sorted(set(on_disk) - required)
+        if missing_stems or extra_stems:
+            detail_parts = []
+            if missing_stems:
+                detail_parts.append(
+                    f"missing: {', '.join(stem + '.svg' for stem in missing_stems)}"
+                )
+            if extra_stems:
+                detail_parts.append(
+                    f"extra: {', '.join(stem + '.svg' for stem in extra_stems)}"
+                )
+            self._template_issues.append((
+                'error',
+                'standard_template_files',
+                "locked_svg templates must contain exactly title.svg, toc.svg, "
+                f"chapter.svg, content.svg, ending.svg ({'; '.join(detail_parts)})",
+            ))
+
         contract_pages = contract.get("pages")
         if not isinstance(contract_pages, list) or not contract_pages:
             self._template_issues.append((
@@ -1037,6 +1063,12 @@ class SVGQualityChecker:
                     'error',
                     'contract_workspace_missing',
                     f"{stem}.svg is a content page but declares no workspace",
+                ))
+            if page.get("role") != "content" and workspaces:
+                self._template_issues.append((
+                    'error',
+                    'contract_workspace_unexpected',
+                    f"{stem}.svg is not a content page but declares workspace entries",
                 ))
             for workspace in workspaces:
                 bbox = workspace.get("bbox") if isinstance(workspace, dict) else None
@@ -1089,16 +1121,16 @@ class SVGQualityChecker:
         .. code-block:: yaml
 
             placeholders:
-              01_cover: ["{{PPTTitle}}", "{{BrandLogo}}"]
-              03_content: []        # explicitly assert "no expectation"
-              03a_content_two_col:  # variant-specific override
+              title: ["{{PPTTitle}}", "{{BrandLogo}}"]
+              content: []           # explicitly assert "no expectation"
+              chapter:
                 - "{{LeftTitle}}"
                 - "{{RightTitle}}"
 
         Each key is a stem (full filename without ``.svg``) or page-type prefix
-        (``01_cover``). An empty list silences the default convention for that
-        stem; a populated list replaces the default. Stems / prefixes not
-        listed fall back to ``DEFAULT_PLACEHOLDER_CONVENTION``.
+        (``title`` / ``content``). An empty list silences the default
+        convention for that stem; a populated list replaces the default. Stems
+        / prefixes not listed fall back to ``DEFAULT_PLACEHOLDER_CONVENTION``.
 
         We parse with PyYAML when available; otherwise we fall back to a
         minimal regex that handles the documented shape.
@@ -1174,7 +1206,9 @@ class SVGQualityChecker:
         svg_ref_re = re.compile(r"[`\(]([0-9A-Za-z_]+\.svg)[`\)]")
         for match in svg_ref_re.finditer(text):
             stem = match.group(1)[:-4]
-            if stem in seen or not re.match(r"^\d", stem):
+            if stem in seen:
+                continue
+            if not (re.match(r"^\d", stem) or stem in SVGQualityChecker.REQUIRED_TEMPLATE_STEMS):
                 continue
             seen.add(stem)
             stems.append(stem)
@@ -1200,9 +1234,8 @@ class SVGQualityChecker:
 
         Resolution order, first hit wins:
         1. ``overrides[stem]`` — frontmatter entry for the exact filename
-        2. ``overrides[<page_type_prefix>]`` — frontmatter entry for the
-           variant's parent type (e.g. ``03_content`` for
-           ``03a_content_two_col``)
+        2. ``overrides[<page_type_prefix>]`` — legacy frontmatter entry for a
+           numbered variant's parent type
         3. ``DEFAULT_PLACEHOLDER_CONVENTION[<page_type_prefix>]``
 
         Returns ``None`` for stems with no matching convention or override —
@@ -1213,6 +1246,8 @@ class SVGQualityChecker:
         overrides = overrides or {}
         if stem in overrides:
             return overrides[stem]
+        if stem in cls.DEFAULT_PLACEHOLDER_CONVENTION:
+            return cls.DEFAULT_PLACEHOLDER_CONVENTION[stem]
 
         # Variant convention: <NN><letter>?_<rest>; strip the letter to find
         # the parent type prefix, e.g. "03a_content_two_col" -> "03_content".

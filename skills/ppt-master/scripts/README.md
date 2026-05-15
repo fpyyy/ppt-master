@@ -42,7 +42,7 @@ Repository update:
 | Conversion | `source_to_md/pdf_to_md.py`, `source_to_md/doc_to_md.py`, `source_to_md/excel_to_md.py`, `source_to_md/ppt_to_md.py`, `source_to_md/web_to_md.py` | [docs/conversion.md](./docs/conversion.md) |
 | Project management | `project_manager.py`, `batch_validate.py`, `generate_examples_index.py`, `error_helper.py` | [docs/project.md](./docs/project.md) |
 | SVG pipeline | `finalize_svg.py`, `svg_to_pptx.py`, `total_md_split.py`, `svg_quality_checker.py`, `animation_config.py`, `notes_to_audio.py` | [docs/svg-pipeline.md](./docs/svg-pipeline.md) |
-| Locked templates | `svg_template.py`, `register_template.py` | [docs/project.md](./docs/project.md) |
+| Locked templates | `svg_template.py`, `svg_llm_xml.py`, `register_template.py` | [docs/project.md](./docs/project.md) |
 | Spec maintenance | `update_spec.py` | [docs/update_spec.md](./docs/update_spec.md) |
 | Image tools | `image_gen.py`, `analyze_images.py`, `gemini_watermark_remover.py` | [docs/image.md](./docs/image.md) |
 | Repo maintenance | `update_repo.py` | README install/update section |
@@ -72,7 +72,9 @@ Locked SVG templates:
 
 ```bash
 .\.venv\Scripts\python.exe scripts/svg_template.py inspect <svg_dir>
+.\.venv\Scripts\python.exe scripts/svg_llm_xml.py <svg_dir> -o <svg_dir>\llm_xml
 .\.venv\Scripts\python.exe scripts/svg_template.py create <svg_dir> <template_id>
+.\.venv\Scripts\python.exe scripts/svg_template.py visualize-content <template_dir>
 .\.venv\Scripts\python.exe scripts/svg_template.py apply <template_dir> <page_stem> --data fill.json -o out.svg
 ```
 

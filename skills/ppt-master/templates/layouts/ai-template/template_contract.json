@@ -1,0 +1,298 @@
+{
+  "schema_version": 1,
+  "engine": "locked_svg",
+  "template_id": "ai-template",
+  "canvas_format": "ppt169",
+  "pages": [
+    {
+      "stem": "title",
+      "file": "title.svg",
+      "role": "title",
+      "viewBox": "0 0 1280 720",
+      "sha256": "e485a59f81ec533ae43d9a5dca51113c71a275336783e6156f226d707f71a713",
+      "placeholders": [
+        {
+          "name": "PPTTitle",
+          "token": "{{PPTTitle}}",
+          "count": 1,
+          "text_fit": {
+            "estimated_width": 1177.6,
+            "font_size": 58.667,
+            "max_cjk_chars": 20,
+            "max_latin_chars": 36,
+            "source": "estimated"
+          }
+        },
+        {
+          "name": "PresenterNames",
+          "token": "{{PresenterNames}}",
+          "count": 1,
+          "text_fit": {
+            "estimated_width": 942.08,
+            "font_size": 32,
+            "max_cjk_chars": 29,
+            "max_latin_chars": 53,
+            "source": "estimated"
+          }
+        },
+        {
+          "name": "TeacherNames",
+          "token": "{{TeacherNames}}",
+          "count": 1,
+          "text_fit": {
+            "estimated_width": 942.08,
+            "font_size": 32,
+            "max_cjk_chars": 29,
+            "max_latin_chars": 53,
+            "source": "estimated"
+          }
+        },
+        {
+          "name": "TodayDateTime",
+          "token": "{{TodayDateTime}}",
+          "count": 1,
+          "text_fit": {
+            "estimated_width": 942.08,
+            "font_size": 32,
+            "max_cjk_chars": 29,
+            "max_latin_chars": 53,
+            "source": "estimated"
+          }
+        }
+      ],
+      "workspaces": []
+    },
+    {
+      "stem": "toc",
+      "file": "toc.svg",
+      "role": "toc",
+      "viewBox": "0 0 1280 720",
+      "sha256": "464c03bbd408db83d1a59b50dfe57b310ec48fa3858c05552471713fde2326bc",
+      "placeholders": [
+        {
+          "name": "SectionNumber1",
+          "token": "{{SectionNumber1}}",
+          "count": 1,
+          "text_fit": {
+            "estimated_width": 942.08,
+            "font_size": 32,
+            "max_cjk_chars": 29,
+            "max_latin_chars": 53,
+            "source": "estimated"
+          }
+        },
+        {
+          "name": "SectionNumber2",
+          "token": "{{SectionNumber2}}",
+          "count": 1,
+          "text_fit": {
+            "estimated_width": 942.08,
+            "font_size": 32,
+            "max_cjk_chars": 29,
+            "max_latin_chars": 53,
+            "source": "estimated"
+          }
+        },
+        {
+          "name": "SectionNumber3",
+          "token": "{{SectionNumber3}}",
+          "count": 1,
+          "text_fit": {
+            "estimated_width": 942.08,
+            "font_size": 32,
+            "max_cjk_chars": 29,
+            "max_latin_chars": 53,
+            "source": "estimated"
+          }
+        },
+        {
+          "name": "SectionNumber4",
+          "token": "{{SectionNumber4}}",
+          "count": 1,
+          "text_fit": {
+            "estimated_width": 942.08,
+            "font_size": 32,
+            "max_cjk_chars": 29,
+            "max_latin_chars": 53,
+            "source": "estimated"
+          }
+        },
+        {
+          "name": "SectionNumber5",
+          "token": "{{SectionNumber5}}",
+          "count": 1,
+          "text_fit": {
+            "estimated_width": 942.08,
+            "font_size": 32,
+            "max_cjk_chars": 29,
+            "max_latin_chars": 53,
+            "source": "estimated"
+          }
+        },
+        {
+          "name": "SectionTitle1",
+          "token": "{{SectionTitle1}}",
+          "count": 1,
+          "text_fit": {
+            "estimated_width": 942.08,
+            "font_size": 32,
+            "max_cjk_chars": 29,
+            "max_latin_chars": 53,
+            "source": "estimated"
+          }
+        },
+        {
+          "name": "SectionTitle2",
+          "token": "{{SectionTitle2}}",
+          "count": 1,
+          "text_fit": {
+            "estimated_width": 942.08,
+            "font_size": 32,
+            "max_cjk_chars": 29,
+            "max_latin_chars": 53,
+            "source": "estimated"
+          }
+        },
+        {
+          "name": "SectionTitle3",
+          "token": "{{SectionTitle3}}",
+          "count": 1,
+          "text_fit": {
+            "estimated_width": 942.08,
+            "font_size": 32,
+            "max_cjk_chars": 29,
+            "max_latin_chars": 53,
+            "source": "estimated"
+          }
+        },
+        {
+          "name": "SectionTitle4",
+          "token": "{{SectionTitle4}}",
+          "count": 1,
+          "text_fit": {
+            "estimated_width": 942.08,
+            "font_size": 32,
+            "max_cjk_chars": 29,
+            "max_latin_chars": 53,
+            "source": "estimated"
+          }
+        },
+        {
+          "name": "SectionTitle5",
+          "token": "{{SectionTitle5}}",
+          "count": 1,
+          "text_fit": {
+            "estimated_width": 942.08,
+            "font_size": 32,
+            "max_cjk_chars": 29,
+            "max_latin_chars": 53,
+            "source": "estimated"
+          }
+        }
+      ],
+      "workspaces": []
+    },
+    {
+      "stem": "chapter",
+      "file": "chapter.svg",
+      "role": "chapter",
+      "viewBox": "0 0 1280 720",
+      "sha256": "662646376c49a85f82a9c953f80ccbc5c66f5eb66560cf372cfbaa5eacb4cd05",
+      "placeholders": [
+        {
+          "name": "SectionNumber",
+          "token": "{{SectionNumber}}",
+          "count": 1,
+          "text_fit": {
+            "estimated_width": 942.08,
+            "font_size": 58.667,
+            "max_cjk_chars": 16,
+            "max_latin_chars": 29,
+            "source": "estimated"
+          }
+        },
+        {
+          "name": "SectionTitle",
+          "token": "{{SectionTitle}}",
+          "count": 1,
+          "text_fit": {
+            "estimated_width": 942.08,
+            "font_size": 48,
+            "max_cjk_chars": 19,
+            "max_latin_chars": 35,
+            "source": "estimated"
+          }
+        }
+      ],
+      "workspaces": []
+    },
+    {
+      "stem": "content",
+      "file": "content.svg",
+      "role": "content",
+      "viewBox": "0 0 1280 720",
+      "sha256": "c74ffbf4429341b9f2483809dda33f66dd168317379858cdd4f7c2f4d694ded6",
+      "placeholders": [
+        {
+          "name": "PageTitle",
+          "token": "{{PageTitle}}",
+          "count": 1,
+          "text_fit": {
+            "estimated_width": 942.08,
+            "font_size": 37.333,
+            "max_cjk_chars": 25,
+            "max_latin_chars": 45,
+            "source": "estimated"
+          }
+        }
+      ],
+      "workspaces": [
+        {
+          "id": "main",
+          "bbox": [
+            96,
+            144,
+            1088,
+            522
+          ],
+          "element": "auto",
+          "source": "auto-heuristic"
+        }
+      ]
+    },
+    {
+      "stem": "ending",
+      "file": "ending.svg",
+      "role": "ending",
+      "viewBox": "0 0 1280 720",
+      "sha256": "6de6ebd020236313e303f8d6eba1a49c0ecc049180762030875cadb4c19bcc29",
+      "placeholders": [
+        {
+          "name": "PresenterNames",
+          "token": "{{PresenterNames}}",
+          "count": 1,
+          "text_fit": {
+            "estimated_width": 942.08,
+            "font_size": 16,
+            "max_cjk_chars": 58,
+            "max_latin_chars": 107,
+            "source": "estimated"
+          }
+        },
+        {
+          "name": "TeacherNames",
+          "token": "{{TeacherNames}}",
+          "count": 1,
+          "text_fit": {
+            "estimated_width": 942.08,
+            "font_size": 16,
+            "max_cjk_chars": 58,
+            "max_latin_chars": 107,
+            "source": "estimated"
+          }
+        }
+      ],
+      "workspaces": []
+    }
+  ]
+}

@@ -40,7 +40,7 @@
 
 > **⚠️ PPT Master 是 harness，不是完整的 agent。** `harness + model = agent`——工具负责工作流，模型决定上限。要组成真正高质量的 agent，推荐组合是：**Claude 大上下文窗口（~100 万 token）+ AI 生图（`gpt-image-2`）**。其他模型能跑流程，但达不到同等质量上限。效果不理想，请先换模型，不要质疑 harness。
 
-> **锁定 SVG 模板** —— 先准备好带有 `{{PPTTitle}}` 等自定义占位符和 `data-ppt-workspace="main"` 正文工作区的 SVG 页面，再用 `/create-template` 生成可复用模板。后续生成 PPT 时，智能体只读取 `template_contract.json`，不会读取 SVG 源码，嵌入图片不会进入提示词上下文。详见 [模板指南 →](./docs/zh/templates-guide.md)。
+> **锁定 SVG 模板** —— 先准备好五个带有 `{{PPTTitle}}` 等自定义占位符的 SVG 页面：`title.svg`、`toc.svg`、`chapter.svg`、`content.svg`、`ending.svg`，再用 `/create-template` 生成可复用模板。工具会自动推断 `content.svg` 正文工作区，并生成适合大模型阅读的 XML 用于判断主题色。后续生成 PPT 时，智能体只读取 `template_contract.json`，不会读取 SVG 源码，嵌入图片不会进入提示词上下文。详见 [模板指南 →](./docs/zh/templates-guide.md)。
 
 > **动画** —— 导出的 deck 支持**页间转场**和**页内元素入场动画**，输出为真正的 OOXML 动画（不是嵌入视频）。默认进入页面后元素按顺序自动级联入场，无需点击；在 PowerPoint 和 Keynote 中原生播放，无需额外工具。详见 [转场与动画使用指南 →](./docs/zh/animations.md)。
 

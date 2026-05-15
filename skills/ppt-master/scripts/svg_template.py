@@ -10,12 +10,15 @@ SVG from JSON data.
 Usage:
     .\\.venv\\Scripts\\python.exe skills/ppt-master/scripts/svg_template.py inspect <svg_dir>
     .\\.venv\\Scripts\\python.exe skills/ppt-master/scripts/svg_template.py create <svg_dir> <template_id>
+    .\\.venv\\Scripts\\python.exe skills/ppt-master/scripts/svg_template.py visualize-content <template_dir>
     .\\.venv\\Scripts\\python.exe skills/ppt-master/scripts/svg_template.py apply <template_dir> <page_stem> --data fill.json -o out.svg
+    .\\.venv\\Scripts\\python.exe skills/ppt-master/scripts/svg_llm_xml.py <svg_dir> -o <output_dir>
 
 Examples:
     .\\.venv\\Scripts\\python.exe skills/ppt-master/scripts/svg_template.py inspect reference/AI-template
-    .\\.venv\\Scripts\\python.exe skills/ppt-master/scripts/svg_template.py create reference/AI-template bit_locked --display-name "BIT Locked"
-    .\\.venv\\Scripts\\python.exe skills/ppt-master/scripts/svg_template.py apply skills/ppt-master/templates/layouts/bit_locked 03_content --data fill.json -o projects/demo/svg_output/03_content.svg
+    .\\.venv\\Scripts\\python.exe skills/ppt-master/scripts/svg_template.py create reference/AI-template bit_locked
+    .\\.venv\\Scripts\\python.exe skills/ppt-master/scripts/svg_template.py visualize-content skills/ppt-master/templates/layouts/bit_locked
+    .\\.venv\\Scripts\\python.exe skills/ppt-master/scripts/svg_template.py apply skills/ppt-master/templates/layouts/bit_locked content --data fill.json -o projects/demo/svg_output/03_content.svg
 
 Dependencies:
     None (only uses standard library)
@@ -24,6 +27,7 @@ Dependencies:
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
 import html
 import json
@@ -31,6 +35,7 @@ import re
 import shutil
 import subprocess
 import sys
+import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -38,11 +43,30 @@ from xml.etree import ElementTree as ET
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+from svg_llm_xml import write_llm_xml_dir  # noqa: E402
+
 SKILL_DIR = SCRIPT_DIR.parent
 LAYOUTS_DIR = SKILL_DIR / "templates" / "layouts"
 
 PLACEHOLDER_RE = re.compile(r"\{\{([A-Za-z][A-Za-z0-9_]*)\}\}")
 SVG_CLOSE_RE = re.compile(r"</svg\s*>\s*$", re.IGNORECASE)
+REQUIRED_TEMPLATE_FILES = (
+    "title.svg",
+    "toc.svg",
+    "chapter.svg",
+    "content.svg",
+    "ending.svg",
+)
+STANDARD_PAGE_ROLES = {
+    "title": "title",
+    "toc": "toc",
+    "chapter": "chapter",
+    "content": "content",
+    "ending": "ending",
+}
 LOCAL_ASSET_EXTS = {
     ".apng",
     ".avif",
@@ -64,6 +88,7 @@ class Workspace:
     workspace_id: str
     bbox: tuple[float, float, float, float]
     element: str
+    source: str = "declared"
 
 
 @dataclass
@@ -74,7 +99,9 @@ class SvgSummary:
     role: str
     view_box: str
     sha256: str
+    svg_text: str
     placeholders: dict[str, int]
+    placeholder_fits: dict[str, dict[str, Any]]
     workspaces: list[Workspace]
     local_assets: list[Path]
     embedded_image_count: int
@@ -116,6 +143,59 @@ def _parse_bbox(value: str) -> tuple[float, float, float, float]:
     return x, y, width, height
 
 
+def _format_view_box(value: tuple[float, float, float, float]) -> str:
+    return " ".join(str(_format_float(part)) for part in value)
+
+
+def _infer_root_view_box(root: ET.Element, svg_file: Path) -> str:
+    width = _parse_optional_number(root.attrib.get("width"))
+    height = _parse_optional_number(root.attrib.get("height"))
+    if width is None or height is None or width <= 0 or height <= 0:
+        raise TemplateError(
+            f"{svg_file.name}: missing root viewBox and cannot infer it from width/height"
+        )
+    return _format_view_box((0, 0, width, height))
+
+
+def _inject_root_view_box(svg_text: str, view_box: str) -> str:
+    if re.search(r"<svg\b[^>]*\bviewBox\s*=", svg_text, re.IGNORECASE):
+        return svg_text
+    match = re.search(r"<svg\b[^>]*", svg_text, re.IGNORECASE)
+    if not match:
+        return svg_text
+    return svg_text[:match.end()] + f' viewBox="{view_box}"' + svg_text[match.end():]
+
+
+def _parse_optional_number(value: str | None) -> float | None:
+    if value is None:
+        return None
+    try:
+        return _parse_number(value)
+    except TemplateError:
+        return None
+
+
+def _style_value(style: str, name: str) -> str | None:
+    for part in style.split(";"):
+        key, sep, value = part.partition(":")
+        if sep and key.strip() == name:
+            return value.strip()
+    return None
+
+
+def _transform_translate(elem: ET.Element) -> tuple[float, float]:
+    transform = elem.attrib.get("transform", "")
+    match = re.search(
+        r"translate\(\s*([-+]?\d+(?:\.\d+)?)(?:[\s,]+([-+]?\d+(?:\.\d+)?))?",
+        transform,
+    )
+    if not match:
+        return 0.0, 0.0
+    x = float(match.group(1))
+    y = float(match.group(2) or 0)
+    return x, y
+
+
 def _element_bbox(elem: ET.Element) -> tuple[float, float, float, float] | None:
     explicit = elem.attrib.get("data-ppt-workspace-bbox")
     if explicit:
@@ -133,17 +213,159 @@ def _element_bbox(elem: ET.Element) -> tuple[float, float, float, float] | None:
     return None
 
 
+def _bbox_inside(
+    candidate: tuple[float, float, float, float],
+    view_box: tuple[float, float, float, float],
+) -> bool:
+    x, y, width, height = candidate
+    vx, vy, vw, vh = view_box
+    return (
+        width > 0
+        and height > 0
+        and x >= vx
+        and y >= vy
+        and x + width <= vx + vw
+        and y + height <= vy + vh
+    )
+
+
+def _text_content(elem: ET.Element) -> str:
+    return "".join(elem.itertext())
+
+
+def _font_size(elem: ET.Element) -> float:
+    direct = _parse_optional_number(elem.attrib.get("font-size"))
+    if direct:
+        return direct
+    styled = _parse_optional_number(_style_value(elem.attrib.get("style", ""), "font-size"))
+    return styled or 24.0
+
+
+def _text_anchor(elem: ET.Element) -> str:
+    direct = elem.attrib.get("text-anchor")
+    if direct:
+        return direct.strip()
+    styled = _style_value(elem.attrib.get("style", ""), "text-anchor")
+    return styled.strip() if styled else "start"
+
+
+def _text_xy(elem: ET.Element) -> tuple[float | None, float | None]:
+    tx, ty = _transform_translate(elem)
+    x = _parse_optional_number(elem.attrib.get("x"))
+    y = _parse_optional_number(elem.attrib.get("y"))
+    if x is None or y is None:
+        for child in elem:
+            if _local_name(child.tag) != "tspan":
+                continue
+            if x is None:
+                x = _parse_optional_number(child.attrib.get("x"))
+            if y is None:
+                y = _parse_optional_number(child.attrib.get("y"))
+            if x is not None and y is not None:
+                break
+    return (x + tx if x is not None else None, y + ty if y is not None else None)
+
+
+def _collect_placeholder_fits(
+    root: ET.Element,
+    placeholders: dict[str, int],
+    view_box: tuple[float, float, float, float],
+) -> dict[str, dict[str, Any]]:
+    fits: dict[str, dict[str, Any]] = {}
+    vx, _vy, vw, _vh = view_box
+    for elem in root.iter():
+        if _local_name(elem.tag) != "text":
+            continue
+        content = _text_content(elem)
+        names = {match.group(1) for match in PLACEHOLDER_RE.finditer(content)}
+        if not names:
+            continue
+        x, _y = _text_xy(elem)
+        font_size = _font_size(elem)
+        anchor = _text_anchor(elem)
+        if x is None:
+            available_width = vw * 0.8
+        elif anchor == "middle":
+            available_width = 2 * min(max(0.0, x - vx), max(0.0, vx + vw - x))
+        elif anchor == "end":
+            available_width = max(0.0, x - vx)
+        else:
+            available_width = max(0.0, vx + vw - x)
+        available_width = max(font_size * 4, available_width * 0.92)
+        text_fit = {
+            "estimated_width": _format_float(available_width),
+            "font_size": _format_float(font_size),
+            "max_cjk_chars": max(2, int(available_width / font_size)),
+            "max_latin_chars": max(4, int(available_width / (font_size * 0.55))),
+            "source": "estimated",
+        }
+        for name in names:
+            if name not in placeholders:
+                continue
+            previous = fits.get(name)
+            if previous is None or text_fit["max_cjk_chars"] < previous["max_cjk_chars"]:
+                fits[name] = text_fit
+    return fits
+
+
+def _infer_title_bottom(
+    root: ET.Element,
+    view_box: tuple[float, float, float, float],
+) -> float | None:
+    _vx, vy, _vw, vh = view_box
+    candidates: list[float] = []
+    for elem in root.iter():
+        if _local_name(elem.tag) != "text":
+            continue
+        content = _text_content(elem)
+        x, y = _text_xy(elem)
+        if y is None:
+            continue
+        font_size = _font_size(elem)
+        is_title = bool(re.search(r"\{\{(?:Page)?Title\}\}", content, re.IGNORECASE))
+        if is_title or y <= vy + vh * 0.24:
+            candidates.append(y + font_size * 0.65)
+    return max(candidates) if candidates else None
+
+
+def _infer_content_workspace(
+    root: ET.Element,
+    svg_file: Path,
+    view_box: tuple[float, float, float, float],
+) -> Workspace:
+    vx, vy, vw, vh = view_box
+    labelled_candidates: list[tuple[float, tuple[float, float, float, float], str]] = []
+    for elem in root.iter():
+        label_parts = []
+        for attr_name, attr_value in elem.attrib.items():
+            if _local_name(attr_name) in {"id", "class", "aria-label", "data-name"}:
+                label_parts.append(attr_value)
+        label = " ".join(label_parts).lower()
+        if not any(token in label for token in ("workspace", "content", "body", "main")):
+            continue
+        bbox = _element_bbox(elem)
+        if bbox and _bbox_inside(bbox, view_box):
+            area = bbox[2] * bbox[3]
+            labelled_candidates.append((area, bbox, _local_name(elem.tag)))
+    if labelled_candidates:
+        _area, bbox, element = max(labelled_candidates, key=lambda item: item[0])
+        return Workspace("main", bbox, element, source="auto-labelled")
+
+    title_bottom = _infer_title_bottom(root, view_box)
+    margin_x = vw * 0.075
+    bottom_margin = vh * 0.075
+    top = max(vy + vh * 0.2, (title_bottom or vy) + vh * 0.05)
+    bottom = vy + vh - bottom_margin
+    if bottom - top < vh * 0.35:
+        top = vy + vh * 0.22
+    bbox = (vx + margin_x, top, vw - 2 * margin_x, bottom - top)
+    if bbox[2] <= 0 or bbox[3] <= 0:
+        raise TemplateError(f"{svg_file.name}: failed to infer a usable content workspace")
+    return Workspace("main", bbox, "auto", source="auto-heuristic")
+
+
 def _infer_role(stem: str) -> str:
-    lowered = stem.lower()
-    if "cover" in lowered or lowered.startswith("01"):
-        return "cover"
-    if "toc" in lowered or "catalog" in lowered:
-        return "toc"
-    if "chapter" in lowered or "section" in lowered:
-        return "chapter"
-    if "ending" in lowered or "closing" in lowered or "thanks" in lowered:
-        return "ending"
-    return "content"
+    return STANDARD_PAGE_ROLES.get(stem.lower(), "content")
 
 
 def _find_workspaces(root: ET.Element, svg_file: Path) -> list[Workspace]:
@@ -152,11 +374,15 @@ def _find_workspaces(root: ET.Element, svg_file: Path) -> list[Workspace]:
         workspace_id = elem.attrib.get("data-ppt-workspace")
         if not workspace_id:
             continue
-        bbox = _element_bbox(elem)
+        try:
+            bbox = _element_bbox(elem)
+        except TemplateError as exc:
+            raise TemplateError(f"{svg_file.name}: workspace {workspace_id!r}: {exc}") from exc
         if bbox is None:
             raise TemplateError(
                 f"{svg_file.name}: workspace {workspace_id!r} has no geometry. "
-                "Add x/y/width/height or data-ppt-workspace-bbox=\"x y width height\"."
+                "Remove the marker to use automatic content inference, or add "
+                "x/y/width/height / data-ppt-workspace-bbox=\"x y width height\"."
             )
         workspaces.append(
             Workspace(
@@ -203,23 +429,29 @@ def _read_svg_summary(svg_file: Path) -> SvgSummary:
     if _local_name(root.tag) != "svg":
         raise TemplateError(f"{svg_file.name}: root element must be <svg>")
     view_box = root.attrib.get("viewBox", "").strip()
+    normalized_text = text
     if not view_box:
-        raise TemplateError(f"{svg_file.name}: missing root viewBox")
+        view_box = _infer_root_view_box(root, svg_file)
+        normalized_text = _inject_root_view_box(text, view_box)
 
     placeholders: dict[str, int] = {}
     for match in PLACEHOLDER_RE.finditer(text):
         placeholders[match.group(1)] = placeholders.get(match.group(1), 0) + 1
 
-    workspaces = _find_workspaces(root, svg_file)
     role = _infer_role(svg_file.stem)
+    view_box_tuple = _parse_bbox(view_box)
+    placeholder_fits = _collect_placeholder_fits(root, placeholders, view_box_tuple)
+    workspaces = _find_workspaces(root, svg_file)
     if role == "content" and not workspaces:
+        workspaces = [_infer_content_workspace(root, svg_file, view_box_tuple)]
+    if role != "content" and workspaces:
         raise TemplateError(
-            f"{svg_file.name}: content pages must declare data-ppt-workspace=\"main\" "
-            "or another explicit workspace."
+            f"{svg_file.name}: only content.svg may declare workspaces. "
+            "For title/toc/chapter/ending pages, expose editable text through {{...}} placeholders only."
         )
 
     local_assets, embedded_count = _collect_local_assets(root, svg_file)
-    digest = hashlib.sha256(svg_file.read_bytes()).hexdigest()
+    digest = hashlib.sha256(normalized_text.encode("utf-8")).hexdigest()
     return SvgSummary(
         source=svg_file,
         file_name=svg_file.name,
@@ -227,7 +459,9 @@ def _read_svg_summary(svg_file: Path) -> SvgSummary:
         role=role,
         view_box=view_box,
         sha256=digest,
+        svg_text=normalized_text,
         placeholders=placeholders,
+        placeholder_fits=placeholder_fits,
         workspaces=workspaces,
         local_assets=local_assets,
         embedded_image_count=embedded_count,
@@ -237,10 +471,23 @@ def _read_svg_summary(svg_file: Path) -> SvgSummary:
 def _scan_svg_dir(svg_dir: Path) -> list[SvgSummary]:
     if not svg_dir.is_dir():
         raise TemplateError(f"SVG directory not found: {svg_dir}")
-    svg_files = sorted(path for path in svg_dir.glob("*.svg") if path.is_file())
+    svg_files = {path.name.lower(): path for path in svg_dir.glob("*.svg") if path.is_file()}
     if not svg_files:
         raise TemplateError(f"No .svg files found in {svg_dir}")
-    return [_read_svg_summary(path) for path in svg_files]
+    missing = [name for name in REQUIRED_TEMPLATE_FILES if name not in svg_files]
+    extra = sorted(name for name in svg_files if name not in REQUIRED_TEMPLATE_FILES)
+    if missing or extra:
+        details = []
+        if missing:
+            details.append(f"missing: {', '.join(missing)}")
+        if extra:
+            details.append(f"extra: {', '.join(extra)}")
+        raise TemplateError(
+            "Template SVG directory must contain exactly five top-level SVG files: "
+            f"{', '.join(REQUIRED_TEMPLATE_FILES)} ({'; '.join(details)})."
+        )
+    ordered_files = [svg_files[name] for name in REQUIRED_TEMPLATE_FILES]
+    return [_read_svg_summary(path) for path in ordered_files]
 
 
 def _contract_page(summary: SvgSummary) -> dict[str, Any]:
@@ -251,7 +498,16 @@ def _contract_page(summary: SvgSummary) -> dict[str, Any]:
         "viewBox": summary.view_box,
         "sha256": summary.sha256,
         "placeholders": [
-            {"name": name, "token": f"{{{{{name}}}}}", "count": count}
+            {
+                "name": name,
+                "token": f"{{{{{name}}}}}",
+                "count": count,
+                **(
+                    {"text_fit": summary.placeholder_fits[name]}
+                    if name in summary.placeholder_fits
+                    else {}
+                ),
+            }
             for name, count in sorted(summary.placeholders.items())
         ],
         "workspaces": [
@@ -259,6 +515,7 @@ def _contract_page(summary: SvgSummary) -> dict[str, Any]:
                 "id": workspace.workspace_id,
                 "bbox": [_format_float(part) for part in workspace.bbox],
                 "element": workspace.element,
+                "source": workspace.source,
             }
             for workspace in summary.workspaces
         ],
@@ -287,18 +544,9 @@ def build_contract(
     }
 
 
-def _keywords_list(raw: str) -> list[str]:
-    return [part.strip() for part in re.split(r"[,;]", raw) if part.strip()]
-
-
 def _render_design_spec(
     *,
     template_id: str,
-    display_name: str,
-    category: str,
-    summary: str,
-    keywords: list[str],
-    primary_color: str,
     canvas_format: str,
     pages: list[SvgSummary],
 ) -> str:
@@ -308,11 +556,6 @@ def _render_design_spec(
     }
     frontmatter = {
         "template_id": template_id,
-        "display_name": display_name,
-        "category": category,
-        "summary": summary,
-        "keywords": keywords,
-        "primary_color": primary_color,
         "canvas_format": canvas_format,
         "template_engine": "locked_svg",
         "template_contract": "template_contract.json",
@@ -352,30 +595,16 @@ def _render_design_spec(
         [
             *fm_lines,
             "",
-            f"# {display_name} - Locked SVG Template Specification",
+            f"# {template_id} - Locked SVG Template",
             "",
-            "## I. Template Overview",
-            "",
-            f"- Summary: {summary}",
-            f"- Category: {category}",
-            "- Engine: locked SVG. Runtime agents must read `template_contract.json`, not SVG files.",
-            "",
-            "## II. Color Scheme",
-            "",
-            f"- Primary color: `{primary_color}`",
-            "",
-            "## III. Signature Design Elements",
-            "",
-            "- Visual identity is locked inside the SVG files. Do not describe or re-read SVG source during deck generation.",
-            "- Replace only declared `{{...}}` placeholders and inject generated content into declared workspaces.",
-            "",
-            "## IV. Runtime Contract",
+            "## I. Runtime Contract",
             "",
             "- Contract file: `template_contract.json`",
             "- Template engine: `locked_svg`",
             "- Runtime fill command: `svg_template.py apply <template_dir> <page_stem> --data <fill.json> -o <out.svg>`",
+            "- Runtime agents read `template_contract.json`, not template SVG source.",
             "",
-            "## V. Page Roster",
+            "## II. Page Roster",
             "",
             *roster,
             "",
@@ -415,7 +644,8 @@ def cmd_inspect(args: argparse.Namespace) -> int:
             f"{{{{{name}}}}} x{count}" for name, count in sorted(summary.placeholders.items())
         ) or "none"
         workspaces = ", ".join(
-            f"{workspace.workspace_id}={workspace.bbox[0]:g},{workspace.bbox[1]:g},{workspace.bbox[2]:g},{workspace.bbox[3]:g}"
+            f"{workspace.workspace_id}={workspace.bbox[0]:g},{workspace.bbox[1]:g},"
+            f"{workspace.bbox[2]:g},{workspace.bbox[3]:g} ({workspace.source})"
             for workspace in summary.workspaces
         ) or "none"
         print(
@@ -423,6 +653,9 @@ def cmd_inspect(args: argparse.Namespace) -> int:
             f"placeholders={placeholders}; workspaces={workspaces}; "
             f"embedded_images={summary.embedded_image_count}; local_assets={len(summary.local_assets)}"
         )
+    if args.llm_xml_dir:
+        written = write_llm_xml_dir(args.svg_dir.resolve(), args.llm_xml_dir.resolve())
+        print(f"LLM XML files: {len(written)} -> {args.llm_xml_dir}")
     return 0
 
 
@@ -439,8 +672,10 @@ def cmd_create(args: argparse.Namespace) -> int:
     template_dir.mkdir(parents=True, exist_ok=True)
 
     for summary in summaries:
-        shutil.copy2(summary.source, template_dir / summary.file_name)
+        (template_dir / summary.file_name).write_text(summary.svg_text, encoding="utf-8")
     _copy_referenced_assets(summaries, template_dir)
+    llm_xml_dir = template_dir / "llm_xml"
+    write_llm_xml_dir(template_dir, llm_xml_dir)
 
     contract = build_contract(
         args.template_id,
@@ -452,16 +687,8 @@ def cmd_create(args: argparse.Namespace) -> int:
         encoding="utf-8",
     )
 
-    keywords = _keywords_list(args.keywords)
-    display_name = args.display_name or args.template_id
-    summary = args.summary or f"Locked SVG template generated from {args.svg_dir.name}."
     design_spec = _render_design_spec(
         template_id=args.template_id,
-        display_name=display_name,
-        category=args.category,
-        summary=summary,
-        keywords=keywords,
-        primary_color=args.primary_color,
         canvas_format=args.canvas_format,
         pages=summaries,
     )
@@ -493,6 +720,106 @@ def _find_page(contract: dict[str, Any], page_stem: str) -> dict[str, Any]:
         if page.get("stem") == page_stem:
             return page
     raise TemplateError(f"Page stem {page_stem!r} not found in template_contract.json")
+
+
+def _svg_num(value: Any) -> str:
+    return str(_format_float(float(value)))
+
+
+def _workspace_overlay(workspace: dict[str, Any], index: int, stroke_width: float) -> str:
+    bbox = workspace.get("bbox")
+    if not isinstance(bbox, (list, tuple)) or len(bbox) != 4:
+        raise TemplateError(f"invalid workspace bbox for {workspace.get('id') or index!r}")
+    x, y, width, height = (float(part) for part in bbox)
+    workspace_id = str(workspace.get("id") or f"workspace-{index}")
+    label = (
+        f"{workspace_id}: "
+        f"{_svg_num(x)}, {_svg_num(y)}, {_svg_num(width)}x{_svg_num(height)}"
+    )
+    label_x = x + 10
+    label_y = y + 26
+    label_width = max(260, min(width - 20, 10 * len(label))) if width > 40 else 260
+    return "\n".join(
+        [
+            f'<rect id="workspace-{html.escape(_safe_xml_id(workspace_id))}" '
+            f'x="{_svg_num(x)}" y="{_svg_num(y)}" '
+            f'width="{_svg_num(width)}" height="{_svg_num(height)}" '
+            'fill="#f97316" fill-opacity="0.14" stroke="#f97316" '
+            f'stroke-width="{_svg_num(stroke_width)}" stroke-dasharray="14 8" '
+            'vector-effect="non-scaling-stroke"/>',
+            f'<rect x="{_svg_num(label_x - 6)}" y="{_svg_num(label_y - 20)}" '
+            f'width="{_svg_num(label_width)}" height="26" rx="4" '
+            'fill="#fff7ed" fill-opacity="0.92" stroke="#f97316" '
+            'vector-effect="non-scaling-stroke"/>',
+            f'<text x="{_svg_num(label_x)}" y="{_svg_num(label_y)}" '
+            'font-family="Arial, Microsoft YaHei, sans-serif" font-size="18" '
+            f'fill="#9a3412">{html.escape(label)}</text>',
+        ]
+    )
+
+
+def _render_content_viewbox_debug(
+    *,
+    template_dir: Path,
+    content_page: dict[str, Any],
+    output_path: Path,
+) -> None:
+    content_svg = template_dir / str(content_page.get("file") or "content.svg")
+    if not content_svg.exists():
+        raise TemplateError(f"content template SVG missing: {content_svg}")
+    view_box = str(content_page.get("viewBox") or "").strip()
+    if not view_box:
+        raise TemplateError("content page missing viewBox in template_contract.json")
+    view_x, view_y, view_width, view_height = _parse_bbox(view_box)
+    stroke_width = max(view_width, view_height) / 320
+    svg_payload = base64.b64encode(content_svg.read_bytes()).decode("ascii")
+    background = f"data:image/svg+xml;base64,{svg_payload}"
+    overlays = [
+        _workspace_overlay(workspace, index, stroke_width)
+        for index, workspace in enumerate(content_page.get("workspaces") or [], start=1)
+    ]
+    if not overlays:
+        overlays.append(
+            '<text x="24" y="64" font-family="Arial, Microsoft YaHei, sans-serif" '
+            'font-size="22" fill="#b45309">No content workspaces declared</text>'
+        )
+    debug_svg = "\n".join(
+        [
+            '<svg xmlns="http://www.w3.org/2000/svg" '
+            'xmlns:xlink="http://www.w3.org/1999/xlink" '
+            f'viewBox="{html.escape(view_box)}" '
+            f'width="{_svg_num(view_width)}" height="{_svg_num(view_height)}">',
+            "  <desc>Debug overlay for content.svg viewBox and locked template workspaces.</desc>",
+            f'  <image x="{_svg_num(view_x)}" y="{_svg_num(view_y)}" '
+            f'width="{_svg_num(view_width)}" height="{_svg_num(view_height)}" '
+            f'opacity="0.58" preserveAspectRatio="none" xlink:href="{background}"/>',
+            f'  <rect id="content-viewbox" x="{_svg_num(view_x)}" y="{_svg_num(view_y)}" '
+            f'width="{_svg_num(view_width)}" height="{_svg_num(view_height)}" '
+            'fill="none" stroke="#2563eb" '
+            f'stroke-width="{_svg_num(stroke_width)}" vector-effect="non-scaling-stroke"/>',
+            '  <g id="content-workspace-overlays">',
+            "    " + "\n    ".join(overlays),
+            "  </g>",
+            "</svg>",
+            "",
+        ]
+    )
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(debug_svg, encoding="utf-8")
+
+
+def cmd_visualize_content(args: argparse.Namespace) -> int:
+    template_dir = args.template_dir.resolve()
+    contract = _load_contract(template_dir)
+    content_page = _find_page(contract, "content")
+    output_path = args.output.resolve() if args.output else template_dir / "debug" / "content_viewbox.svg"
+    _render_content_viewbox_debug(
+        template_dir=template_dir,
+        content_page=content_page,
+        output_path=output_path,
+    )
+    print(f"Wrote content viewBox debug SVG: {output_path}")
+    return 0
 
 
 def _normalize_placeholder_key(key: str) -> str:
@@ -530,6 +857,59 @@ def _replace_placeholders(text: str, values: dict[str, Any], *, strict: bool) ->
     if strict and missing:
         raise TemplateError(f"missing placeholder values: {', '.join(sorted(missing))}")
     return result
+
+
+def _weighted_text_units(value: str) -> float:
+    units = 0.0
+    for char in value:
+        if char.isspace():
+            units += 0.35
+        elif unicodedata.east_asian_width(char) in {"F", "W"}:
+            units += 1.0
+        else:
+            units += 0.55
+    return units
+
+
+def _check_placeholder_fit(
+    page: dict[str, Any],
+    values: dict[str, Any],
+    *,
+    enabled: bool,
+) -> None:
+    if not enabled:
+        return
+    fit_by_name = {}
+    for placeholder in page.get("placeholders", []):
+        if isinstance(placeholder, dict) and isinstance(placeholder.get("text_fit"), dict):
+            fit_by_name[str(placeholder.get("name") or "")] = placeholder["text_fit"]
+    if not fit_by_name:
+        return
+    normalized = {
+        _normalize_placeholder_key(str(key)): str(value)
+        for key, value in values.items()
+    }
+    too_long = []
+    for name, value in normalized.items():
+        fit = fit_by_name.get(name)
+        if not fit:
+            continue
+        max_units = float(fit.get("max_cjk_chars") or 0)
+        if max_units <= 0:
+            continue
+        used_units = _weighted_text_units(value)
+        if used_units > max_units:
+            too_long.append(
+                f"{name} uses {used_units:.1f} width units, limit {max_units:g} "
+                f"(max_cjk_chars={fit.get('max_cjk_chars')}, "
+                f"max_latin_chars={fit.get('max_latin_chars')})"
+            )
+    if too_long:
+        raise TemplateError(
+            "placeholder text is likely to overflow its locked template box: "
+            + "; ".join(too_long)
+            + ". Shorten the value or rebuild the template with a larger placeholder area."
+        )
 
 
 def _fragment_inner_svg(fragment_path: Path) -> tuple[str, tuple[float, float, float, float]]:
@@ -612,6 +992,11 @@ def cmd_apply(args: argparse.Namespace) -> int:
     fill_data = _load_fill_data(args.data.resolve())
 
     svg_text = template_svg.read_text(encoding="utf-8")
+    _check_placeholder_fit(
+        page,
+        fill_data.get("placeholders", {}),
+        enabled=not args.no_fit_check,
+    )
     svg_text = _replace_placeholders(
         svg_text,
         fill_data.get("placeholders", {}),
@@ -642,6 +1027,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Scan SVG files and print a compact, base64-safe summary.",
     )
     inspect_parser.add_argument("svg_dir", type=Path)
+    inspect_parser.add_argument(
+        "--llm-xml-dir",
+        type=Path,
+        help="Optional output directory for sanitized LLM-friendly XML copies.",
+    )
     inspect_parser.set_defaults(func=cmd_inspect)
 
     create_parser = subparsers.add_parser(
@@ -650,16 +1040,24 @@ def build_parser() -> argparse.ArgumentParser:
     )
     create_parser.add_argument("svg_dir", type=Path)
     create_parser.add_argument("template_id")
-    create_parser.add_argument("--display-name", default="")
-    create_parser.add_argument("--category", default="brand")
-    create_parser.add_argument("--summary", default="")
-    create_parser.add_argument("--keywords", default="locked-svg,template")
-    create_parser.add_argument("--primary-color", default="#000000")
     create_parser.add_argument("--canvas-format", default="ppt169")
     create_parser.add_argument("--output-dir", type=Path)
     create_parser.add_argument("--force", action="store_true")
     create_parser.add_argument("--no-register", action="store_true")
     create_parser.set_defaults(func=cmd_create)
+
+    visualize_parser = subparsers.add_parser(
+        "visualize-content",
+        help="Write debug/content_viewbox.svg with the content viewBox and workspace overlay.",
+    )
+    visualize_parser.add_argument("template_dir", type=Path)
+    visualize_parser.add_argument(
+        "-o",
+        "--output",
+        type=Path,
+        help="Output SVG path. Defaults to <template_dir>/debug/content_viewbox.svg.",
+    )
+    visualize_parser.set_defaults(func=cmd_visualize_content)
 
     apply_parser = subparsers.add_parser(
         "apply",
@@ -670,6 +1068,11 @@ def build_parser() -> argparse.ArgumentParser:
     apply_parser.add_argument("--data", required=True, type=Path)
     apply_parser.add_argument("-o", "--output", required=True, type=Path)
     apply_parser.add_argument("--strict", action="store_true")
+    apply_parser.add_argument(
+        "--no-fit-check",
+        action="store_true",
+        help="Disable estimated placeholder length checks.",
+    )
     apply_parser.set_defaults(func=cmd_apply)
 
     return parser

@@ -39,15 +39,22 @@ For a locked template page:
 
 1. Create `<project_path>/template_fill/P<NN>_<stem>.json`.
 2. Fill `placeholders` with values for the page's declared `{{...}}` tokens.
-3. For content pages, generate an SVG fragment for the declared workspace only, usually `<project_path>/template_fill/P<NN>_main.svg`.
-4. Add `workspaces: {"main": "P<NN>_main.svg"}` to the fill JSON.
-5. Run:
+3. For `content` pages only, generate an SVG fragment for the declared workspace, usually `<project_path>/template_fill/P<NN>_main.svg`.
+4. For `title`, `toc`, `chapter`, and `ending`, leave `workspaces` empty; replace placeholders only.
+5. Add `workspaces: {"main": "P<NN>_main.svg"}` to the fill JSON only when the page role is `content`.
+6. Run:
 
 ```bash
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_template.py apply <project_path>/templates/<template_id> <stem> --data <project_path>/template_fill/P<NN>_<stem>.json -o <project_path>/svg_output/<NN>_<page_name>.svg
 ```
 
 **Workspace fragment rule**: the fragment root uses `viewBox="0 0 <width> <height>"` where width/height match the workspace bbox in `template_contract.json`. The fragment coordinate system starts at the workspace top-left `(0,0)`.
+
+**Placeholder fit rule**: For non-content locked pages, obey
+`template_contract.json pages[].placeholders[].text_fit`. Keep replacement text
+within `max_cjk_chars` / `max_latin_chars`; if `svg_template.py apply` reports
+a fit error, shorten the wording and rerun. Do not lower font size or add new
+workspace fragments to make long text fit.
 
 ### Page-Template Mapping Declaration (Required Output)
 
@@ -59,6 +66,7 @@ Before generating each page, output which contract page is used:
 ```
 
 - **Locked content pages**: only generate the declared workspace fragment
+- **Locked non-content pages**: replace `{{...}}` text only and respect text-fit budgets
 - **No template**: generate entirely per the Design Spec
 
 ---
@@ -91,7 +99,7 @@ Before drawing each page, look up its entry in `page_rhythm` (key format `P<NN>`
 
 | Tag | Layout discipline |
 |-----|-------------------|
-| `anchor` | Structural page (cover / chapter / TOC / ending). Follow the matching template verbatim. |
+| `anchor` | Structural page (title / chapter / TOC / ending). Follow the matching template verbatim. |
 | `dense` | Information-heavy. Card grids, multi-column layouts, KPI dashboards, tables, and charts are all permitted. This is the baseline behavior. |
 | `breathing` | Low-density impact page. Avoid **multi-card grid layouts** — do not organize content as multiple parallel rounded containers (3-card row, 4-card KPI grid, 2×2 matrix rendered as cards). Use naked text blocks, dividers, whitespace, or full-bleed imagery as the content structure. Single rounded visual elements (hero image corners, callouts, tags, one emphasis block) are fine — the rule is about grid structure, not about the `rx` attribute. Proportions follow information weight (not a preset ratio). Typical forms: hero quote, single large number with one-line interpretation, full-bleed image with floating caption, section transition. |
 
@@ -105,7 +113,7 @@ Before drawing each page, look up its entry in `page_rhythm` (key format `P<NN>`
 
 Before drawing each page, look up its entry in `page_layouts` to decide which locked template page stem applies. Template SVGs were not loaded; only the contract was loaded in §1.0.
 
-- Entry present (e.g., `P04: 03_content`) → the stem MUST appear in `template_contract.json pages[].stem`; generate fill JSON + workspace fragments and run `svg_template.py apply`.
+- Entry present (e.g., `P04: content`) → the stem MUST appear in `template_contract.json pages[].stem`; generate fill JSON and run `svg_template.py apply`. Generate a workspace fragment only when that contract page has a `content` role and a declared workspace.
 - No entry for this page → free design. **Not an error** — Strategist intentionally left this page free.
 - Whole section absent → no layout template pages are used.
 

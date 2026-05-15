@@ -139,9 +139,7 @@ Want to turn polished SVG pages into a reusable template for PPT Master? Here's 
 
 **Step 1 - Prepare SVG Pages**
 
-Prepare SVG files for the key page types. Put replaceable text in custom placeholders such as `{{PPTTitle}}`, and mark content-page body regions with `data-ppt-workspace="main"`.
-
-If the workspace element has no direct `x/y/width/height`, add `data-ppt-workspace-bbox="x y width height"`.
+Prepare exactly five SVG files: `title.svg`, `toc.svg`, `chapter.svg`, `content.svg`, and `ending.svg`. Put replaceable text in custom placeholders such as `{{PPTTitle}}`; `svg_template.py create` infers the `content.svg` workspace automatically.
 
 **Step 2 - Let AI Create the Template**
 
@@ -156,7 +154,7 @@ You don't need to supply every detail upfront — the AI agent will ask follow-u
 
 **Step 3 - Wait for the Result**
 
-The AI agent will run `svg_template.py inspect`, create `template_contract.json`, and register the locked template. Runtime agents read the contract, not the SVG source.
+The AI agent will run `svg_template.py inspect`, `svg_llm_xml.py`, create `template_contract.json`, and register the locked template. Runtime agents read the contract, not the SVG source.
 
 > **Tip**: The more specific you are about the style and use case, the better the generated template will match your expectations.
 

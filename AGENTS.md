@@ -56,6 +56,11 @@ Convenience summary only — full workflow in [`skills/ppt-master/SKILL.md`](ski
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/project_manager.py import-sources <project_path> <source_files_or_URLs...> --move
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/project_manager.py validate <project_path>
 
+# Locked SVG template creation
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_template.py inspect <svg_dir>
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_llm_xml.py <svg_dir> -o <svg_dir>\llm_xml
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_template.py create <svg_dir> <template_id>
+
 # Image tools and SVG quality check
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/analyze_images.py <project_path>/images
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/image_gen.py "prompt" --aspect_ratio 16:9 --image_size 1K -o <project_path>/images

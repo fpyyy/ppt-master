@@ -65,6 +65,7 @@ description: >
 | `${SKILL_DIR}/scripts/svg_to_pptx.py` | Export to PPTX |
 | `${SKILL_DIR}/scripts/update_spec.py` | Propagate a `spec_lock.md` color / font_family change across all generated SVGs |
 | `${SKILL_DIR}/scripts/svg_template.py` | Inspect, create, and fill locked SVG templates without exposing SVG source at runtime |
+| `${SKILL_DIR}/scripts/svg_llm_xml.py` | Rewrite SVG templates into LLM-friendly XML with base64 images and path `d` payloads redacted |
 
 For complete tool documentation, see `${SKILL_DIR}/scripts/README.md`.
 

@@ -11,7 +11,7 @@ locked SVG template directory containing:
 
 - `design_spec.md`
 - `template_contract.json`
-- one or more `.svg` files
+- `title.svg`, `toc.svg`, `chapter.svg`, `content.svg`, `ending.svg`
 
 Example:
 
@@ -42,11 +42,14 @@ Run:
 
 ```bash
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_template.py inspect <svg_dir>
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_llm_xml.py <svg_dir> -o <svg_dir>\llm_xml
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_template.py create <svg_dir> <template_id>
 ```
 
 `inspect` prints compact metadata only and never prints SVG source or base64
 image payloads.
+`svg_llm_xml.py` creates sanitized XML with base64 images and path drawing
+commands replaced by short pseudocode, while text and colors remain visible.
 
 ## 3. SVG Requirements
 
@@ -58,17 +61,19 @@ Replaceable text uses custom placeholders:
 {{PPTDate}}
 ```
 
-Content pages must mark the editable body area:
+The directory must contain exactly:
 
-```xml
-data-ppt-workspace="main"
+```text
+title.svg
+toc.svg
+chapter.svg
+content.svg
+ending.svg
 ```
 
-If the workspace element has no direct `x/y/width/height`, add:
-
-```xml
-data-ppt-workspace-bbox="x y width height"
-```
+Only `content.svg` receives a workspace. `svg_template.py create` infers that
+workspace automatically and records it in `template_contract.json`; the other
+four pages are placeholder-only.
 
 The generated `template_contract.json` lists every page, placeholder, workspace
 bbox, and SVG SHA. If a SVG changes, recreate the template contract.
@@ -76,6 +81,7 @@ bbox, and SVG SHA. If a SVG changes, recreate the template contract.
 ## 4. Template Boundaries
 
 - Locked SVG templates preserve the original visual shell.
-- Runtime agents generate content only inside declared workspaces.
+- Runtime agents generate content only inside the inferred `content.svg` workspace.
+- Runtime agents replace only `{{...}}` text on title / TOC / chapter / ending pages and must respect `text_fit` budgets.
 - Embedded PNG/base64 data is allowed in SVGs but stays out of prompt context.
 - Old template replication modes are removed; rebuild templates from SVG.

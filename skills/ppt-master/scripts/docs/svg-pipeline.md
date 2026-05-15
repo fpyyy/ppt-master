@@ -26,13 +26,17 @@ Create and apply locked SVG templates.
 
 ```bash
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_template.py inspect <svg_dir>
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_llm_xml.py <svg_dir> -o <svg_dir>\llm_xml
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_template.py create <svg_dir> <template_id>
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_template.py visualize-content <template_dir>
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_template.py apply <template_dir> <page_stem> --data <fill.json> -o <out.svg>
 ```
 
 `inspect` reports compact metadata only; it never prints SVG source or embedded base64 image data.
-`create` copies the source SVGs and writes `design_spec.md` plus `template_contract.json`.
-`apply` replaces custom placeholders such as `{{PPTTitle}}` and injects workspace fragments into explicitly marked workspace boxes.
+`svg_llm_xml.py` writes model-readable XML with base64 images and path `d` payloads redacted.
+`create` requires `title.svg`, `toc.svg`, `chapter.svg`, `content.svg`, and `ending.svg`; it copies the source SVGs, infers any missing root `viewBox` from `width`/`height`, and writes `llm_xml/`, `design_spec.md`, and `template_contract.json`.
+`visualize-content` writes `debug/content_viewbox.svg` under the template directory so the `content.svg` root `viewBox` and workspace boxes can be inspected without adding a sixth top-level SVG.
+`apply` replaces custom placeholders such as `{{PPTTitle}}`; it injects workspace fragments only for `content.svg`.
 
 ## `finalize_svg.py`
 

@@ -94,7 +94,7 @@
 > One entry per page. Key: `P<NN>` (zero-padded, matching `§IX Content Outline` in `design_spec.md`). Value: one of the three rhythm tags. Executor reads per page and applies the tag's layout discipline — breaks the "every page looks the same" pattern.
 >
 > **Vocabulary** (exactly these three values):
-> - `anchor` — Structural pages (cover / chapter opener / TOC / ending). Follow the template as-is.
+> - `anchor` — Structural pages (title / chapter opener / TOC / ending). Follow the template as-is.
 > - `dense` — Information-heavy pages (data, KPIs, comparisons, multi-point lists). Card grids, multi-column layouts, tables, charts all permitted.
 > - `breathing` — Low-density pages (single concept, hero quote, big image + caption, section transition). Avoid **multi-card grid layouts** (multiple parallel rounded containers as the primary structure); organize via naked text, dividers, whitespace, or full-bleed imagery. Single rounded elements (hero image corners, callouts, tags, one emphasis block) are fine. Proportions follow information weight — not a preset ratio menu.
 >
@@ -103,13 +103,14 @@
 > **Missing or empty section** → Executor falls back to `dense` for every page (legacy pre-rhythm behavior). Remove the section only for legacy decks; new decks MUST fill it.
 
 ## page_layouts
-- P01: 01_cover
-- P03: 02a_chapter
-- P04: 03a_content_abstract
+- P01: title
+- P02: toc
+- P03: chapter
+- P04: content
 
-> One entry per page **that uses a template SVG**. Key: `P<NN>` matching §IX. Value: the template's SVG basename without extension (e.g., `01_cover`, `03a_content_image_text`) — Executor resolves it to `templates/<chosen_template>/<value>.svg`. Modern templates ship many content-page variants (`03a_content_abstract`, `03b_content_image_text`, `03c_content_three_items` …); the page-type → single-file mapping in `executor-base.md §1` no longer covers them, so this section is the per-page truth.
+> One entry per page **that uses a template SVG**. Key: `P<NN>` matching §IX. Value: one of the template's five SVG basenames without extension: `title`, `toc`, `chapter`, `content`, `ending`. Executor resolves it through `template_contract.json`, not by reading the SVG.
 >
-> **No entry for a page** → that page is free design (no template inheritance). Mixed decks are supported: e.g., cover/chapter pages inherit a template while content pages are free.
+> **No entry for a page** → that page is free design (no template inheritance). Mixed decks are supported: e.g., title/chapter pages inherit a template while content pages are free.
 >
 > **Hard rule**: Use both `page_layouts` and `page_charts` for the same page only when the layout template is a compatible shell for the chart. Do not assign a conflicting layout just to fill every page: a waterfall chart should not inherit a timeline layout, and KPI cards should not inherit a circle-diagram layout unless that is the intended visual structure. When no compatible layout exists, omit the page from `page_layouts`.
 >

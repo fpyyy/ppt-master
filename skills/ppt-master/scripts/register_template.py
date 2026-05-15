@@ -198,7 +198,7 @@ def _extract_entry(template_id: str, template_dir: Path) -> dict:
         keywords = _split_keywords(tone)[:5]
 
     primary_color = fm.get("primary_color") or _extract_primary_color(body)
-    category = fm.get("category", "general")
+    category = fm.get("category") or ""
     template_engine = fm.get("template_engine", "")
     template_contract = fm.get("template_contract", "")
     if template_engine == "locked_svg":
@@ -224,10 +224,11 @@ def _extract_entry(template_id: str, template_dir: Path) -> dict:
 
     pages = _list_pages(template_dir)
 
-    entry = OrderedDict(
-        summary=summary,
-        keywords=keywords,
-    )
+    entry = OrderedDict()
+    if summary:
+        entry["summary"] = summary
+    if keywords:
+        entry["keywords"] = keywords
 
     extras = OrderedDict(
         pages=pages,
@@ -265,19 +266,17 @@ def _render_quick_index_rows(
     items: Iterable[tuple[str, dict, dict]],
 ) -> list[str]:
     rows: list[str] = [
-        "| Template Name | Engine | Category | Use Cases | Primary Color | Design Tone |",
-        "|---------------|--------|----------|-----------|---------------|-------------|",
+        "| Template Name | Engine | Pages | Contract |",
+        "|---------------|--------|-------|----------|",
     ]
     for tid, _, extras in items:
         engine = extras.get("template_engine") or "legacy"
-        cat = extras.get("category") or "general"
-        use_cases = extras.get("use_cases") or "—"
-        primary = extras.get("primary_color") or "—"
-        if primary != "—":
-            primary = f"`{primary}`"
-        tone = extras.get("design_tone") or "—"
+        pages = ", ".join(f"`{page}.svg`" for page in extras.get("pages", [])) or "—"
+        contract = extras.get("template_contract") or "—"
+        if contract != "—":
+            contract = f"`{contract}`"
         rows.append(
-            f"| `{tid}` | {engine} | {cat.title()} | {use_cases} | {primary} | {tone} |"
+            f"| `{tid}` | {engine} | {pages} | {contract} |"
         )
     return rows
 
@@ -355,12 +354,9 @@ def _print_completion_card(template_id: str, entry: dict, extras: dict) -> None:
     print()
     print(f"**Template Name**: {template_id}")
     print(f"**Template Path**: `templates/layouts/{template_id}/`")
-    print(f"**Category**: {extras.get('category', 'general')}")
     print(f"**Template Engine**: {extras.get('template_engine') or 'legacy'}")
     if extras.get("template_contract"):
         print(f"**Contract**: `{extras['template_contract']}`")
-    primary = extras.get("primary_color") or "—"
-    print(f"**Primary Color**: {primary}")
     print("**Index Registration**: Done")
     print()
     print("### Files Included")
