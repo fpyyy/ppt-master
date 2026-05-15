@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="1280" height="720" viewBox="0 0 1280 720"><rect x="0" y="0" width="1280" height="720" fill="#FFFFFF"/>
+<g id="layout-shape-5" data-name="矩形 4">
+<rect x="0" y="240.32" width="1280" height="20.67" fill="#A13F0B" stroke="none" stroke-width="1"/>
+</g>
+<g id="layout-shape-2" data-name="图片 1">
+<svg x="0" y="0" width="1280" height="240.44" viewBox="0 0.15558 1 0.45737" preserveAspectRatio="none"><image href="../assets/image1.png" x="0" y="0" width="1" height="1" preserveAspectRatio="none"/></svg>
+</g>
+<g id="layout-shape-10" data-name="矩形 9">
+<rect x="0" y="-0.83" width="1280" height="241.27" fill="#006C39" fill-opacity="0.9" stroke="none" stroke-width="1"/>
+</g>
+<g id="layout-shape-11" data-name="图片 10">
+<image href="../assets/image2.png" x="527.49" y="88.32" width="225.02" height="62.98" preserveAspectRatio="none"/>
+</g>
+<g id="layout-shape-4" data-name="直接连接符 3">
+<line x1="-8.55" y1="240.32" x2="1286.97" y2="240.32" stroke-width="2" stroke="#FFFFFF" fill="#006C39"/>
+</g>
+<g id="shape-19" data-name="组合 18">
+<g id="shape-4" data-name="椭圆 3">
+<ellipse cx="425.62" cy="490.81" rx="41.05" ry="41.05" fill="#A13F0B" stroke="none" stroke-width="1"/>
+<text x="425.62" y="505.47" text-anchor="middle" xml:space="preserve" font-family="&quot;Century Gothic&quot;, sans-serif" font-size="58.67" fill="#FFFFFF"><tspan fill="#FFFFFF" font-size="58.67">1</tspan></text>
+</g>
+<g id="shape-8" data-name="文本框 7">
+<rect x="504.83" y="459.79" width="393.4" height="58.16" fill="none"/>
+<text x="504.83" y="500.59" text-anchor="start" xml:space="preserve" font-family="&quot;微软雅黑&quot;, sans-serif" font-size="48" fill="#A2A2A2" font-weight="bold" letter-spacing="4"><tspan fill="#A2A2A2" font-size="48" font-weight="bold" letter-spacing="4">研究背景与目的</tspan></text>
+</g>
+</g></svg>

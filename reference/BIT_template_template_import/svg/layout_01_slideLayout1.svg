@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="1280" height="720" viewBox="0 0 1280 720"><g id="layout-shape-5" data-name="矩形 4">
+<rect x="0" y="240.32" width="1280" height="20.67" fill="#A13F0B" stroke="none" stroke-width="1"/>
+</g>
+<g id="layout-shape-2" data-name="图片 1">
+<svg x="0" y="0" width="1280" height="240.44" viewBox="0 0.15558 1 0.45737" preserveAspectRatio="none"><image href="../assets/image1.png" x="0" y="0" width="1" height="1" preserveAspectRatio="none"/></svg>
+</g>
+<g id="layout-shape-10" data-name="矩形 9">
+<rect x="0" y="-0.83" width="1280" height="241.27" fill="#006C39" fill-opacity="0.9" stroke="none" stroke-width="1"/>
+</g>
+<g id="layout-shape-11" data-name="图片 10">
+<image href="../assets/image2.png" x="527.49" y="88.32" width="225.02" height="62.98" preserveAspectRatio="none"/>
+</g>
+<g id="layout-shape-4" data-name="直接连接符 3">
+<line x1="-8.55" y1="240.32" x2="1286.97" y2="240.32" stroke-width="2" stroke="#FFFFFF" fill="#006C39"/>
+</g></svg>

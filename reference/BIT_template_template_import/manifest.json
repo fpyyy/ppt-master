@@ -1,0 +1,817 @@
+{
+  "source": {
+    "pptx": "C:\\PPT\\ppt-master\\reference\\BIT_template.pptx",
+    "name": "BIT_template.pptx"
+  },
+  "slideSize": {
+    "width_emu": 12192000,
+    "height_emu": 6858000,
+    "width_px": 1280,
+    "height_px": 720
+  },
+  "theme": {
+    "colors": {
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#006C39",
+      "lt2": "#FFFFFF",
+      "accent1": "#006C39",
+      "accent2": "#3F3F3F",
+      "accent3": "#A2A2A2",
+      "accent4": "#A13F0B",
+      "accent5": "#4EB3CF",
+      "accent6": "#51C3F9",
+      "hlink": "#EE7B08",
+      "folHlink": "#977B2D"
+    },
+    "fonts": {
+      "majorLatin": "微软雅黑",
+      "minorLatin": "微软雅黑",
+      "minorEastAsia": "微软雅黑"
+    }
+  },
+  "assets": {
+    "exportDir": "assets",
+    "commonAssets": [
+      "image1.png",
+      "image2.png"
+    ],
+    "allAssets": [
+      "image1.png",
+      "image2.png",
+      "image3.png",
+      "image4.png",
+      "image5.png",
+      "image6.png",
+      "image7.png",
+      "image8.png"
+    ],
+    "assetMap": {
+      "ppt/media/image1.png": "image1.png",
+      "ppt/media/image2.png": "image2.png",
+      "ppt/media/image3.png": "image3.png",
+      "ppt/media/image4.png": "image4.png",
+      "ppt/media/image5.png": "image5.png",
+      "ppt/media/image6.png": "image6.png",
+      "ppt/media/image7.png": "image7.png",
+      "ppt/media/image8.png": "image8.png"
+    }
+  },
+  "pageTypeCandidates": {
+    "chapter_candidate": [
+      3,
+      4
+    ],
+    "content_candidate": [
+      2
+    ],
+    "cover_candidate": [
+      1
+    ],
+    "ending_candidate": [
+      5
+    ]
+  },
+  "layouts": [
+    {
+      "path": "ppt/slideLayouts/slideLayout1.xml",
+      "name": "slideLayout1.xml",
+      "svgFile": "layout_01_slideLayout1.svg",
+      "parentPath": "ppt/slideMasters/slideMaster1.xml",
+      "themePath": null,
+      "theme": null,
+      "backgroundAsset": null,
+      "imageAssets": [
+        "image1.png",
+        "image2.png"
+      ],
+      "placeholders": [],
+      "textSamples": [],
+      "textCount": 0,
+      "shapeCount": 7,
+      "usedBySlides": [
+        2,
+        3
+      ]
+    },
+    {
+      "path": "ppt/slideLayouts/slideLayout2.xml",
+      "name": "slideLayout2.xml",
+      "svgFile": "layout_02_slideLayout2.svg",
+      "parentPath": "ppt/slideMasters/slideMaster1.xml",
+      "themePath": null,
+      "theme": null,
+      "backgroundAsset": null,
+      "imageAssets": [
+        "image3.png"
+      ],
+      "placeholders": [],
+      "textSamples": [],
+      "textCount": 0,
+      "shapeCount": 8,
+      "usedBySlides": []
+    },
+    {
+      "path": "ppt/slideLayouts/slideLayout3.xml",
+      "name": "slideLayout3.xml",
+      "svgFile": "layout_03_slideLayout3.svg",
+      "parentPath": "ppt/slideMasters/slideMaster1.xml",
+      "themePath": null,
+      "theme": null,
+      "backgroundAsset": null,
+      "imageAssets": [
+        "image4.png",
+        "image5.png"
+      ],
+      "placeholders": [
+        {
+          "type": "title",
+          "idx": null,
+          "size": null,
+          "orient": null,
+          "geometry": {
+            "x": 70,
+            "y": 275,
+            "width": 736,
+            "height": 126
+          },
+          "textSamples": [
+            "请在此输入标题",
+            "尽量回车保证标题为两行"
+          ]
+        },
+        {
+          "type": "body",
+          "idx": "13",
+          "size": "quarter",
+          "orient": null,
+          "geometry": {
+            "x": 70,
+            "y": 247,
+            "width": 539,
+            "height": 27
+          },
+          "textSamples": [
+            "请在此输入你的副标题"
+          ]
+        },
+        {
+          "type": "body",
+          "idx": "16",
+          "size": "quarter",
+          "orient": null,
+          "geometry": {
+            "x": 70,
+            "y": 430,
+            "width": 653,
+            "height": 39
+          },
+          "textSamples": [
+            "答辩人：北小理　　　导　师： 京小工　　　时　间：",
+            "XXX"
+          ]
+        }
+      ],
+      "textSamples": [
+        "请在此输入标题",
+        "尽量回车保证标题为两行",
+        "请在此输入你的副标题",
+        "答辩人：北小理　　　导　师： 京小工　　　时　间：",
+        "XXX",
+        "◀ BIT ▶"
+      ],
+      "textCount": 6,
+      "shapeCount": 15,
+      "usedBySlides": []
+    },
+    {
+      "path": "ppt/slideLayouts/slideLayout4.xml",
+      "name": "slideLayout4.xml",
+      "svgFile": "layout_04_slideLayout4.svg",
+      "parentPath": "ppt/slideMasters/slideMaster2.xml",
+      "themePath": null,
+      "theme": null,
+      "backgroundAsset": null,
+      "imageAssets": [
+        "image4.png",
+        "image5.png"
+      ],
+      "placeholders": [
+        {
+          "type": "title",
+          "idx": null,
+          "size": null,
+          "orient": null,
+          "geometry": {
+            "x": 70,
+            "y": 275,
+            "width": 736,
+            "height": 126
+          },
+          "textSamples": [
+            "请在此输入标题",
+            "尽量回车保证标题为两行"
+          ]
+        },
+        {
+          "type": "body",
+          "idx": "13",
+          "size": "quarter",
+          "orient": null,
+          "geometry": {
+            "x": 70,
+            "y": 247,
+            "width": 539,
+            "height": 27
+          },
+          "textSamples": [
+            "请在此输入你的副标题"
+          ]
+        },
+        {
+          "type": "body",
+          "idx": "16",
+          "size": "quarter",
+          "orient": null,
+          "geometry": {
+            "x": 70,
+            "y": 430,
+            "width": 653,
+            "height": 39
+          },
+          "textSamples": [
+            "答辩人：北小理　　　导　师： 京小工　　　时　间：",
+            "XXX"
+          ]
+        }
+      ],
+      "textSamples": [
+        "请在此输入标题",
+        "尽量回车保证标题为两行",
+        "请在此输入你的副标题",
+        "答辩人：北小理　　　导　师： 京小工　　　时　间：",
+        "XXX",
+        "◀ BIT ▶"
+      ],
+      "textCount": 6,
+      "shapeCount": 15,
+      "usedBySlides": [
+        1
+      ]
+    },
+    {
+      "path": "ppt/slideLayouts/slideLayout5.xml",
+      "name": "slideLayout5.xml",
+      "svgFile": "layout_05_slideLayout5.svg",
+      "parentPath": "ppt/slideMasters/slideMaster2.xml",
+      "themePath": null,
+      "theme": null,
+      "backgroundAsset": null,
+      "imageAssets": [
+        "image4.png",
+        "image6.png"
+      ],
+      "placeholders": [
+        {
+          "type": "title",
+          "idx": null,
+          "size": null,
+          "orient": null,
+          "geometry": {
+            "x": 540,
+            "y": 269,
+            "width": 652,
+            "height": 126
+          },
+          "textSamples": [
+            "请在此输入标题",
+            "尽量回车保证标题为两行"
+          ]
+        },
+        {
+          "type": "body",
+          "idx": "13",
+          "size": "quarter",
+          "orient": null,
+          "geometry": {
+            "x": 539,
+            "y": 245,
+            "width": 541,
+            "height": 27
+          },
+          "textSamples": [
+            "请在此输入你的副标题"
+          ]
+        },
+        {
+          "type": "body",
+          "idx": "16",
+          "size": "quarter",
+          "orient": null,
+          "geometry": {
+            "x": 540,
+            "y": 439,
+            "width": 654,
+            "height": 39
+          },
+          "textSamples": [
+            "答辩人：北小理　　　导　师： 京小工　　　时　间：",
+            "XXX"
+          ]
+        }
+      ],
+      "textSamples": [
+        "请在此输入标题",
+        "尽量回车保证标题为两行",
+        "请在此输入你的副标题",
+        "答辩人：北小理　　　导　师： 京小工　　　时　间：",
+        "XXX"
+      ],
+      "textCount": 5,
+      "shapeCount": 12,
+      "usedBySlides": []
+    },
+    {
+      "path": "ppt/slideLayouts/slideLayout6.xml",
+      "name": "slideLayout6.xml",
+      "svgFile": "layout_06_slideLayout6.svg",
+      "parentPath": "ppt/slideMasters/slideMaster2.xml",
+      "themePath": null,
+      "theme": null,
+      "backgroundAsset": null,
+      "imageAssets": [
+        "image7.png"
+      ],
+      "placeholders": [
+        {
+          "type": "title",
+          "idx": null,
+          "size": null,
+          "orient": null,
+          "geometry": {
+            "x": 54,
+            "y": 395,
+            "width": 1172,
+            "height": 139
+          },
+          "textSamples": [
+            "北京理工大学",
+            "毕业设计论文答辩模板"
+          ]
+        },
+        {
+          "type": "body",
+          "idx": "16",
+          "size": "quarter",
+          "orient": null,
+          "geometry": {
+            "x": 225,
+            "y": 580,
+            "width": 830,
+            "height": 39
+          },
+          "textSamples": [
+            "答辩人：北小理　　　导　师： 京小工　　　时　间：",
+            "XXX"
+          ]
+        }
+      ],
+      "textSamples": [
+        "北京理工大学",
+        "毕业设计论文答辩模板",
+        "答辩人：北小理　　　导　师： 京小工　　　时　间：",
+        "XXX",
+        "BIT",
+        "|"
+      ],
+      "textCount": 9,
+      "shapeCount": 16,
+      "usedBySlides": []
+    },
+    {
+      "path": "ppt/slideLayouts/slideLayout7.xml",
+      "name": "slideLayout7.xml",
+      "svgFile": "layout_07_slideLayout7.svg",
+      "parentPath": "ppt/slideMasters/slideMaster2.xml",
+      "themePath": null,
+      "theme": null,
+      "backgroundAsset": null,
+      "imageAssets": [
+        "image7.png"
+      ],
+      "placeholders": [],
+      "textSamples": [],
+      "textCount": 0,
+      "shapeCount": 8,
+      "usedBySlides": [
+        5
+      ]
+    },
+    {
+      "path": "ppt/slideLayouts/slideLayout8.xml",
+      "name": "slideLayout8.xml",
+      "svgFile": "layout_08_slideLayout8.svg",
+      "parentPath": "ppt/slideMasters/slideMaster2.xml",
+      "themePath": null,
+      "theme": null,
+      "backgroundAsset": null,
+      "imageAssets": [
+        "image8.png"
+      ],
+      "placeholders": [
+        {
+          "type": "title",
+          "idx": null,
+          "size": null,
+          "orient": null,
+          "geometry": {
+            "x": 61,
+            "y": 26,
+            "width": 907,
+            "height": 50
+          },
+          "textSamples": [
+            "单击此处编辑母版标题样式"
+          ]
+        }
+      ],
+      "textSamples": [
+        "单击此处编辑母版标题样式"
+      ],
+      "textCount": 1,
+      "shapeCount": 10,
+      "usedBySlides": [
+        4
+      ]
+    }
+  ],
+  "masters": [
+    {
+      "path": "ppt/slideMasters/slideMaster1.xml",
+      "name": "slideMaster1.xml",
+      "svgFile": "master_01_slideMaster1.svg",
+      "parentPath": null,
+      "themePath": "ppt/theme/theme1.xml",
+      "theme": {
+        "colors": {
+          "dk1": "#000000",
+          "lt1": "#FFFFFF",
+          "dk2": "#006C39",
+          "lt2": "#FFFFFF",
+          "accent1": "#006C39",
+          "accent2": "#3F3F3F",
+          "accent3": "#A2A2A2",
+          "accent4": "#A13F0B",
+          "accent5": "#4EB3CF",
+          "accent6": "#51C3F9",
+          "hlink": "#EE7B08",
+          "folHlink": "#977B2D"
+        },
+        "fonts": {
+          "majorLatin": "微软雅黑",
+          "minorLatin": "微软雅黑",
+          "minorEastAsia": "微软雅黑"
+        }
+      },
+      "backgroundAsset": null,
+      "imageAssets": [],
+      "placeholders": [
+        {
+          "type": "title",
+          "idx": null,
+          "size": null,
+          "orient": null,
+          "geometry": {
+            "x": 88,
+            "y": 38,
+            "width": 1104,
+            "height": 139
+          },
+          "textSamples": [
+            "单击此处编辑母版标题样式"
+          ]
+        },
+        {
+          "type": "body",
+          "idx": "1",
+          "size": null,
+          "orient": null,
+          "geometry": {
+            "x": 88,
+            "y": 192,
+            "width": 1104,
+            "height": 457
+          },
+          "textSamples": [
+            "编辑母版文本样式",
+            "第二级"
+          ]
+        },
+        {
+          "type": "dt",
+          "idx": "2",
+          "size": "half",
+          "orient": null,
+          "geometry": {
+            "x": 88,
+            "y": 667,
+            "width": 288,
+            "height": 38
+          },
+          "textSamples": [],
+          "textStyle": {
+            "fontSizePx": 16.0,
+            "latinFont": "微软雅黑",
+            "eastAsiaFont": "微软雅黑"
+          }
+        },
+        {
+          "type": "ftr",
+          "idx": "3",
+          "size": "quarter",
+          "orient": null,
+          "geometry": {
+            "x": 424,
+            "y": 667,
+            "width": 432,
+            "height": 38
+          },
+          "textSamples": [],
+          "textStyle": {
+            "fontSizePx": 16.0,
+            "latinFont": "微软雅黑",
+            "eastAsiaFont": "微软雅黑"
+          }
+        },
+        {
+          "type": "sldNum",
+          "idx": "4",
+          "size": "quarter",
+          "orient": null,
+          "geometry": {
+            "x": 904,
+            "y": 667,
+            "width": 288,
+            "height": 38
+          },
+          "textSamples": [],
+          "textStyle": {
+            "fontSizePx": 16.0,
+            "latinFont": "微软雅黑",
+            "eastAsiaFont": "微软雅黑"
+          }
+        }
+      ],
+      "textSamples": [
+        "单击此处编辑母版标题样式",
+        "编辑母版文本样式",
+        "第二级",
+        "第三级",
+        "第四级",
+        "第五级"
+      ],
+      "textCount": 6,
+      "shapeCount": 7,
+      "usedBySlides": [
+        2,
+        3
+      ]
+    },
+    {
+      "path": "ppt/slideMasters/slideMaster2.xml",
+      "name": "slideMaster2.xml",
+      "svgFile": "master_02_slideMaster2.svg",
+      "parentPath": null,
+      "themePath": "ppt/theme/theme2.xml",
+      "theme": {
+        "colors": {
+          "dk1": "#000000",
+          "lt1": "#FFFFFF",
+          "dk2": "#006C39",
+          "lt2": "#FFFFFF",
+          "accent1": "#006C39",
+          "accent2": "#3F3F3F",
+          "accent3": "#A2A2A2",
+          "accent4": "#A13F0B",
+          "accent5": "#4EB3CF",
+          "accent6": "#51C3F9",
+          "hlink": "#EE7B08",
+          "folHlink": "#977B2D"
+        },
+        "fonts": {
+          "majorLatin": "微软雅黑",
+          "minorLatin": "微软雅黑",
+          "minorEastAsia": "微软雅黑"
+        }
+      },
+      "backgroundAsset": null,
+      "imageAssets": [],
+      "placeholders": [
+        {
+          "type": "title",
+          "idx": null,
+          "size": null,
+          "orient": null,
+          "geometry": {
+            "x": 88,
+            "y": 38,
+            "width": 1104,
+            "height": 139
+          },
+          "textSamples": [
+            "单击此处编辑母版标题样式"
+          ]
+        },
+        {
+          "type": "body",
+          "idx": "1",
+          "size": null,
+          "orient": null,
+          "geometry": {
+            "x": 88,
+            "y": 192,
+            "width": 1104,
+            "height": 457
+          },
+          "textSamples": [
+            "编辑母版文本样式",
+            "第二级"
+          ]
+        },
+        {
+          "type": "dt",
+          "idx": "2",
+          "size": "half",
+          "orient": null,
+          "geometry": {
+            "x": 88,
+            "y": 667,
+            "width": 288,
+            "height": 38
+          },
+          "textSamples": [],
+          "textStyle": {
+            "fontSizePx": 16.0,
+            "latinFont": "微软雅黑",
+            "eastAsiaFont": "微软雅黑"
+          }
+        },
+        {
+          "type": "ftr",
+          "idx": "3",
+          "size": "quarter",
+          "orient": null,
+          "geometry": {
+            "x": 424,
+            "y": 667,
+            "width": 432,
+            "height": 38
+          },
+          "textSamples": [],
+          "textStyle": {
+            "fontSizePx": 16.0,
+            "latinFont": "微软雅黑",
+            "eastAsiaFont": "微软雅黑"
+          }
+        },
+        {
+          "type": "sldNum",
+          "idx": "4",
+          "size": "quarter",
+          "orient": null,
+          "geometry": {
+            "x": 904,
+            "y": 667,
+            "width": 288,
+            "height": 38
+          },
+          "textSamples": [],
+          "textStyle": {
+            "fontSizePx": 16.0,
+            "latinFont": "微软雅黑",
+            "eastAsiaFont": "微软雅黑"
+          }
+        }
+      ],
+      "textSamples": [
+        "单击此处编辑母版标题样式",
+        "编辑母版文本样式",
+        "第二级",
+        "第三级",
+        "第四级",
+        "第五级"
+      ],
+      "textCount": 6,
+      "shapeCount": 7,
+      "usedBySlides": [
+        1,
+        4,
+        5
+      ]
+    }
+  ],
+  "slides": [
+    {
+      "index": 1,
+      "name": "slide1.xml",
+      "svgFile": "slide_01.svg",
+      "flatSvgFile": "slide_01.svg",
+      "slidePath": "ppt/slides/slide1.xml",
+      "layoutPath": "ppt/slideLayouts/slideLayout4.xml",
+      "masterPath": "ppt/slideMasters/slideMaster2.xml",
+      "backgroundAsset": null,
+      "backgroundSource": null,
+      "imageAssets": [],
+      "textSamples": [
+        "北京理工大学",
+        "毕业设计论文答辩模板",
+        "请在此输入副标题",
+        "答辩人：北小理　　　导　师：京小工　　　时间："
+      ],
+      "textCount": 4,
+      "shapeCount": 5,
+      "pageType": "cover_candidate"
+    },
+    {
+      "index": 2,
+      "name": "slide2.xml",
+      "svgFile": "slide_02.svg",
+      "flatSvgFile": "slide_02.svg",
+      "slidePath": "ppt/slides/slide2.xml",
+      "layoutPath": "ppt/slideLayouts/slideLayout1.xml",
+      "masterPath": "ppt/slideMasters/slideMaster1.xml",
+      "backgroundAsset": null,
+      "backgroundSource": null,
+      "imageAssets": [],
+      "textSamples": [
+        "1",
+        "研究背景与目的",
+        "2",
+        "研究内容与方法",
+        "3",
+        "实验结果与分析"
+      ],
+      "textCount": 6,
+      "shapeCount": 10,
+      "pageType": "content_candidate"
+    },
+    {
+      "index": 3,
+      "name": "slide3.xml",
+      "svgFile": "slide_03.svg",
+      "flatSvgFile": "slide_03.svg",
+      "slidePath": "ppt/slides/slide3.xml",
+      "layoutPath": "ppt/slideLayouts/slideLayout1.xml",
+      "masterPath": "ppt/slideMasters/slideMaster1.xml",
+      "backgroundAsset": null,
+      "backgroundSource": null,
+      "imageAssets": [],
+      "textSamples": [
+        "1",
+        "研究背景与目的"
+      ],
+      "textCount": 2,
+      "shapeCount": 3,
+      "pageType": "chapter_candidate"
+    },
+    {
+      "index": 4,
+      "name": "slide4.xml",
+      "svgFile": "slide_04.svg",
+      "flatSvgFile": "slide_04.svg",
+      "slidePath": "ppt/slides/slide4.xml",
+      "layoutPath": "ppt/slideLayouts/slideLayout8.xml",
+      "masterPath": "ppt/slideMasters/slideMaster2.xml",
+      "backgroundAsset": null,
+      "backgroundSource": null,
+      "imageAssets": [],
+      "textSamples": [
+        "一段文字"
+      ],
+      "textCount": 1,
+      "shapeCount": 3,
+      "pageType": "chapter_candidate"
+    },
+    {
+      "index": 5,
+      "name": "slide5.xml",
+      "svgFile": "slide_05.svg",
+      "flatSvgFile": "slide_05.svg",
+      "slidePath": "ppt/slides/slide5.xml",
+      "layoutPath": "ppt/slideLayouts/slideLayout7.xml",
+      "masterPath": "ppt/slideMasters/slideMaster2.xml",
+      "backgroundAsset": null,
+      "backgroundSource": null,
+      "imageAssets": [],
+      "textSamples": [
+        "谢谢观看",
+        "敬请各位老师批评指正",
+        "答辩人：北小理",
+        "导　师：京小工"
+      ],
+      "textCount": 4,
+      "shapeCount": 4,
+      "pageType": "ending_candidate"
+    }
+  ]
+}

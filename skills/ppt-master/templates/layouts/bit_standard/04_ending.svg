@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1280" height="720" viewBox="0 0 1280 720">
+  <defs>
+    <linearGradient id="endingBg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#008244" stop-opacity="0.65"/>
+      <stop offset="52%" stop-color="#006C39"/>
+      <stop offset="100%" stop-color="#008244" stop-opacity="0.65"/>
+    </linearGradient>
+  </defs>
+  <g id="background">
+    <rect x="0" y="0" width="1280" height="720" fill="#006C39"/>
+    <rect x="0" y="0" width="1280" height="720" fill="url(#endingBg)"/>
+  </g>
+  <g id="line-motif">
+    <path d="M 466 640 L 466 573 L 466 395 L 641 522 L 814 395 L 814 573 L 814 640" fill="none" stroke="#FFFFFF" stroke-width="6"/>
+    <path d="M 466 257 L 466 107 L 814 107 L 814 257" fill="none" stroke="#FFFFFF" stroke-width="6"/>
+    <polygon points="640,402 649,418 631,418" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.667"/>
+    <image href="bit_logo_white.png" x="522" y="147" width="237" height="66" preserveAspectRatio="none"/>
+  </g>
+  <g id="ending-message">
+    <text x="640" y="304" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="58" fill="#FFFFFF">{{THANK_YOU}}</text>
+    <text x="640" y="374" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="44" fill="#FFFFFF">{{ENDING_SUBTITLE}}</text>
+    <text x="640" y="454" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" fill="#FFFFFF" letter-spacing="1.33">{{CONTACT_INFO}}</text>
+  </g>
+  <g id="footer">
+    <text x="640" y="684" text-anchor="middle" font-family="Century Gothic, Arial, sans-serif" font-size="14" fill="#FFFFFF" fill-opacity="0.72">{{COPYRIGHT}}</text>
+  </g>
+</svg>

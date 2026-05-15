@@ -1,4 +1,14 @@
 {
+  "BIT": {
+    "summary": "Beijing Institute of Technology thesis defense and academic report template with BIT green, rust accents, and campus-branded page chrome.",
+    "keywords": [
+      "BIT",
+      "thesis-defense",
+      "academic",
+      "university",
+      "green"
+    ]
+  },
   "academic_defense": {
     "summary": "Thesis defense, academic presentations, research progress reports, grant applications.",
     "keywords": [
@@ -27,11 +37,11 @@
       "conclusion-first"
     ]
   },
-  "BIT": {
-    "summary": "Beijing Institute of Technology thesis defense and academic report template with BIT green, rust accents, and campus-branded page chrome.",
+  "bit_standard": {
+    "summary": "Beijing Institute of Technology standard academic defense template with BIT green, rust accents, campus imagery, and reusable PPT Master placeholders.",
     "keywords": [
       "BIT",
-      "thesis-defense",
+      "defense",
       "academic",
       "university",
       "green"
