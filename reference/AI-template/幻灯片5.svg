@@ -43,6 +43,6 @@
             font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="400" font-size="16"
             transform="translate(580.058 453)">答辩人：{{PresenterNames}}</text><text fill="#FFFFFF"
             font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="400" font-size="16"
-            transform="translate(580.058 478)">导&#160&#160;&#160;&#160;师：{{TeacherNames}}</text>
+            transform="translate(580.058 478)">导&#160;&#160;&#160;&#160;师：{{TeacherNames}}</text>
     </g>
 </svg>
