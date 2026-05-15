@@ -6,7 +6,7 @@ import hashlib
 import mimetypes
 import re
 import shutil
-import tempfile
+import uuid
 import zipfile
 from pathlib import Path
 from typing import Any
@@ -338,7 +338,9 @@ def create_pptx_with_native_svg(
 
     animation_cli_overrides = animation_cli_overrides or {}
 
-    temp_dir = Path(tempfile.mkdtemp())
+    temp_dir = output_path.parent / f"pptx-build-{uuid.uuid4().hex[:12]}"
+    temp_dir.mkdir(parents=True, exist_ok=False)
+    temp_output_path: Path | None = None
 
     try:
         # Create base PPTX with python-pptx
@@ -714,13 +716,20 @@ def create_pptx_with_native_svg(
 
         # Repackage PPTX to a temporary file first. The public output path is
         # replaced only after every slide and relationship has succeeded.
-        temp_output_path = temp_dir / 'result.pptx'
+        temp_output_path = output_path.with_name(f"{output_path.stem}.tmp{output_path.suffix}")
+        if temp_output_path.exists():
+            temp_output_path.unlink()
         with zipfile.ZipFile(temp_output_path, 'w', zipfile.ZIP_DEFLATED) as zf:
             for file_path in extract_dir.rglob('*'):
                 if file_path.is_file():
                     arcname = file_path.relative_to(extract_dir)
                     zf.write(file_path, arcname)
-        shutil.move(str(temp_output_path), str(output_path))
+        try:
+            temp_output_path.replace(output_path)
+        except PermissionError:
+            # Some sandboxed Windows environments deny rename/unlink for PPTX
+            # artifacts while still allowing direct file creation.
+            shutil.copyfile(temp_output_path, output_path)
 
         if verbose:
             print()
@@ -734,4 +743,9 @@ def create_pptx_with_native_svg(
         return success_count == len(svg_files)
 
     finally:
+        if temp_output_path is not None and temp_output_path.exists():
+            try:
+                temp_output_path.unlink()
+            except PermissionError:
+                pass
         shutil.rmtree(temp_dir, ignore_errors=True)

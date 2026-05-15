@@ -1674,18 +1674,17 @@ def convert_ellipse(elem: ET.Element, ctx: ConvertContext) -> ShapeResult | None
 
 
 # ---------------------------------------------------------------------------
-# nested <svg> sprite (template-import round-trip)
+# nested <svg> sprite crop wrappers
 # ---------------------------------------------------------------------------
 
-# Inverse of pptx_to_svg/pic_to_svg.py:101-113 — that path writes a cropped
-# DrawingML picture as an outer <svg viewBox> wrapping a unit-rectangle <image>.
-# Without this converter, every cropped picture in a template-import SVG is
-# silently dropped on re-export.
+# Tooling may write a cropped DrawingML picture as an outer <svg viewBox>
+# wrapping a unit-rectangle <image>. Without this converter, those cropped
+# pictures are silently dropped on re-export.
 
 def convert_nested_svg(elem: ET.Element, ctx: ConvertContext) -> ShapeResult | None:
     """Convert a nested <svg> sprite-crop wrapper to a DrawingML picture.
 
-    Pattern produced by pptx_to_svg::
+    Supported crop wrapper pattern::
 
         <svg x="10" y="20" width="200" height="300" viewBox="0.5 0.3 0.5 0.7">
           <image href="..." x="0" y="0" width="1" height="1" preserveAspectRatio="none"/>

@@ -31,7 +31,7 @@ Verify the project's Phase-A artifacts before doing anything else:
 | `<project_path>/spec_lock.md` | Always | Strategist's execution contract; Executor reads it per page |
 | `<project_path>/design_spec.md` | Always | Section IX page outline; Executor cross-references it |
 | `<project_path>/images/` | `spec_lock images` references any image | Images must exist for embedding |
-| `<project_path>/templates/` | `spec_lock page_layouts` / `page_charts` references any | Layout / chart SVGs needed for batch read |
+| `<project_path>/templates/<template_id>/template_contract.json` | `spec_lock template.engine` is `locked_svg` | Locked template contract needed for runtime fill without reading SVGs |
 
 If any required artifact is missing → report which one(s) and stop. Do NOT auto-fall-back into Phase A; the user must either complete Phase A in the original session or explicitly restart.
 
@@ -47,7 +47,7 @@ Then jump to `### Step 6: Executor Phase` and run the documented pipeline:
 
 - Read references (executor-base + shared-standards + chosen style file + image-layout-spec + svg-image-embedding)
 - Design Parameter Confirmation
-- Pre-generation Batch Read (every layout / chart SVG referenced in `spec_lock`)
+- Pre-generation Batch Read (locked template contract + chart SVGs referenced in `spec_lock`; never template page SVGs)
 - Per-page `spec_lock` re-read + sequential page generation
 - Quality Check Gate
 - Speaker notes generation

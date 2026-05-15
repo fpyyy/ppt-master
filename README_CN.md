@@ -40,7 +40,7 @@
 
 > **⚠️ PPT Master 是 harness，不是完整的 agent。** `harness + model = agent`——工具负责工作流，模型决定上限。要组成真正高质量的 agent，推荐组合是：**Claude 大上下文窗口（~100 万 token）+ AI 生图（`gpt-image-2`）**。其他模型能跑流程，但达不到同等质量上限。效果不理想，请先换模型，不要质疑 harness。
 
-> **模板复刻** —— 把任何一份你喜欢的 `.pptx` 丢给 AI，一句"用 `/create-template` 复刻成模板"，就能拿到一套可被 PPT Master 直接调用的页面布局——主题色、字体、母版/版式结构、复用图片、甚至精灵图裁剪关系都按 OOXML 真实抽取，封面/章节/装饰繁复的页面都能稳定还原。从此你不再受限于内置模板：公司品牌 deck、客户中标模板、找的高质量参考稿，都能一键变成你的私人模板库。详见 [模板指南 →](./docs/zh/templates-guide.md)。
+> **锁定 SVG 模板** —— 先准备好带有 `{{PPTTitle}}` 等自定义占位符和 `data-ppt-workspace="main"` 正文工作区的 SVG 页面，再用 `/create-template` 生成可复用模板。后续生成 PPT 时，智能体只读取 `template_contract.json`，不会读取 SVG 源码，嵌入图片不会进入提示词上下文。详见 [模板指南 →](./docs/zh/templates-guide.md)。
 
 > **动画** —— 导出的 deck 支持**页间转场**和**页内元素入场动画**，输出为真正的 OOXML 动画（不是嵌入视频）。默认进入页面后元素按顺序自动级联入场，无需点击；在 PowerPoint 和 Keynote 中原生播放，无需额外工具。详见 [转场与动画使用指南 →](./docs/zh/animations.md)。
 
@@ -241,7 +241,7 @@ PPT Master 会优先读取当前进程环境变量，然后按顺序读取第一
 | 🆚 | [为什么选 PPT Master](./docs/zh/why-ppt-master.md) | 与 Gamma、Copilot 等工具的对比 |
 | 🪟 | [Windows 安装指南](./docs/zh/windows-installation.md) | Windows 用户手把手安装教程 |
 | 📖 | [SKILL.md](./skills/ppt-master/SKILL.md) | 核心流程与规则 |
-| 🎨 | [模板指南](./docs/zh/templates-guide.md) | 选用、派生新模板（重点）、模板边界；含 standard / fidelity 模式选型 |
+| 🎨 | [模板指南](./docs/zh/templates-guide.md) | 创建和使用带运行时契约的锁定 SVG 模板 |
 | 📐 | [画布格式](./skills/ppt-master/references/canvas-formats.md) | PPT 16:9、小红书、朋友圈等 10+ 种格式 |
 | 🎬 | [转场与动画](./docs/zh/animations.md) | 页间转场和页内元素入场动画 |
 | 🎙️ | [音频旁白与视频导出](./docs/zh/audio-narration.md) | 90+ 语种 TTS 旁白、音频嵌入 PPTX、导出为 MP4 |

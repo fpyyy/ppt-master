@@ -135,17 +135,17 @@ For post-generation fixes, simply tell the AI: "Page 3 has a layout issue — th
 
 ## Q: How do I create a custom template?
 
-Want to turn a PPT you love into a reusable template for PPT Master? Here's how:
+Want to turn polished SVG pages into a reusable template for PPT Master? Here's how:
 
-**Step 1 — Prepare Reference Material**
+**Step 1 - Prepare SVG Pages**
 
-The simplest path is still to prepare screenshots of the key page types from your reference PPT — cover page, table of contents, chapter divider, content page, and closing page. Save them as images in a single folder with clear, descriptive filenames (e.g., `cover.png`, `toc.png`, `chapter.png`, `content.png`, `closing.png`).
+Prepare SVG files for the key page types. Put replaceable text in custom placeholders such as `{{PPTTitle}}`, and mark content-page body regions with `data-ppt-workspace="main"`.
 
-If you already have the original `.pptx` template file, you can also provide it as a reference source. PPT Master can extract reusable background images, logos, theme colors, and font metadata from the PPTX first, then use those assets during template reconstruction.
+If the workspace element has no direct `x/y/width/height`, add `data-ppt-workspace-bbox="x y width height"`.
 
-**Step 2 — Let AI Create the Template**
+**Step 2 - Let AI Create the Template**
 
-Use an AI coding agent (Claude Code, Codex, etc.) and ask it to use the **PPT Master `/create-template` workflow** to convert your reference material into a template. The more context you give, the better the result — for example:
+Use an AI coding agent (Claude Code, Codex, etc.) and ask it to use the **PPT Master `/create-template` workflow** on your SVG directory. The more metadata you give, the better the result - for example:
 
 - Template name and intended use case (e.g., government reports, premium consulting)
 - Desired tone and color palette (e.g., "modern and restrained, dark blue primary")
@@ -154,9 +154,9 @@ Use an AI coding agent (Claude Code, Codex, etc.) and ask it to use the **PPT Ma
 
 You don't need to supply every detail upfront — the AI agent will ask follow-up questions to fill in anything missing (template ID, theme mode, etc.).
 
-**Step 3 — Wait for the Result**
+**Step 3 - Wait for the Result**
 
-The AI agent will handle the rest — analyzing your screenshots, building the layout definitions, and registering the template so it appears as a selectable option in the PPT Master workflow.
+The AI agent will run `svg_template.py inspect`, create `template_contract.json`, and register the locked template. Runtime agents read the contract, not the SVG source.
 
 > **Tip**: The more specific you are about the style and use case, the better the generated template will match your expectations.
 

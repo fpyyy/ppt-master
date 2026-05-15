@@ -199,6 +199,14 @@ def _extract_entry(template_id: str, template_dir: Path) -> dict:
 
     primary_color = fm.get("primary_color") or _extract_primary_color(body)
     category = fm.get("category", "general")
+    template_engine = fm.get("template_engine", "")
+    template_contract = fm.get("template_contract", "")
+    if template_engine == "locked_svg":
+        contract_name = str(template_contract or "template_contract.json")
+        if not (template_dir / contract_name).exists():
+            raise SpecParseError(
+                f"locked_svg template is missing contract file: {contract_name}"
+            )
     use_cases = (
         fm.get("use_cases")
         or _extract_section_field(
@@ -227,6 +235,8 @@ def _extract_entry(template_id: str, template_dir: Path) -> dict:
         primary_color=str(primary_color or ""),
         use_cases=str(use_cases),
         design_tone=str(design_tone),
+        template_engine=str(template_engine or ""),
+        template_contract=str(template_contract or ""),
     )
     return {"entry": entry, "extras": extras}
 
@@ -255,10 +265,11 @@ def _render_quick_index_rows(
     items: Iterable[tuple[str, dict, dict]],
 ) -> list[str]:
     rows: list[str] = [
-        "| Template Name | Category | Use Cases | Primary Color | Design Tone |",
-        "|---------------|----------|-----------|---------------|-------------|",
+        "| Template Name | Engine | Category | Use Cases | Primary Color | Design Tone |",
+        "|---------------|--------|----------|-----------|---------------|-------------|",
     ]
     for tid, _, extras in items:
+        engine = extras.get("template_engine") or "legacy"
         cat = extras.get("category") or "general"
         use_cases = extras.get("use_cases") or "—"
         primary = extras.get("primary_color") or "—"
@@ -266,7 +277,7 @@ def _render_quick_index_rows(
             primary = f"`{primary}`"
         tone = extras.get("design_tone") or "—"
         rows.append(
-            f"| `{tid}` | {cat.title()} | {use_cases} | {primary} | {tone} |"
+            f"| `{tid}` | {engine} | {cat.title()} | {use_cases} | {primary} | {tone} |"
         )
     return rows
 
@@ -345,6 +356,9 @@ def _print_completion_card(template_id: str, entry: dict, extras: dict) -> None:
     print(f"**Template Name**: {template_id}")
     print(f"**Template Path**: `templates/layouts/{template_id}/`")
     print(f"**Category**: {extras.get('category', 'general')}")
+    print(f"**Template Engine**: {extras.get('template_engine') or 'legacy'}")
+    if extras.get("template_contract"):
+        print(f"**Contract**: `{extras['template_contract']}`")
     primary = extras.get("primary_color") or "—"
     print(f"**Primary Color**: {primary}")
     print("**Index Registration**: Done")

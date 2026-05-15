@@ -143,7 +143,7 @@ def build_pattern_fill(
     pattern_elem: ET.Element,
     opacity: float | None = None,
 ) -> str:
-    """Build <a:pattFill> from an SVG <pattern> emitted by pptx_to_svg.
+    """Build <a:pattFill> from an SVG <pattern> with PowerPoint annotations.
 
     Reads the round-trip annotations (data-pptx-pattern / data-pptx-fg /
     data-pptx-bg) when present. Falls back to inspecting the inner stroke /

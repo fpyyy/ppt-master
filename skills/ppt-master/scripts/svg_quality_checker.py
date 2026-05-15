@@ -14,6 +14,7 @@ import sys
 import re
 import json
 import html
+import hashlib
 from pathlib import Path
 from typing import List, Dict, Tuple
 from collections import defaultdict
@@ -64,7 +65,7 @@ def _parse_placeholders_fallback(block: str) -> Dict[str, Tuple[str, ...]]:
     .. code-block:: yaml
 
         placeholders:
-          01_cover: ["{{TITLE}}", "{{LOGO}}"]
+          01_cover: ["{{PPTTitle}}", "{{PPTLogo}}"]
           03_content: []
           03a_content_two_col:
             - "{{LEFT_TITLE}}"
@@ -151,10 +152,10 @@ class SVGQualityChecker:
     # Variants reuse the parent type's expectation (`03a_content_two_col.svg`
     # is matched by the same `03_content` rules as `03_content.svg`).
     DEFAULT_PLACEHOLDER_CONVENTION = {
-        "01_cover": ("{{TITLE}}",),  # only the title is universally expected
-        "02_chapter": ("{{CHAPTER_TITLE}}",),
+        "01_cover": ("{{PPTTitle}}",),  # only the title is universally expected
+        "02_chapter": ("{{ChapterTitle}}",),
         "02_toc": (),  # TOC layouts vary too widely to assert anything
-        "03_content": ("{{PAGE_TITLE}}",),
+        "03_content": ("{{PageTitle}}",),
         "04_ending": (),  # ending pages legitimately use varied vocabularies
     }
 
@@ -336,8 +337,8 @@ class SVGQualityChecker:
         # ============================================================
 
         # Clipping / masking
-        # clipPath is allowed on <image> elements and on pptx_to_svg-generated
-        # nested crop <svg data-pptx-crop="1"> wrappers. Both map back to
+        # clipPath is allowed on <image> elements and on tool-generated nested
+        # crop <svg data-pptx-crop="1"> wrappers. Both map back to
         # DrawingML picture geometry in the native converter.
         if '<clippath' in content_lower:
             # clip-path on non-image elements → error
@@ -349,7 +350,7 @@ class SVGQualityChecker:
             if clip_on_non_image:
                 result['errors'].append(
                     "clip-path is only allowed on <image> elements or "
-                    "pptx_to_svg crop wrappers — for shapes, draw the target "
+                    "tool-generated crop wrappers — for shapes, draw the target "
                     "shape directly instead of clipping")
             # Check that every clip-path reference has a matching <clipPath> def
             clip_refs = re.findall(r'clip-path\s*=\s*["\']url\(#([^)]+)\)', content)
@@ -887,10 +888,14 @@ class SVGQualityChecker:
         """
         spec_path = dir_path / 'design_spec.md'
         spec_text = spec_path.read_text(encoding='utf-8') if spec_path.exists() else ""
+        frontmatter = self._extract_frontmatter(spec_text) if spec_text else {}
         spec_pages = self._extract_spec_roster(spec_text) if spec_text else []
         custom_contract = self._extract_frontmatter_placeholders(spec_text) if spec_text else {}
 
         on_disk = {p.stem for p in svg_files}
+
+        if frontmatter.get("template_engine") == "locked_svg":
+            self._check_locked_svg_contract(dir_path, svg_files, frontmatter)
 
         if spec_pages:
             spec_set = set(spec_pages)
@@ -946,6 +951,135 @@ class SVGQualityChecker:
                         "(declare 'placeholders:' frontmatter in design_spec.md to silence)",
                     ))
 
+    def _check_locked_svg_contract(
+        self,
+        dir_path: Path,
+        svg_files: List[Path],
+        frontmatter: Dict,
+    ) -> None:
+        """Validate the locked SVG runtime contract beside a template."""
+        contract_name = str(frontmatter.get("template_contract") or "template_contract.json")
+        contract_path = dir_path / contract_name
+        if not contract_path.exists():
+            self._template_issues.append((
+                'error',
+                'contract_missing',
+                f"locked_svg template is missing {contract_name}",
+            ))
+            return
+
+        try:
+            contract = json.loads(contract_path.read_text(encoding='utf-8'))
+        except (OSError, json.JSONDecodeError) as exc:
+            self._template_issues.append((
+                'error',
+                'contract_invalid',
+                f"{contract_name} is not valid JSON: {exc}",
+            ))
+            return
+
+        if contract.get("schema_version") != 1 or contract.get("engine") != "locked_svg":
+            self._template_issues.append((
+                'error',
+                'contract_invalid',
+                f"{contract_name} must declare schema_version=1 and engine=locked_svg",
+            ))
+            return
+
+        on_disk = {p.stem: p for p in svg_files}
+        contract_pages = contract.get("pages")
+        if not isinstance(contract_pages, list) or not contract_pages:
+            self._template_issues.append((
+                'error',
+                'contract_empty',
+                f"{contract_name} must list at least one page",
+            ))
+            return
+
+        contract_stems = set()
+        for page in contract_pages:
+            if not isinstance(page, dict):
+                self._template_issues.append((
+                    'error',
+                    'contract_invalid',
+                    f"{contract_name} contains a non-object page entry",
+                ))
+                continue
+            stem = str(page.get("stem") or "")
+            file_name = str(page.get("file") or "")
+            contract_stems.add(stem)
+            svg_path = on_disk.get(stem)
+            if not stem or svg_path is None:
+                self._template_issues.append((
+                    'error',
+                    'contract_missing_page',
+                    f"{contract_name} lists {stem or '<blank>'} but the SVG is missing",
+                ))
+                continue
+            if svg_path.name != file_name:
+                self._template_issues.append((
+                    'error',
+                    'contract_file_mismatch',
+                    f"{contract_name} lists file {file_name} for {stem}, but disk has {svg_path.name}",
+                ))
+            expected_sha = page.get("sha256")
+            if expected_sha:
+                actual_sha = hashlib.sha256(svg_path.read_bytes()).hexdigest()
+                if actual_sha != expected_sha:
+                    self._template_issues.append((
+                        'error',
+                        'contract_sha_mismatch',
+                        f"{svg_path.name} changed after template_contract.json was generated",
+                    ))
+            workspaces = page.get("workspaces") or []
+            if page.get("role") == "content" and not workspaces:
+                self._template_issues.append((
+                    'error',
+                    'contract_workspace_missing',
+                    f"{stem}.svg is a content page but declares no workspace",
+                ))
+            for workspace in workspaces:
+                bbox = workspace.get("bbox") if isinstance(workspace, dict) else None
+                bbox_invalid = not isinstance(bbox, list) or len(bbox) != 4
+                if not bbox_invalid:
+                    try:
+                        bbox_invalid = float(bbox[2]) <= 0 or float(bbox[3]) <= 0
+                    except (TypeError, ValueError):
+                        bbox_invalid = True
+                if bbox_invalid:
+                    self._template_issues.append((
+                        'error',
+                        'contract_workspace_invalid',
+                        f"{stem}.svg has an invalid workspace bbox",
+                    ))
+
+        orphan_contract = sorted(set(on_disk) - contract_stems)
+        for stem in orphan_contract:
+            self._template_issues.append((
+                'error',
+                'contract_orphan',
+                f"{stem}.svg exists on disk but is not listed in {contract_name}",
+            ))
+
+    @staticmethod
+    def _extract_frontmatter(spec_text: str) -> Dict:
+        """Read YAML frontmatter as a dict; return empty on legacy specs."""
+        if not spec_text.startswith("---\n"):
+            return {}
+        end = spec_text.find("\n---\n", 4)
+        if end == -1:
+            return {}
+        block = spec_text[4:end]
+        try:
+            import yaml  # type: ignore
+        except ImportError:
+            return {}
+        try:
+            data = yaml.safe_load(block) or {}
+        except yaml.YAMLError:
+            return {}
+        return data if isinstance(data, dict) else {}
+
     @staticmethod
     def _extract_frontmatter_placeholders(spec_text: str) -> Dict[str, Tuple[str, ...]]:
         """Read the optional ``placeholders:`` map from design_spec.md frontmatter.
@@ -955,11 +1089,11 @@ class SVGQualityChecker:
         .. code-block:: yaml
 
             placeholders:
-              01_cover: ["{{TITLE}}", "{{BRAND_LOGO}}"]
+              01_cover: ["{{PPTTitle}}", "{{BrandLogo}}"]
               03_content: []        # explicitly assert "no expectation"
               03a_content_two_col:  # variant-specific override
-                - "{{LEFT_TITLE}}"
-                - "{{RIGHT_TITLE}}"
+                - "{{LeftTitle}}"
+                - "{{RightTitle}}"
 
         Each key is a stem (full filename without ``.svg``) or page-type prefix
         (``01_cover``). An empty list silences the default convention for that
@@ -1159,7 +1293,7 @@ class SVGQualityChecker:
         # Fix suggestions
         if self.summary['errors'] > 0 or self.summary['warnings'] > 0:
             print(f"\n[TIP] Common fixes:")
-            print(f"  1. XML well-formedness: write typography as raw Unicode (—, ©, →, NBSP); escape XML reserved chars as &amp; &lt; &gt; &quot; &apos; — never use HTML named entities like &nbsp; &mdash; &copy;")
+            print("  1. XML well-formedness: use raw Unicode typography, escape XML reserved chars as &amp; &lt; &gt; &quot; &apos;, and avoid HTML named entities like &nbsp; &mdash; &copy;")
             print(f"  2. viewBox issues: Ensure consistency with canvas format (see references/canvas-formats.md)")
             print(f"  3. foreignObject: Use <text> + <tspan> for manual line breaks")
             print(f"  4. Font issues: end every font-family stack with a PPT-safe family (e.g. Microsoft YaHei / Arial / Consolas)")
@@ -1311,7 +1445,7 @@ def print_usage() -> None:
     print("  --format <ppt169|ppt43|...>   Expected canvas format")
     print("  --template-mode               Validate a templates/layouts/<id> directory:")
     print("                                  glob *.svg directly, skip spec_lock checks,")
-    print("                                  enforce roster ↔ design_spec.md Page Roster consistency,")
+    print("                                  enforce roster <-> design_spec.md Page Roster consistency,")
     print("                                  and emit advisory placeholder-convention warnings.")
 
 

@@ -72,6 +72,16 @@
 
 > One entry per image file used. Append ` | no-crop` only for images that must not lose pixels (data screenshots, charts, certificates) — Executor will size the container to native ratio and use `preserveAspectRatio="xMidYMid meet"`. Untagged entries default to croppable (`slice`). Remove the section entirely if no images.
 
+## template
+- engine: locked_svg
+- template_id: <template_id>
+- contract: templates/<template_id>/template_contract.json
+
+> Emit this section only when a locked SVG template was copied in Step 3.
+> `engine` MUST be `locked_svg`. `contract` points to the copied
+> `template_contract.json`. Executor reads this JSON contract, not the template
+> SVG files. Omit the entire section when no template is used.
+
 ## page_rhythm
 - P01: anchor
 - P02: dense

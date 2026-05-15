@@ -40,7 +40,7 @@ Drop in a PDF, DOCX, URL, or Markdown — get back a **natively editable PowerPo
 
 > **⚠️ PPT Master is a harness, not a complete agent.** `harness + model = agent` — the tool owns the workflow; the model sets the ceiling. To form a genuinely high-quality agent, use **Claude with a large context window (~1M tokens) + AI image generation (`gpt-image-2`)**. Other models can run the pipeline but cannot reach the same quality ceiling. If results disappoint, upgrade the model — don't blame the harness.
 
-> **Template Replication** — hand the AI any `.pptx` you like and say "replicate it as a template via `/create-template`" — you get a layout set PPT Master can invoke directly. Theme colors, fonts, master/layout structure, reusable images, even sprite-sheet crop relationships are extracted straight from OOXML, so covers, chapter dividers and decoration-heavy pages all reproduce reliably. You're no longer limited to the built-in templates: a company brand deck, a client's winning template, or any high-quality reference can become a private template in your own library. See [Templates Guide →](./docs/templates-guide.md).
+> **Locked SVG Templates** — prepare polished SVG pages with custom placeholders such as `{{PPTTitle}}` and explicit `data-ppt-workspace="main"` regions, then use `/create-template` to turn them into a reusable locked template. Runtime agents read only `template_contract.json`, not the SVG source, so embedded images stay out of prompt context. See [Templates Guide →](./docs/templates-guide.md).
 
 > **Animations** — exported decks support **page transitions** and **per-element entrance animations** as real OOXML, not embedded video. By default, elements cascade in automatically on slide entry — no clicking needed. Plays natively in PowerPoint and Keynote, no extra tooling. See [Animations & Transitions →](./skills/ppt-master/references/animations.md).
 
@@ -253,7 +253,7 @@ PPT Master reads the current process environment first, then the first `.env` fo
 | 🆚 | [Why PPT Master](./docs/why-ppt-master.md) | How it compares to Gamma, Copilot, and other AI tools |
 | 🪟 | [Windows Installation](./docs/windows-installation.md) | Step-by-step setup guide for Windows users |
 | 📖 | [SKILL.md](./skills/ppt-master/SKILL.md) | Core workflow and rules |
-| 🎨 | [Templates Guide](./docs/templates-guide.md) | Use, derive (the focus), and template boundaries; covers `standard` vs `fidelity` modes |
+| 🎨 | [Templates Guide](./docs/templates-guide.md) | Create and use locked SVG templates with runtime contracts |
 | 📐 | [Canvas Formats](./skills/ppt-master/references/canvas-formats.md) | PPT 16:9, Xiaohongshu, WeChat, and 10+ formats |
 | 🎬 | [Animations & Transitions](./skills/ppt-master/references/animations.md) | Page transitions and per-element entrance animations |
 | 🎙️ | [Audio Narration & Video Export](./docs/audio-narration.md) | TTS narration in 90+ locales, embed audio, export as MP4 |
