@@ -346,7 +346,12 @@ def build_stroke_xml(
     if not stroke or stroke == 'none':
         return '<a:ln><a:noFill/></a:ln>'
 
-    width = _f(_get_attr(elem, 'stroke-width', ctx), 1.0)
+    raw_width = _f(_get_attr(elem, 'stroke-width', ctx), 1.0)
+    # SVG strokes are affected by the current transform unless explicitly
+    # marked non-scaling. This converter bakes group scale into child geometry,
+    # so line width must be baked too or icon / connector strokes render thin.
+    stroke_scale = max((abs(ctx.scale_x) + abs(ctx.scale_y)) / 2.0, 0.001)
+    width = raw_width * stroke_scale
     width_emu = px_to_emu(width)
 
     # Dash pattern
@@ -362,7 +367,10 @@ def build_stroke_xml(
                 parts = re.split(r'[\s,]+', dasharray.strip())
                 d_raw = float(parts[0])
                 sp_raw = float(parts[1]) if len(parts) > 1 else d_raw
-                sw = max(width, 0.001)
+                # Dash percentages are relative to the line width. SVG scales
+                # dash lengths and stroke width together under group scale, so
+                # the original dash/width ratio is the stable value to emit.
+                sw = max(raw_width, 0.001)
                 d_pct = int(d_raw / sw * 100000)
                 sp_pct = int(sp_raw / sw * 100000)
                 dash_xml = f'<a:custDash><a:ds d="{d_pct}" sp="{sp_pct}"/></a:custDash>'

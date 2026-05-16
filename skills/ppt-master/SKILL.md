@@ -165,6 +165,11 @@ cp -R ${TEMPLATE_DIR}/* <project_path>/templates/${TEMPLATE_ID}/
 
 If `template_contract.json` is missing, STOP and tell the user to rebuild the template with the SVG-only `create-template` workflow. Do not fall back to reading template SVGs.
 
+If the copied locked template's `design_spec.md` / `template_contract.json`
+lacks a `Template Style Lock` / `style_lock` with colors and typography, STOP
+and tell the user to rebuild the template with the current `create-template`
+workflow. Do not invent missing template colors or fonts in the PPT project.
+
 > Style descriptions ("麦肯锡风格" / "Keynote 风" / "极简风" / etc.) never trigger Step 3. They flow naturally into Strategist's Eight Confirmations as part of the user's input — Strategist uses them as a style brief when proposing color / typography / tone in confirmations e and g.
 
 > Bare template names ("academic_defense", "招商银行") do NOT trigger Step 3 even if a folder by that name exists in the library. The user must give a path. AI must not "helpfully" resolve a name to a path.
@@ -200,6 +205,20 @@ Read references/strategist.md
 6. Icon usage approach
 7. Typography plan
 8. Image usage approach
+
+**Template style lock override**: when Step 3 copied a locked SVG template with
+`style_lock`, items 5 and 7 are not free recommendations. Present them as
+"locked by template" and copy the template's colors / typography verbatim into
+`<project_path>/design_spec.md` and `<project_path>/spec_lock.md`, unless the
+user explicitly asks to override the template style.
+
+**Template structural-count check**: when a locked template structural page
+exposes repeated indexed placeholders, Strategist MUST compare the template
+slot count with the actual content item count before writing `page_layouts`.
+For TOC / agenda pages, exact count match is required to use `toc`. If the
+template provides `Section1`-`Section5` but the outline has 4 sections, omit
+that page from `page_layouts` and plan a free structural redesign using the
+template's locked colors / typography.
 
 **Mandatory — split-mode note** (not a ninth confirmation): after listing the eight confirmation details, you MUST append exactly one short line (rendered in the user's language, prefixed with 💡) about generation mode. Pick the variant by qualitative read of Phase A signals — recommended page count, source-material bulk, whether `topic-research` ran with substantial web-fetch accumulation:
 

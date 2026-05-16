@@ -15,6 +15,7 @@ from .drawingml_utils import (
     px_to_emu, _f, _get_attr,
     ctx_x, ctx_y, ctx_w, ctx_h,
     rect_to_dml_xfrm,
+    parse_transform_matrix, transform_point,
     parse_hex_color, resolve_url_id, get_effective_filter_id,
     parse_font_family, is_cjk_char, estimate_text_width,
     _xml_escape,
@@ -618,21 +619,30 @@ def convert_path(elem: ET.Element, ctx: ConvertContext) -> ShapeResult | None:
     commands = svg_path_to_absolute(commands)
     commands = normalize_path_commands(commands)
 
-    tx, ty = 0.0, 0.0
+    tx = ctx.translate_x
+    ty = ctx.translate_y
+    sx = ctx.scale_x
+    sy = ctx.scale_y
     rot = 0
     transform = elem.get('transform')
     if transform:
-        t_match = re.search(r'translate\(\s*([-\d.]+)[\s,]+([-\d.]+)\s*\)', transform)
-        if t_match:
-            tx = float(t_match.group(1))
-            ty = float(t_match.group(2))
-        r_match = re.search(r'rotate\(\s*([-\d.]+)', transform)
-        if r_match:
-            rot = int(float(r_match.group(1)) * ANGLE_UNIT)
+        a, b, c, d, e, f = parse_transform_matrix(transform)
+        if abs(b) <= 1e-9 and abs(c) <= 1e-9:
+            sx = ctx.scale_x * a
+            sy = ctx.scale_y * d
+            tx = ctx.translate_x + e * ctx.scale_x
+            ty = ctx.translate_y + f * ctx.scale_y
+        else:
+            t_match = re.search(r'translate\(\s*([-\d.]+)[\s,]+([-\d.]+)\s*\)', transform)
+            if t_match:
+                tx += float(t_match.group(1)) * ctx.scale_x
+                ty += float(t_match.group(2)) * ctx.scale_y
+            r_match = re.search(r'rotate\(\s*([-\d.]+)', transform)
+            if r_match:
+                rot = int(float(r_match.group(1)) * ANGLE_UNIT)
 
     path_xml, min_x, min_y, width, height = path_commands_to_drawingml(
-        commands, ctx.translate_x + tx, ctx.translate_y + ty,
-        ctx.scale_x, ctx.scale_y,
+        commands, tx, ty, sx, sy,
     )
 
     if not path_xml:
@@ -798,6 +808,24 @@ def convert_polyline(elem: ET.Element, ctx: ConvertContext) -> ShapeResult | Non
 # ---------------------------------------------------------------------------
 # text
 # ---------------------------------------------------------------------------
+
+def _apply_axis_aligned_text_transform(
+    transform: str,
+    x: float,
+    y: float,
+) -> tuple[float, float, float]:
+    """Apply translate/scale/matrix transforms that keep text axis-aligned."""
+    if not transform:
+        return x, y, 1.0
+
+    a, b, c, d, e, f = parse_transform_matrix(transform)
+    if abs(b) > 1e-9 or abs(c) > 1e-9:
+        return x, y, 1.0
+
+    x_t, y_t = transform_point((a, b, c, d, e, f), x, y)
+    scale_y = abs(d) if abs(d) > 1e-9 else 1.0
+    return x_t, y_t, scale_y
+
 
 def _normalize_text(text: str, *, preserve_space: bool = False) -> str:
     """Collapse runs of whitespace into a single space; do NOT strip the ends.
@@ -1013,9 +1041,15 @@ def _build_run_xml(
 
 def convert_text(elem: ET.Element, ctx: ConvertContext) -> ShapeResult | None:
     """Convert SVG <text> to DrawingML text shape with multi-run support."""
-    x = ctx_x(_f(elem.get('x')), ctx)
-    y = ctx_y(_f(elem.get('y')), ctx)
-    font_size = _f(_get_attr(elem, 'font-size', ctx), 16) * ctx.scale_y
+    raw_x = _f(elem.get('x'))
+    raw_y = _f(elem.get('y'))
+    text_transform = elem.get('transform', '')
+    raw_x, raw_y, local_scale_y = _apply_axis_aligned_text_transform(
+        text_transform, raw_x, raw_y,
+    )
+    x = ctx_x(raw_x, ctx)
+    y = ctx_y(raw_y, ctx)
+    font_size = _f(_get_attr(elem, 'font-size', ctx), 16) * ctx.scale_y * local_scale_y
     font_weight = _get_attr(elem, 'font-weight', ctx) or '400'
     font_family_str = _get_attr(elem, 'font-family', ctx) or ''
     text_anchor = _get_attr(elem, 'text-anchor', ctx) or 'start'
@@ -1085,7 +1119,6 @@ def convert_text(elem: ET.Element, ctx: ConvertContext) -> ShapeResult | None:
     # box so its center lands where SVG would place the rotated visual center —
     # otherwise rotated y-axis labels etc. drift to the wrong location.
     text_rot = 0
-    text_transform = elem.get('transform', '')
     if text_transform:
         rot_match = re.search(
             r'rotate\(\s*([-\d.]+)(?:[\s,]+([-\d.]+)[\s,]+([-\d.]+))?',
@@ -1504,6 +1537,101 @@ def _resolve_image_meet_fit(
     return (dx, dy, fit_w, fit_h)
 
 
+def _resolve_rect_clip_crop(
+    elem: ET.Element,
+    ctx: ConvertContext,
+    raw_x: float,
+    raw_y: float,
+    raw_w: float,
+    raw_h: float,
+) -> tuple[float, float, float, float, str] | None:
+    """Map a rectangular image clip-path to a PPT picture frame + srcRect.
+
+    SVG commonly writes a background image larger than its visible region and
+    clips it with ``clip-path: url(#rect)``. DrawingML picture geometry does
+    not clip arbitrary sub-rectangles inside the picture frame; the equivalent
+    editable representation is a picture whose frame is the clip rectangle and
+    whose ``a:srcRect`` crops the embedded source image.
+
+    This helper handles the ``preserveAspectRatio="none"`` case exactly. Other
+    aspect-ratio modes have additional object-fit semantics and fall back to the
+    existing geometry path instead of guessing.
+    """
+    clip_ref = elem.get('clip-path', '')
+    if not clip_ref or clip_ref == 'none':
+        return None
+
+    par = (elem.get('preserveAspectRatio') or 'xMidYMid meet').strip()
+    if par.split()[0] != 'none':
+        return None
+
+    clip_id = resolve_url_id(clip_ref)
+    if not clip_id or clip_id not in ctx.defs:
+        return None
+
+    clip_elem = ctx.defs[clip_id]
+    if clip_elem.tag.replace(f'{{{SVG_NS}}}', '') != 'clipPath':
+        return None
+
+    rect = None
+    for child in clip_elem:
+        if child.tag.replace(f'{{{SVG_NS}}}', '') == 'rect':
+            rect = child
+            break
+    if rect is None:
+        return None
+
+    if raw_w <= 0 or raw_h <= 0:
+        return None
+
+    is_obb = clip_elem.get('clipPathUnits') == 'objectBoundingBox'
+    if is_obb:
+        clip_x = raw_x + _f(rect.get('x')) * raw_w
+        clip_y = raw_y + _f(rect.get('y')) * raw_h
+        clip_w = _f(rect.get('width'), 1.0) * raw_w
+        clip_h = _f(rect.get('height'), 1.0) * raw_h
+    else:
+        clip_x = _f(rect.get('x'))
+        clip_y = _f(rect.get('y'))
+        clip_w = _f(rect.get('width'))
+        clip_h = _f(rect.get('height'))
+
+    if clip_w <= 0 or clip_h <= 0:
+        return None
+
+    img_r = raw_x + raw_w
+    img_b = raw_y + raw_h
+    clip_r = clip_x + clip_w
+    clip_b = clip_y + clip_h
+
+    vis_x = max(raw_x, clip_x)
+    vis_y = max(raw_y, clip_y)
+    vis_r = min(img_r, clip_r)
+    vis_b = min(img_b, clip_b)
+    vis_w = vis_r - vis_x
+    vis_h = vis_b - vis_y
+
+    if vis_w <= 0 or vis_h <= 0:
+        return None
+
+    # Full-image clip: no crop needed.
+    if (
+        abs(vis_x - raw_x) < 0.01 and
+        abs(vis_y - raw_y) < 0.01 and
+        abs(vis_w - raw_w) < 0.01 and
+        abs(vis_h - raw_h) < 0.01
+    ):
+        return None
+
+    l = max(0, min(100000, int(round((vis_x - raw_x) / raw_w * 100000))))
+    t = max(0, min(100000, int(round((vis_y - raw_y) / raw_h * 100000))))
+    r = max(0, min(100000, int(round((img_r - vis_r) / raw_w * 100000))))
+    b = max(0, min(100000, int(round((img_b - vis_b) / raw_h * 100000))))
+    src_rect_xml = f'<a:srcRect l="{l}" t="{t}" r="{r}" b="{b}"/>'
+
+    return vis_x, vis_y, vis_w, vis_h, src_rect_xml
+
+
 def convert_image(elem: ET.Element, ctx: ConvertContext) -> ShapeResult | None:
     """Convert SVG <image> to DrawingML picture element.
 
@@ -1521,18 +1649,7 @@ def convert_image(elem: ET.Element, ctx: ConvertContext) -> ShapeResult | None:
     raw_w = _f(elem.get('width'))
     raw_h = _f(elem.get('height'))
 
-    if ctx.use_transform_matrix:
-        x = raw_x
-        y = raw_y
-        w = raw_w
-        h = raw_h
-    else:
-        x = ctx_x(raw_x, ctx)
-        y = ctx_y(raw_y, ctx)
-        w = ctx_w(raw_w, ctx)
-        h = ctx_h(raw_h, ctx)
-
-    if w <= 0 or h <= 0:
+    if raw_w <= 0 or raw_h <= 0:
         return None
 
     # Extract image data
@@ -1578,31 +1695,41 @@ def convert_image(elem: ET.Element, ctx: ConvertContext) -> ShapeResult | None:
             rot = int(float(r_match.group(1)) * ANGLE_UNIT)
     rot_attr = f' rot="{rot}"' if rot else ''
 
-    # Resolve clip-path → DrawingML geometry
-    clip_geom = _resolve_clip_geometry(elem, ctx, raw_x, raw_y, raw_w, raw_h)
+    # Resolve clip-path → DrawingML geometry / crop. Rectangular clips on
+    # preserveAspectRatio="none" images need srcRect + a smaller picture frame;
+    # otherwise PowerPoint shows the full source image inside the original box.
+    rect_clip_crop = _resolve_rect_clip_crop(elem, ctx, raw_x, raw_y, raw_w, raw_h)
+    if rect_clip_crop is not None:
+        frame_x, frame_y, frame_w, frame_h, src_rect_xml = rect_clip_crop
+        clip_geom = '<a:prstGeom prst="rect"><a:avLst/></a:prstGeom>'
+        meet_fit = None
+    else:
+        frame_x, frame_y, frame_w, frame_h = raw_x, raw_y, raw_w, raw_h
+        clip_geom = _resolve_clip_geometry(elem, ctx, raw_x, raw_y, raw_w, raw_h)
 
-    # Resolve preserveAspectRatio="<align> slice" → DrawingML <a:srcRect>.
-    # This keeps the original image intact in the .pptx and lets users
-    # re-crop or reset the picture in PowerPoint, instead of permanently
-    # baking the crop into the embedded asset.
-    src_rect_xml = _resolve_image_src_rect(elem, img_data, w, h)
+        # Resolve preserveAspectRatio="<align> slice" → DrawingML <a:srcRect>.
+        # This keeps the original image intact in the .pptx and lets users
+        # re-crop or reset the picture in PowerPoint, instead of permanently
+        # baking the crop into the embedded asset.
+        src_rect_xml = _resolve_image_src_rect(elem, img_data, raw_w, raw_h)
 
-    # Resolve preserveAspectRatio="<align> meet" by shrinking the picture
-    # frame to match the image's aspect ratio. Skipped when a real clip-path
-    # is in effect: clip geometry is computed against the original-box
-    # coordinate space and would no longer line up after a frame shift.
-    has_clip = bool(elem.get('clip-path')) and elem.get('clip-path') != 'none'
-    meet_fit = None if has_clip else _resolve_image_meet_fit(elem, img_data, w, h)
+        # Resolve preserveAspectRatio="<align> meet" by shrinking the picture
+        # frame to match the image's aspect ratio. Skipped when a real
+        # clip-path is in effect: clip geometry is computed against the
+        # original-box coordinate space and would no longer line up after a
+        # frame shift.
+        has_clip = bool(elem.get('clip-path')) and elem.get('clip-path') != 'none'
+        meet_fit = None if has_clip else _resolve_image_meet_fit(elem, img_data, raw_w, raw_h)
 
     shape_id = ctx.next_id()
     if meet_fit is not None:
         dx, dy, fit_w, fit_h = meet_fit
         xfrm_attr, off_x, off_y, ext_cx, ext_cy, bounds_emu = _picture_xfrm_from_rect(
-            ctx, x + dx, y + dy, fit_w, fit_h,
+            ctx, frame_x + dx, frame_y + dy, fit_w, fit_h,
         )
     else:
         xfrm_attr, off_x, off_y, ext_cx, ext_cy, bounds_emu = _picture_xfrm_from_rect(
-            ctx, x, y, w, h,
+            ctx, frame_x, frame_y, frame_w, frame_h,
         )
     if rot_attr:
         xfrm_attr += rot_attr

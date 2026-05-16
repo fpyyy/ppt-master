@@ -1,43 +1,30 @@
-<ns0:svg xmlns:ns0="http://www.w3.org/2000/svg" xmlns:ns1="http://www.w3.org/1999/xlink" width="1280" height="720" overflow="hidden" viewBox="0 0 1280 720" data-llm-sanitized="true" data-llm-omitted-paths="7" data-llm-omitted-base64-images="2">
+<ns0:svg xmlns:ns0="http://www.w3.org/2000/svg" xmlns:ns1="http://www.w3.org/1999/xlink" width="1280" height="720" overflow="hidden" viewBox="0 0 1280 720" data-llm-sanitized="true" data-llm-omitted-paths="7" data-llm-omitted-base64-images="1">
   <ns0:defs>
-    <ns0:clipPath id="clip0">
-      <ns0:rect x="0" y="0" width="1280" height="720" />
-    </ns0:clipPath>
-    <ns0:clipPath id="clip1">
-      <ns0:rect x="0" y="0" width="12192000" height="2286000" />
-    </ns0:clipPath>
-    <ns0:image width="1467" height="605" ns1:href="data:image/jpeg;base64,BASE64_IMAGE_OMITTED(chars=401152)" preserveAspectRatio="none" id="img2" data-llm-omitted="base64-image" />
-    <ns0:clipPath id="clip3">
-      <ns0:rect x="0" y="777611" width="12119460" height="2286000" />
-    </ns0:clipPath>
-    <ns0:clipPath id="ppt_crop_toc">
-      <ns0:rect x="0" y="0" width="1280" height="240.000282" />
-    </ns0:clipPath>
-  </ns0:defs>
-  <ns0:g>
+        </ns0:defs>
+  <ns0:g id="page-root">
     <ns0:rect x="0" y="0" width="1280" height="720" fill="#FFFFFF" />
-    <ns0:image x="0" y="-81.639046" width="1280.007246" height="524.739824" preserveAspectRatio="none" clip-path="url(#ppt_crop_toc)" ns1:href="data:image/jpeg;base64,BASE64_IMAGE_OMITTED(chars=401152)" data-llm-omitted="base64-image" />
+    <ns0:image id="toc-background-image" x="0" y="0" width="1280" height="240" preserveAspectRatio="none" ns1:href="data:image/png;base64,BASE64_IMAGE_OMITTED(chars=475356)" data-llm-omitted="base64-image" />
     <ns0:rect x="0" y="-1" width="1280" height="241" fill="#057748" fill-opacity="0.901961" />
     <ns0:rect x="0" y="240" width="1280" height="21" fill="#A13F0B" />
     <ns0:path d="VECTOR_PATH_OMITTED(chars=19, commands='M')" stroke="#FFFFFF" stroke-width="2" stroke-miterlimit="8" fill="none" fill-rule="evenodd" />
     <ns0:path d="VECTOR_PATH_OMITTED(chars=108183, commands='M C Z L')" fill="#FFFFFF" fill-rule="evenodd" />
     <ns0:path d="VECTOR_PATH_OMITTED(chars=137, commands='M C Z')" fill="#A13F0B" fill-rule="evenodd" />
-    <ns0:text fill="#FFFFFF" font-family="Century Gothic,Century Gothic_MSFontService,sans-serif" font-weight="700" font-size="32" transform="translate(662.05 346)">{{SectionNumber1}}</ns0:text>
-    <ns0:text font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="700" font-size="32" transform="translate(726.504 344)">{{SectionTitle1}}</ns0:text>
+    <ns0:text fill="#FFFFFF" font-family="Times New Roman,Microsoft YaHei,serif" font-weight="700" font-size="32" transform="translate(662.05 346)">{{SectionNumber1}}</ns0:text>
+    <ns0:text font-family="Times New Roman,Microsoft YaHei,serif" font-weight="700" font-size="32" transform="translate(726.504 344)">{{SectionTitle1}}</ns0:text>
     <ns0:path d="VECTOR_PATH_OMITTED(chars=137, commands='M C Z')" fill="#A13F0B" fill-rule="evenodd" />
-    <ns0:text fill="#FFFFFF" font-family="Century Gothic,Century Gothic_MSFontService,sans-serif" font-weight="700" font-size="32" transform="translate(662.251 421)">{{SectionNumber2}}</ns0:text>
-    <ns0:text font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="700" font-size="32" transform="translate(726.705 419)">{{SectionTitle2}}</ns0:text>
+    <ns0:text fill="#FFFFFF" font-family="Times New Roman,Microsoft YaHei,serif" font-weight="700" font-size="32" transform="translate(662.251 421)">{{SectionNumber2}}</ns0:text>
+    <ns0:text font-family="Times New Roman,Microsoft YaHei,serif" font-weight="700" font-size="32" transform="translate(726.705 419)">{{SectionTitle2}}</ns0:text>
     <ns0:path d="VECTOR_PATH_OMITTED(chars=137, commands='M C Z')" fill="#A13F0B" fill-rule="evenodd" />
-    <ns0:text fill="#FFFFFF" font-family="Century Gothic,Century Gothic_MSFontService,sans-serif" font-weight="700" font-size="32" transform="translate(662.05 497)">{{SectionNumber3}}</ns0:text>
-    <ns0:text font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="700" font-size="32" transform="translate(726.26 495)">{{SectionTitle3}}</ns0:text>
+    <ns0:text fill="#FFFFFF" font-family="Times New Roman,Microsoft YaHei,serif" font-weight="700" font-size="32" transform="translate(662.05 497)">{{SectionNumber3}}</ns0:text>
+    <ns0:text font-family="Times New Roman,Microsoft YaHei,serif" font-weight="700" font-size="32" transform="translate(726.26 495)">{{SectionTitle3}}</ns0:text>
     <ns0:path d="VECTOR_PATH_OMITTED(chars=137, commands='M C Z')" fill="#A13F0B" fill-rule="evenodd" />
-    <ns0:text fill="#FFFFFF" font-family="Century Gothic,Century Gothic_MSFontService,sans-serif" font-weight="700" font-size="32" transform="translate(662.05 572)">{{SectionNumber4}}</ns0:text>
-    <ns0:text font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="700" font-size="32" transform="translate(726.504 570)">{{SectionTitle4}}</ns0:text>
+    <ns0:text fill="#FFFFFF" font-family="Times New Roman,Microsoft YaHei,serif" font-weight="700" font-size="32" transform="translate(662.05 572)">{{SectionNumber4}}</ns0:text>
+    <ns0:text font-family="Times New Roman,Microsoft YaHei,serif" font-weight="700" font-size="32" transform="translate(726.504 570)">{{SectionTitle4}}</ns0:text>
     <ns0:path d="VECTOR_PATH_OMITTED(chars=137, commands='M C Z')" fill="#A13F0B" fill-rule="evenodd" />
-    <ns0:text fill="#FFFFFF" font-family="Century Gothic,Century Gothic_MSFontService,sans-serif" font-weight="700" font-size="32" transform="translate(662.05 647)">{{SectionNumber5}}</ns0:text>
-    <ns0:text font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="700" font-size="32" transform="translate(726.504 646)">{{SectionTitle5}}</ns0:text>
-    <ns0:text fill="#057748" font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="700" font-size="80" transform="translate(241.211 468)">目录</ns0:text>
-    <ns0:text fill="#3F3F3F" font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="400" font-size="26.6667" transform="translate(249.651 530)">CONTENTS</ns0:text>
+    <ns0:text fill="#FFFFFF" font-family="Times New Roman,Microsoft YaHei,serif" font-weight="700" font-size="32" transform="translate(662.05 647)">{{SectionNumber5}}</ns0:text>
+    <ns0:text font-family="Times New Roman,Microsoft YaHei,serif" font-weight="700" font-size="32" transform="translate(726.504 646)">{{SectionTitle5}}</ns0:text>
+    <ns0:text fill="#057748" font-family="Times New Roman,Microsoft YaHei,serif" font-weight="700" font-size="80" transform="translate(241.211 468)">目录</ns0:text>
+    <ns0:text fill="#3F3F3F" font-family="Times New Roman,Microsoft YaHei,serif" font-weight="400" font-size="26.6667" transform="translate(249.651 530)">CONTENTS</ns0:text>
     <ns0:rect x="291" y="564" width="61" height="6" fill="#A13F0B" />
   </ns0:g>
 </ns0:svg>

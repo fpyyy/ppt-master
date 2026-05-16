@@ -22,6 +22,11 @@
 - border: #......
 
 > Strategist: fill only colors actually used. Add extra rows as needed; delete unused rows rather than leave as `#......`.
+>
+> Template mode: when `## template` points to a locked SVG template whose
+> `design_spec.md` / `template_contract.json` contains `style_lock.colors`,
+> copy those values verbatim. Do not replace them with an industry palette
+> during the Eight Confirmations.
 
 ## typography
 - font_family: "Microsoft YaHei", Arial, sans-serif
@@ -49,6 +54,12 @@
 > **⚠️ PPT-safe stack discipline (HARD rule).** PPTX stores one `typeface` per run with no runtime fallback. Every stack MUST end with a cross-platform pre-installed font: `"Microsoft YaHei", sans-serif` / `SimSun, serif` / `Arial, sans-serif` / `"Times New Roman", serif` / `Consolas, "Courier New", monospace`. Non-preinstalled fonts (Inter / Google Fonts / brand typefaces) may lead the stack only when the Design Spec notes the font-install or embedding requirement.
 >
 > **Stack length discipline.** 3-4 fonts per stack is the sweet spot. Converter only writes the **first** Latin and **first** CJK font into PPTX — everything after is silently dropped. macOS-only families (`Songti SC`, `Menlo`, `Monaco`, `Helvetica`) are auto-mapped to Windows equivalents via `FONT_FALLBACK_WIN` (see `scripts/svg_to_pptx/drawingml_utils.py`); stacking both is redundant. Lead with Windows-preinstalled fonts (`Microsoft YaHei` / `SimSun` / `Arial` / `Georgia` / `Consolas`); keep at most **one** macOS-exclusive family (typically `"PingFang SC"`) as a browser-preview nicety.
+>
+> Template mode: when `## template` points to a locked SVG template whose
+> `design_spec.md` / `template_contract.json` contains
+> `style_lock.typography`, copy those font stacks and size anchors verbatim.
+> Do not choose a new title/body font combination during the Eight
+> Confirmations.
 
 ## icons
 - library: chunk-filled
@@ -94,7 +105,7 @@
 > One entry per page. Key: `P<NN>` (zero-padded, matching `§IX Content Outline` in `design_spec.md`). Value: one of the three rhythm tags. Executor reads per page and applies the tag's layout discipline — breaks the "every page looks the same" pattern.
 >
 > **Vocabulary** (exactly these three values):
-> - `anchor` — Structural pages (title / chapter opener / TOC / ending). Follow the template as-is.
+> - `anchor` — Structural pages (title / chapter opener / TOC / ending). Follow the template as-is only when `page_layouts` maps the page; otherwise use a restrained free-design structural layout.
 > - `dense` — Information-heavy pages (data, KPIs, comparisons, multi-point lists). Card grids, multi-column layouts, tables, charts all permitted.
 > - `breathing` — Low-density pages (single concept, hero quote, big image + caption, section transition). Avoid **multi-card grid layouts** (multiple parallel rounded containers as the primary structure); organize via naked text, dividers, whitespace, or full-bleed imagery. Single rounded elements (hero image corners, callouts, tags, one emphasis block) are fine. Proportions follow information weight — not a preset ratio menu.
 >
@@ -111,6 +122,14 @@
 > One entry per page **that uses a template SVG**. Key: `P<NN>` matching §IX. Value: one of the template's five SVG basenames without extension: `title`, `toc`, `chapter`, `content`, `ending`. Executor resolves it through `template_contract.json`, not by reading the SVG.
 >
 > **No entry for a page** → that page is free design (no template inheritance). Mixed decks are supported: e.g., title/chapter pages inherit a template while content pages are free.
+>
+> **Hard rule**: For TOC / agenda pages with repeated indexed placeholders
+> (`SectionTitle1..5`, `SectionNumber1..5`, etc.), map to `toc` only when the
+> placeholder slot count exactly matches the actual section count. If the
+> template has 5 slots and the outline has 4 sections, omit that page from
+> `page_layouts`; Executor must redesign the TOC page freely using the locked
+> colors / typography. Do not leave blank slots, duplicate items, invent filler
+> sections, or squeeze extra items into too few slots.
 >
 > **Hard rule**: Use both `page_layouts` and `page_charts` for the same page only when the layout template is a compatible shell for the chart. Do not assign a conflicting layout just to fill every page: a waterfall chart should not inherit a timeline layout, and KPI cards should not inherit a circle-diagram layout unless that is the intended visual structure. When no compatible layout exists, omit the page from `page_layouts`.
 >

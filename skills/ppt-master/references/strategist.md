@@ -90,6 +90,12 @@ Accept user combinations and one-off coinages ("Scandinavian + slight industrial
 
 Proactively provide a color scheme (HEX values) based on content characteristics and industry.
 
+**Template lock override**: If Step 3 copied a locked SVG template and its
+`design_spec.md` / `template_contract.json` contains `style_lock.colors`, do
+not propose an industry palette. Present the color scheme as "locked by
+template" and copy the exact lock values into the Eight Confirmations,
+`design_spec.md` §III, and `spec_lock.md colors`.
+
 **Industry color quick reference** (full 14-industry list in `scripts/config.py` under `INDUSTRY_COLORS`):
 
 | Industry | Primary Color | Characteristics |
@@ -160,6 +166,12 @@ See [`../templates/icons/README.md`](../templates/icons/README.md) for the curre
 - `Georgia` ↔ `Cambria`
 
 **Mandatory**: propose **two** combinations to the user — one concord (safe), one contrast (with tension). Do not default to "title = body, same font" without explicit user request.
+
+**Template lock override**: If Step 3 copied a locked SVG template and its
+`design_spec.md` / `template_contract.json` contains `style_lock.typography`,
+do not propose two font combinations. Present typography as "locked by
+template" and copy the exact lock values into the Eight Confirmations,
+`design_spec.md` §IV, and `spec_lock.md typography`.
 
 **Cross-platform pre-installed reference**:
 
@@ -495,6 +507,37 @@ Templates are starting points. The Strategist may adjust based on content and au
 | X. Speaker Notes Requirements | File naming rules, content structure description |
 | XI. Technical Constraints Reminder | SVG generation rules, PPT compatibility rules |
 
+### 6.3 Locked Template Structural Count Check
+
+**Mandatory**: Before writing `page_layouts`, compare repeated indexed
+placeholders on locked structural pages against the actual content item count.
+This check applies to TOC / agenda pages and any non-content template page with
+placeholder families such as `SectionTitle1..5`, `SectionNumber1..5`, or
+`AgendaItem1..5`.
+
+| Condition | Action |
+|---|---|
+| Placeholder slot count matches actual item count | `page_layouts` may map the page to the locked template stem |
+| Placeholder slot count is larger than actual item count | Replan the page as free design; do not leave blank slots or invent filler sections |
+| Placeholder slot count is smaller than actual item count | Replan the page as free design, or regroup the outline only when the source narrative supports it |
+| Count cannot be determined from `template_contract.json` | Treat the locked structural page as incompatible and replan as free design |
+
+**TOC replanning patterns**:
+
+| Actual item count | Safe layout direction |
+|---|---|
+| 1 | Single centered section statement with supporting subtitle |
+| 2 | Balanced split or two large horizontal rows |
+| 3 | Three-column row, vertical stack, or triangular/radial grouping |
+| 4 | 2x2 grid or four-step vertical list with enlarged spacing |
+| 5 | Use the five-slot template only when the contract count matches |
+| 6+ | Two-column agenda, grouped chapter clusters, or compact timeline |
+
+**Hard rule**: A replanned structural page keeps the locked template's
+`style_lock.colors` and `style_lock.typography`, but it receives **no**
+`page_layouts` entry. Record the reason in `design_spec.md` §IX, e.g.
+`free structural redesign — TOC slot mismatch: template 5, outline 4`.
+
 **Generation steps**:
 1. Read reference template: `templates/design_spec_reference.md`
 2. Generate complete spec from scratch based on analysis
@@ -503,7 +546,13 @@ Templates are starting points. The Strategist may adjust based on content and au
    - **page_rhythm is mandatory**: Based on the page list in §IX Content Outline, assign each page one of `anchor` / `dense` / `breathing` (see `spec_lock_reference.md` for the full vocabulary). This is what breaks the uniform "every page is a card grid" feel — without it the Executor defaults all pages to `dense`.
    - **Rhythm follows narrative, not quota**: `breathing` pages mark natural pauses — chapter transitions, standalone emphasis (hero quote / big number), SCQA bridges. Dense decks may legitimately be all `dense`. **Do NOT invent filler pages** ("Thank you", empty dividers) to pad rhythm — every `breathing` page must say something independent.
    - **template (write only when a locked template is in use)**: Read only `<project_path>/templates/<template_id>/design_spec.md` and `<project_path>/templates/<template_id>/template_contract.json`. Add `engine: locked_svg`, `template_id`, and `contract` to `spec_lock.md`. If the contract is missing, STOP and ask the user to rebuild the template via `create-template`.
-   - **page_layouts (write only when a locked template is in use)**: Choose page stems from `template_contract.json pages[].stem`; add `P<NN>: <stem>` for pages that use a locked template page. Pages designed freely get **no entry** — Executor reads the absence as "free design, no inheritance". If zero pages use a template, omit the section entirely.
+   - **template style lock (mandatory when a locked template is in use)**:
+     Copy `style_lock.colors` and `style_lock.typography` from the template
+     into `design_spec.md` §III/§IV and `spec_lock.md colors` / `typography`.
+     If `style_lock` is missing or incomplete, STOP and ask the user to rebuild
+     the template with the current `create-template` workflow. Do not infer
+     missing colors or fonts from the template SVG source.
+   - **page_layouts (write only when a locked template is in use)**: Choose page stems from `template_contract.json pages[].stem`; add `P<NN>: <stem>` for pages that use a locked template page. Before mapping TOC / agenda pages, run §6.3's structural count check. Pages designed freely get **no entry** — Executor reads the absence as "free design, no inheritance". If zero pages use a template, omit the section entirely.
    - **page_charts (write only for chart pages that match a catalog template)**: For each page in `design_spec.md §VII` whose `reference template path` points to `templates/charts/<name>.svg`, add `P<NN>: <chart_name>`. Pages with `no-template-match` in §VII MUST NOT appear here (Executor would look for a non-existent reference). If the deck has no data-visualization pages, omit the section.
    - **Hard rule**: Use both `page_layouts` and `page_charts` for the same page only when the layout template is a compatible shell for the chart. Do not pair chart pages with conflicting page layouts (e.g., `waterfall_chart` + timeline layout, KPI cards + circle-diagram layout). If no compatible layout exists, omit the page from `page_layouts`.
 

@@ -31,6 +31,7 @@ Locked templates are filled by script, not by template inheritance in prompt con
 
 | Page condition | Executor action |
 |---|---|
+| Structural page mapping has a repeated placeholder count that differs from the actual item count | Treat the mapping as incompatible; generate the page as free design using §1.2 |
 | `page_layouts` has `P<NN>: <stem>` and `template.engine = locked_svg` | Use `template_contract.json` to get the page placeholders and workspaces; generate fill JSON and workspace fragments; run `svg_template.py apply` |
 | `page_layouts` exists but no entry for current page | Free design; write the full SVG directly |
 | No template section | Free design |
@@ -56,6 +57,36 @@ within `max_cjk_chars` / `max_latin_chars`; if `svg_template.py apply` reports
 a fit error, shorten the wording and rerun. Do not lower font size or add new
 workspace fragments to make long text fit.
 
+### 1.2 Structural Page Replanning
+
+**Mandatory**: For TOC / agenda pages and other non-content pages with repeated
+indexed placeholders, compare template slot count with the actual item count
+from the current page brief in `design_spec.md` §IX before running
+`svg_template.py apply`.
+
+| Check | Action |
+|---|---|
+| Counts match | Use the locked template page normally |
+| Counts differ | Generate a full free-design SVG page; do not call `svg_template.py apply` for that page |
+| `page_layouts` has no entry for the page | Generate a full free-design SVG page |
+
+**Hard rule**: Do not fill unused template slots with blanks, duplicate an item,
+invent an extra section, or shrink text to force too many items into the locked
+slots.
+
+**Replanned TOC layout directions**:
+
+| Actual items | Layout |
+|---|---|
+| 2 | Two balanced columns or two strong horizontal bands |
+| 3 | Three-column row, vertical stack, or triangular/radial composition |
+| 4 | 2x2 grid or four-step vertical list with equal visual weight |
+| 6+ | Two-column agenda or grouped chapter clusters |
+
+Use `spec_lock.md colors` and `typography` for the replanned page. Keep the page
+structural and calm: safe margins, consistent numbering, even spacing, and no
+decorative element that implies a missing or hidden section.
+
 ### Page-Template Mapping Declaration (Required Output)
 
 Before generating each page, output which contract page is used:
@@ -67,6 +98,7 @@ Before generating each page, output which contract page is used:
 
 - **Locked content pages**: only generate the declared workspace fragment
 - **Locked non-content pages**: replace `{{...}}` text only and respect text-fit budgets
+- **Replanned structural pages**: generate entirely per the Design Spec and §1.2
 - **No template**: generate entirely per the Design Spec
 
 ---
@@ -99,7 +131,7 @@ Before drawing each page, look up its entry in `page_rhythm` (key format `P<NN>`
 
 | Tag | Layout discipline |
 |-----|-------------------|
-| `anchor` | Structural page (title / chapter / TOC / ending). Follow the matching template verbatim. |
+| `anchor` | Structural page (title / chapter / TOC / ending). Follow the matching template verbatim when `page_layouts` maps the page; otherwise use a restrained free-design structural layout. |
 | `dense` | Information-heavy. Card grids, multi-column layouts, KPI dashboards, tables, and charts are all permitted. This is the baseline behavior. |
 | `breathing` | Low-density impact page. Avoid **multi-card grid layouts** — do not organize content as multiple parallel rounded containers (3-card row, 4-card KPI grid, 2×2 matrix rendered as cards). Use naked text blocks, dividers, whitespace, or full-bleed imagery as the content structure. Single rounded visual elements (hero image corners, callouts, tags, one emphasis block) are fine — the rule is about grid structure, not about the `rx` attribute. Proportions follow information weight (not a preset ratio). Typical forms: hero quote, single large number with one-line interpretation, full-bleed image with floating caption, section transition. |
 

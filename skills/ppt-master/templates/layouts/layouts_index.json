@@ -1,3 +1,12 @@
 {
-  "BIT-template": {}
+  "bit-template": {
+    "summary": "BIT green academic locked SVG template with fixed five-section TOC.",
+    "keywords": [
+      "BIT",
+      "academic",
+      "defense",
+      "green",
+      "five-section-toc"
+    ]
+  }
 }

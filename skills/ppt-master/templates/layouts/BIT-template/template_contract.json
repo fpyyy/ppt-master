@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "engine": "locked_svg",
-  "template_id": "BIT-template",
+  "template_id": "bit-template",
   "canvas_format": "ppt169",
   "pages": [
     {
@@ -9,7 +9,7 @@
       "file": "title.svg",
       "role": "title",
       "viewBox": "0 0 1280 720",
-      "sha256": "e485a59f81ec533ae43d9a5dca51113c71a275336783e6156f226d707f71a713",
+      "sha256": "90ad5df2d417079741243a4e4277389b70f8020c96bbfa39099774df8e013d67",
       "placeholders": [
         {
           "name": "PPTTitle",
@@ -67,7 +67,7 @@
       "file": "toc.svg",
       "role": "toc",
       "viewBox": "0 0 1280 720",
-      "sha256": "70e332ae8c2367a3174bb47f59ccc32542b85bdcbd7e09de56a0acc62c8b2617",
+      "sha256": "cdd4a31bb63477a90235ae454fc33ad9f79a005863924ed78eba30d51f1d5df0",
       "placeholders": [
         {
           "name": "SectionNumber1",
@@ -190,14 +190,47 @@
           }
         }
       ],
-      "workspaces": []
+      "workspaces": [],
+      "structural_slots": [
+        {
+          "id": "sections",
+          "item_type": "section",
+          "slot_count": 5,
+          "count_match_required": true,
+          "compatible_item_counts": [
+            5
+          ],
+          "number_placeholders": [
+            "SectionNumber1",
+            "SectionNumber2",
+            "SectionNumber3",
+            "SectionNumber4",
+            "SectionNumber5"
+          ],
+          "title_placeholders": [
+            "SectionTitle1",
+            "SectionTitle2",
+            "SectionTitle3",
+            "SectionTitle4",
+            "SectionTitle5"
+          ],
+          "mismatch_action": "omit page_layouts entry and redesign as a free structural TOC page using style_lock colors and typography",
+          "safe_replan_layouts": {
+            "1": "single centered section statement with subtitle",
+            "2": "two balanced columns or two strong horizontal bands",
+            "3": "three-column row, vertical stack, or triangular grouping",
+            "4": "2x2 grid or four-step vertical list with enlarged spacing",
+            "6+": "two-column agenda, grouped chapter clusters, or compact timeline"
+          }
+        }
+      ]
     },
     {
       "stem": "chapter",
       "file": "chapter.svg",
       "role": "chapter",
       "viewBox": "0 0 1280 720",
-      "sha256": "9fbe02077547f74dedf2b1613fd27fdc440800640f69b240b776971b1874002a",
+      "sha256": "cae3279911651cf46bbbe217d6bfca44d7bbc46ab6692a1fe79a7951c1e8e99b",
       "placeholders": [
         {
           "name": "SectionNumber",
@@ -231,7 +264,7 @@
       "file": "content.svg",
       "role": "content",
       "viewBox": "0 0 1280 720",
-      "sha256": "d5855eeef1382fd1092582d9a3dbbd6adf968c08f90d7d05fcbc0e5371a24501",
+      "sha256": "d72db897645568ae6047f1d76e41f5d24ff5941461a8d9334823495239099c38",
       "placeholders": [
         {
           "name": "PageTitle",
@@ -251,12 +284,12 @@
           "id": "main",
           "bbox": [
             96,
-            114,
+            104,
             1088,
-            532
+            542
           ],
-          "element": "auto",
-          "source": "auto-heuristic"
+          "element": "rect",
+          "source": "declared"
         }
       ]
     },
@@ -265,7 +298,7 @@
       "file": "ending.svg",
       "role": "ending",
       "viewBox": "0 0 1280 720",
-      "sha256": "6de6ebd020236313e303f8d6eba1a49c0ecc049180762030875cadb4c19bcc29",
+      "sha256": "72c3509f43edbe447cad8cf07312c431336f4d1bf01f0e6b802655051be8f59d",
       "placeholders": [
         {
           "name": "PresenterNames",
@@ -294,5 +327,182 @@
       ],
       "workspaces": []
     }
-  ]
+  ],
+  "style_lock": {
+    "source": "llm_xml",
+    "colors": {
+      "bg": "#FFFFFF",
+      "secondary_bg": "#A13F0B",
+      "primary": "#005C30",
+      "accent": "#009944",
+      "secondary_accent": "#A13F0B",
+      "text": "#057748",
+      "text_secondary": "#3F3F3F",
+      "border": "#A13F0B"
+    },
+    "typography": {
+      "font_family": "Times New Roman,Microsoft YaHei,serif",
+      "title_family": "Times New Roman,Microsoft YaHei,serif",
+      "body_family": "Times New Roman,Microsoft YaHei,serif",
+      "emphasis_family": "Times New Roman,Microsoft YaHei,serif",
+      "code_family": "Consolas, \"Courier New\", monospace",
+      "body": 28,
+      "title": 48,
+      "subtitle": 35,
+      "annotation": 16,
+      "cover_title": 59
+    },
+    "observed_colors": [
+      {
+        "hex": "#FFFFFF",
+        "count": 45,
+        "fill_count": 40,
+        "stroke_count": 5,
+        "text_count": 26
+      },
+      {
+        "hex": "#057748",
+        "count": 6,
+        "fill_count": 6,
+        "stroke_count": 0,
+        "text_count": 1
+      },
+      {
+        "hex": "#A13F0B",
+        "count": 61,
+        "fill_count": 28,
+        "stroke_count": 33,
+        "text_count": 0
+      },
+      {
+        "hex": "#3F3F3F",
+        "count": 1,
+        "fill_count": 1,
+        "stroke_count": 0,
+        "text_count": 1
+      },
+      {
+        "hex": "#A2A2A2",
+        "count": 1,
+        "fill_count": 1,
+        "stroke_count": 0,
+        "text_count": 1
+      },
+      {
+        "hex": "#A6A6A6",
+        "count": 17,
+        "fill_count": 17,
+        "stroke_count": 0,
+        "text_count": 0
+      },
+      {
+        "hex": "#DAB293",
+        "count": 2,
+        "fill_count": 2,
+        "stroke_count": 0,
+        "text_count": 0
+      },
+      {
+        "hex": "#009944",
+        "count": 2,
+        "fill_count": 2,
+        "stroke_count": 0,
+        "text_count": 0
+      },
+      {
+        "hex": "#005C30",
+        "count": 2,
+        "fill_count": 2,
+        "stroke_count": 0,
+        "text_count": 0
+      },
+      {
+        "hex": "#CAE5CD",
+        "count": 1,
+        "fill_count": 1,
+        "stroke_count": 0,
+        "text_count": 0
+      },
+      {
+        "hex": "#89C997",
+        "count": 1,
+        "fill_count": 1,
+        "stroke_count": 0,
+        "text_count": 0
+      },
+      {
+        "hex": "#13AE67",
+        "count": 1,
+        "fill_count": 1,
+        "stroke_count": 0,
+        "text_count": 0
+      }
+    ],
+    "observed_fonts": [
+      {
+        "family": "Times New Roman,Microsoft YaHei,serif",
+        "weighted_count": 370,
+        "sizes": [
+          48,
+          32,
+          59,
+          16,
+          21,
+          37
+        ]
+      }
+    ]
+  },
+  "placeholder_rules": {
+    "toc": {
+      "page": "toc",
+      "item_type": "section",
+      "slot_count": 5,
+      "compatible_item_counts": [
+        5
+      ],
+      "count_match_required": true,
+      "number_placeholders": [
+        "SectionNumber1",
+        "SectionNumber2",
+        "SectionNumber3",
+        "SectionNumber4",
+        "SectionNumber5"
+      ],
+      "title_placeholders": [
+        "SectionTitle1",
+        "SectionTitle2",
+        "SectionTitle3",
+        "SectionTitle4",
+        "SectionTitle5"
+      ],
+      "mismatch_action": "When the actual TOC item count is not 5, do not apply toc.svg. Omit this page from page_layouts and generate a free structural TOC using style_lock colors and typography."
+    },
+    "section_numbers": {
+      "scope": [
+        "toc.SectionNumber1-5",
+        "chapter.SectionNumber"
+      ],
+      "allowed_values": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "format": "plain_arabic_integer",
+      "forbidden": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "1.",
+        "一",
+        "壹",
+        "Part 1"
+      ],
+      "rule": "Use digits 1 through 5 only; no leading zero, prefix, suffix, or punctuation."
+    }
+  }
 }

@@ -36,6 +36,7 @@ import shutil
 import subprocess
 import sys
 import unicodedata
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -77,6 +78,26 @@ LOCAL_ASSET_EXTS = {
     ".svg",
     ".webp",
 }
+COLOR_ATTRS = ("fill", "stroke", "stop-color", "flood-color", "color")
+IGNORED_COLOR_VALUES = {
+    "",
+    "none",
+    "transparent",
+    "inherit",
+    "initial",
+    "unset",
+}
+NAMED_COLORS = {
+    "black": "#000000",
+    "white": "#FFFFFF",
+    "red": "#FF0000",
+    "green": "#008000",
+    "blue": "#0000FF",
+    "gray": "#808080",
+    "grey": "#808080",
+}
+DEFAULT_FONT_FAMILY = '"Microsoft YaHei", Arial, sans-serif'
+DEFAULT_CODE_FAMILY = 'Consolas, "Courier New", monospace'
 
 
 class TemplateError(RuntimeError):
@@ -178,9 +199,115 @@ def _parse_optional_number(value: str | None) -> float | None:
 def _style_value(style: str, name: str) -> str | None:
     for part in style.split(";"):
         key, sep, value = part.partition(":")
-        if sep and key.strip() == name:
+        if sep and key.strip().lower() == name.lower():
             return value.strip()
     return None
+
+
+def _attribute_or_style(elem: ET.Element, name: str) -> str | None:
+    for attr_name, attr_value in elem.attrib.items():
+        if _local_name(attr_name).lower() == name.lower():
+            return attr_value.strip()
+    return _style_value(elem.attrib.get("style", ""), name)
+
+
+def _rgb_part(value: str) -> int | None:
+    value = value.strip()
+    try:
+        if value.endswith("%"):
+            numeric = round(float(value[:-1]) * 2.55)
+        else:
+            numeric = round(float(value))
+    except ValueError:
+        return None
+    return max(0, min(255, numeric))
+
+
+def _normalize_color(value: str | None) -> str | None:
+    if value is None:
+        return None
+    raw = value.strip().strip("\"'")
+    lowered = raw.lower()
+    if lowered in IGNORED_COLOR_VALUES or lowered.startswith("url("):
+        return None
+    if lowered == "currentcolor":
+        return None
+    if lowered in NAMED_COLORS:
+        return NAMED_COLORS[lowered]
+
+    hex_match = re.fullmatch(r"#([0-9A-Fa-f]{3,8})", raw)
+    if hex_match:
+        digits = hex_match.group(1)
+        if len(digits) in {3, 4}:
+            expanded = "".join(char * 2 for char in digits)
+            if len(digits) == 4 and expanded[6:8].upper() == "00":
+                return None
+            return f"#{expanded[:6].upper()}"
+        if len(digits) == 8 and digits[6:8].upper() == "00":
+            return None
+        return f"#{digits[:6].upper()}"
+
+    rgb_match = re.fullmatch(r"rgba?\(([^)]+)\)", lowered)
+    if rgb_match:
+        parts = [part.strip() for part in rgb_match.group(1).split(",")]
+        if len(parts) not in {3, 4}:
+            return None
+        if len(parts) == 4:
+            try:
+                if float(parts[3]) <= 0:
+                    return None
+            except ValueError:
+                return None
+        channels = [_rgb_part(part) for part in parts[:3]]
+        if any(channel is None for channel in channels):
+            return None
+        r, g, b = (int(channel) for channel in channels)
+        return f"#{r:02X}{g:02X}{b:02X}"
+
+    return None
+
+
+def _rgb_tuple(color: str) -> tuple[int, int, int]:
+    return (
+        int(color[1:3], 16),
+        int(color[3:5], 16),
+        int(color[5:7], 16),
+    )
+
+
+def _color_luminance(color: str) -> float:
+    r, g, b = (channel / 255 for channel in _rgb_tuple(color))
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+
+def _color_saturation(color: str) -> float:
+    r, g, b = (channel / 255 for channel in _rgb_tuple(color))
+    maximum = max(r, g, b)
+    minimum = min(r, g, b)
+    return 0.0 if maximum == 0 else (maximum - minimum) / maximum
+
+
+def _is_neutral_color(color: str) -> bool:
+    return _color_saturation(color) < 0.12
+
+
+def _element_area(elem: ET.Element) -> float:
+    tag = _local_name(elem.tag)
+    if tag in {"rect", "image"}:
+        width = _parse_optional_number(elem.attrib.get("width")) or 0.0
+        height = _parse_optional_number(elem.attrib.get("height")) or 0.0
+        return max(0.0, width * height)
+    if tag == "circle":
+        radius = _parse_optional_number(elem.attrib.get("r")) or 0.0
+        return max(0.0, 3.14159 * radius * radius)
+    if tag == "ellipse":
+        rx = _parse_optional_number(elem.attrib.get("rx")) or 0.0
+        ry = _parse_optional_number(elem.attrib.get("ry")) or 0.0
+        return max(0.0, 3.14159 * rx * ry)
+    if tag in {"text", "tspan"}:
+        font_size = _font_size(elem)
+        return max(0.0, font_size * font_size * max(1, len(_text_content(elem))) * 0.55)
+    return 0.0
 
 
 def _transform_translate(elem: ET.Element) -> tuple[float, float]:
@@ -420,6 +547,321 @@ def _collect_local_assets(root: ET.Element, svg_file: Path) -> tuple[list[Path],
     return sorted(assets), embedded_count
 
 
+def _record_color_use(
+    uses: dict[str, dict[str, float]],
+    *,
+    color: str,
+    attr: str,
+    elem: ET.Element,
+) -> None:
+    usage = uses.setdefault(
+        color,
+        {
+            "count": 0,
+            "text_count": 0,
+            "fill_count": 0,
+            "stroke_count": 0,
+            "stop_count": 0,
+            "area_score": 0.0,
+        },
+    )
+    tag = _local_name(elem.tag)
+    area = _element_area(elem)
+    usage["count"] += 1
+    if tag in {"text", "tspan"}:
+        usage["text_count"] += 1
+    if attr == "fill":
+        usage["fill_count"] += 1
+        usage["area_score"] += area
+    elif attr == "stroke":
+        usage["stroke_count"] += 1
+        usage["area_score"] += area * 0.15
+    elif attr in {"stop-color", "flood-color"}:
+        usage["stop_count"] += 1
+
+
+def _collect_color_uses(llm_xml_dir: Path) -> dict[str, dict[str, float]]:
+    uses: dict[str, dict[str, float]] = {}
+    for xml_file in sorted(llm_xml_dir.glob("*.xml")):
+        root = ET.fromstring(xml_file.read_text(encoding="utf-8"))
+        for elem in root.iter():
+            for attr in COLOR_ATTRS:
+                value = _attribute_or_style(elem, attr)
+                if value and value.strip().lower() == "currentcolor":
+                    value = _attribute_or_style(elem, "color")
+                color = _normalize_color(value)
+                if color is None:
+                    continue
+                _record_color_use(uses, color=color, attr=attr, elem=elem)
+    return uses
+
+
+def _ranked_colors(
+    colors: list[str],
+    uses: dict[str, dict[str, float]],
+    *,
+    prefer_accent: bool = False,
+) -> list[str]:
+    def score(color: str) -> tuple[float, float, float, float]:
+        usage = uses[color]
+        saturation = _color_saturation(color)
+        area = usage["area_score"]
+        if prefer_accent:
+            return (
+                saturation,
+                usage["fill_count"] + usage["stop_count"] * 0.6,
+                min(area / 100000.0, 12.0),
+                usage["count"],
+            )
+        return (
+            area,
+            usage["fill_count"],
+            usage["count"],
+            _color_luminance(color),
+        )
+
+    return sorted(colors, key=score, reverse=True)
+
+
+def _first_color(candidates: list[str], fallback: str) -> str:
+    return candidates[0] if candidates else fallback
+
+
+def _infer_template_colors(llm_xml_dir: Path) -> tuple[dict[str, str], list[dict[str, Any]]]:
+    uses = _collect_color_uses(llm_xml_dir)
+    if not uses:
+        colors = {
+            "bg": "#FFFFFF",
+            "secondary_bg": "#FFFFFF",
+            "primary": "#111111",
+            "accent": "#111111",
+            "secondary_accent": "#111111",
+            "text": "#111111",
+            "text_secondary": "#111111",
+            "border": "#111111",
+        }
+        return colors, []
+
+    all_colors = list(uses)
+    fill_colors = [color for color in all_colors if uses[color]["fill_count"] > 0]
+    text_colors = [color for color in all_colors if uses[color]["text_count"] > 0]
+    stroke_colors = [color for color in all_colors if uses[color]["stroke_count"] > 0]
+    bg = _first_color(_ranked_colors(fill_colors, uses), "#FFFFFF")
+
+    ranked_text = _ranked_colors(text_colors, uses)
+    text = _first_color([color for color in ranked_text if color != bg], "#111111")
+    if text == "#111111" and bg != "#111111":
+        existing_neutrals = [
+            color for color in all_colors
+            if color != bg and _is_neutral_color(color)
+        ]
+        if _color_luminance(bg) >= 0.5:
+            contrast_side = lambda color: _color_luminance(color) < 0.45
+        else:
+            contrast_side = lambda color: _color_luminance(color) >= 0.55
+        text = _first_color([color for color in existing_neutrals if contrast_side(color)], text)
+
+    text_secondary = _first_color(
+        [color for color in ranked_text if color not in {bg, text}],
+        text,
+    )
+
+    accent_pool = [
+        color for color in all_colors
+        if color not in {bg, text, text_secondary} and not _is_neutral_color(color)
+    ]
+    ranked_accents = _ranked_colors(accent_pool, uses, prefer_accent=True)
+    primary = _first_color(ranked_accents, _first_color([c for c in all_colors if c != bg], text))
+    accent = _first_color([c for c in ranked_accents if c != primary], primary)
+    secondary_accent = _first_color(
+        [c for c in ranked_accents if c not in {primary, accent}],
+        accent,
+    )
+
+    secondary_bg = _first_color(
+        [
+            color for color in _ranked_colors(fill_colors, uses)
+            if color not in {bg, text, primary, accent}
+        ],
+        bg,
+    )
+    border = _first_color(
+        [color for color in _ranked_colors(stroke_colors, uses) if color != bg],
+        secondary_bg,
+    )
+
+    observations = [
+        {
+            "hex": color,
+            "count": int(uses[color]["count"]),
+            "fill_count": int(uses[color]["fill_count"]),
+            "stroke_count": int(uses[color]["stroke_count"]),
+            "text_count": int(uses[color]["text_count"]),
+        }
+        for color in _ranked_colors(all_colors, uses)[:12]
+    ]
+    return {
+        "bg": bg,
+        "secondary_bg": secondary_bg,
+        "primary": primary,
+        "accent": accent,
+        "secondary_accent": secondary_accent,
+        "text": text,
+        "text_secondary": text_secondary,
+        "border": border,
+    }, observations
+
+
+def _walk_font_runs(
+    elem: ET.Element,
+    *,
+    inherited_family: str | None,
+    inherited_size: float | None,
+    runs: list[dict[str, Any]],
+) -> None:
+    family = _attribute_or_style(elem, "font-family") or inherited_family
+    size_raw = _attribute_or_style(elem, "font-size")
+    size = _parse_optional_number(size_raw) if size_raw else inherited_size
+    tag = _local_name(elem.tag)
+    if tag == "text":
+        content = _text_content(elem).strip()
+        if content and (family or size):
+            runs.append(
+                {
+                    "family": family or DEFAULT_FONT_FAMILY,
+                    "size": size or 24.0,
+                    "content": content,
+                }
+            )
+    for child in elem:
+        _walk_font_runs(
+            child,
+            inherited_family=family,
+            inherited_size=size,
+            runs=runs,
+        )
+
+
+def _collect_font_runs(llm_xml_dir: Path) -> list[dict[str, Any]]:
+    runs: list[dict[str, Any]] = []
+    for xml_file in sorted(llm_xml_dir.glob("*.xml")):
+        root = ET.fromstring(xml_file.read_text(encoding="utf-8"))
+        _walk_font_runs(
+            root,
+            inherited_family=None,
+            inherited_size=None,
+            runs=runs,
+        )
+    return runs
+
+
+def _clamp_int(value: float, minimum: int, maximum: int) -> int:
+    return max(minimum, min(maximum, int(round(value))))
+
+
+def _font_family_for_run(runs: list[dict[str, Any]], pattern: str) -> str | None:
+    matches = [
+        run for run in runs
+        if re.search(pattern, str(run["content"]), re.IGNORECASE)
+    ]
+    if not matches:
+        return None
+    return max(matches, key=lambda run: float(run["size"]))["family"]
+
+
+def _font_size_for_run(runs: list[dict[str, Any]], pattern: str) -> float | None:
+    matches = [
+        float(run["size"]) for run in runs
+        if re.search(pattern, str(run["content"]), re.IGNORECASE)
+    ]
+    return max(matches) if matches else None
+
+
+def _infer_template_typography(
+    llm_xml_dir: Path,
+) -> tuple[dict[str, str | int], list[dict[str, Any]]]:
+    runs = _collect_font_runs(llm_xml_dir)
+    if not runs:
+        return {
+            "font_family": DEFAULT_FONT_FAMILY,
+            "title_family": DEFAULT_FONT_FAMILY,
+            "body_family": DEFAULT_FONT_FAMILY,
+            "emphasis_family": DEFAULT_FONT_FAMILY,
+            "code_family": DEFAULT_CODE_FAMILY,
+            "body": 22,
+            "title": 34,
+            "subtitle": 26,
+            "annotation": 15,
+        }, []
+
+    family_counter: Counter[str] = Counter()
+    size_counter: Counter[int] = Counter()
+    for run in runs:
+        family_counter[str(run["family"])] += max(1, len(str(run["content"])))
+        size_counter[int(round(float(run["size"])))] += 1
+
+    body_family = family_counter.most_common(1)[0][0]
+    title_family = (
+        _font_family_for_run(runs, r"\{\{(?:PPTTitle|PageTitle|SectionTitle)\}\}")
+        or max(runs, key=lambda run: float(run["size"]))["family"]
+        or body_family
+    )
+    page_title_size = _font_size_for_run(runs, r"\{\{(?:PageTitle|SectionTitle)\}\}")
+    cover_title_size = _font_size_for_run(runs, r"\{\{PPTTitle\}\}")
+    max_size = max(float(run["size"]) for run in runs)
+    min_size = min(float(run["size"]) for run in runs)
+    title_size = int(round(page_title_size or max_size))
+    body_size = _clamp_int(title_size / 1.5, 16, 28)
+    if min_size < body_size and min_size >= 14:
+        annotation_size = int(round(min_size))
+    else:
+        annotation_size = _clamp_int(body_size * 0.72, 10, body_size)
+    subtitle_size = _clamp_int(body_size * 1.25, body_size + 2, max(title_size, body_size + 2))
+
+    typography: dict[str, str | int] = {
+        "font_family": body_family,
+        "title_family": str(title_family),
+        "body_family": body_family,
+        "emphasis_family": str(title_family),
+        "code_family": DEFAULT_CODE_FAMILY,
+        "body": body_size,
+        "title": title_size,
+        "subtitle": subtitle_size,
+        "annotation": annotation_size,
+    }
+    if cover_title_size and int(round(cover_title_size)) != title_size:
+        typography["cover_title"] = int(round(cover_title_size))
+
+    observations = [
+        {
+            "family": family,
+            "weighted_count": count,
+            "sizes": [
+                size for size, _size_count in size_counter.most_common()
+                if any(
+                    str(run["family"]) == family
+                    and int(round(float(run["size"]))) == size
+                    for run in runs
+                )
+            ][:6],
+        }
+        for family, count in family_counter.most_common(8)
+    ]
+    return typography, observations
+
+
+def _infer_template_style_lock(llm_xml_dir: Path) -> dict[str, Any]:
+    colors, color_observations = _infer_template_colors(llm_xml_dir)
+    typography, font_observations = _infer_template_typography(llm_xml_dir)
+    return {
+        "source": "llm_xml",
+        "colors": colors,
+        "typography": typography,
+        "observed_colors": color_observations,
+        "observed_fonts": font_observations,
+    }
+
+
 def _read_svg_summary(svg_file: Path) -> SvgSummary:
     text = svg_file.read_text(encoding="utf-8")
     try:
@@ -527,6 +969,7 @@ def build_contract(
     summaries: list[SvgSummary],
     *,
     canvas_format: str,
+    style_lock: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build the compact template contract from SVG summaries."""
     view_boxes = {summary.view_box for summary in summaries}
@@ -535,13 +978,114 @@ def build_contract(
             "All SVG pages in one locked template must use the same viewBox. "
             f"Found: {', '.join(sorted(view_boxes))}"
         )
-    return {
+    contract = {
         "schema_version": 1,
         "engine": "locked_svg",
         "template_id": template_id,
         "canvas_format": canvas_format,
         "pages": [_contract_page(summary) for summary in summaries],
     }
+    if style_lock:
+        contract["style_lock"] = style_lock
+    return contract
+
+
+def _render_style_lock(style_lock: dict[str, Any]) -> list[str]:
+    colors = style_lock.get("colors") or {}
+    typography = style_lock.get("typography") or {}
+    observed_colors = style_lock.get("observed_colors") or []
+    observed_fonts = style_lock.get("observed_fonts") or []
+
+    color_rows = [
+        "| Lock Key | Value | Runtime Usage |",
+        "|---|---|---|",
+    ]
+    color_notes = {
+        "bg": "Page background / implicit canvas",
+        "secondary_bg": "Cards, bands, low-emphasis panels",
+        "primary": "Template brand color; titles, icons, section marks",
+        "accent": "Data highlights and high-emphasis callouts",
+        "secondary_accent": "Secondary emphasis and gradient companion",
+        "text": "Main text",
+        "text_secondary": "Captions, labels, annotations",
+        "border": "Dividers and outlines",
+    }
+    for key, note in color_notes.items():
+        if key in colors:
+            color_rows.append(f"| `{key}` | `{colors[key]}` | {note} |")
+
+    type_rows = [
+        "| Lock Key | Value |",
+        "|---|---|",
+    ]
+    for key in (
+        "font_family",
+        "title_family",
+        "body_family",
+        "emphasis_family",
+        "code_family",
+        "body",
+        "title",
+        "cover_title",
+        "subtitle",
+        "annotation",
+    ):
+        if key in typography:
+            value = typography[key]
+            display = f"`{value}`" if isinstance(value, str) else f"`{value}px`"
+            type_rows.append(f"| `{key}` | {display} |")
+
+    observed_color_rows = [
+        "| HEX | Uses | Fill | Stroke | Text |",
+        "|---|---:|---:|---:|---:|",
+    ]
+    for item in observed_colors:
+        observed_color_rows.append(
+            f"| `{item['hex']}` | {item['count']} | {item['fill_count']} | "
+            f"{item['stroke_count']} | {item['text_count']} |"
+        )
+
+    observed_font_rows = [
+        "| Font Family | Weighted Uses | Observed Sizes |",
+        "|---|---:|---|",
+    ]
+    for item in observed_fonts:
+        sizes = ", ".join(f"`{size}px`" for size in item.get("sizes", [])) or "None"
+        observed_font_rows.append(
+            f"| `{item['family']}` | {item['weighted_count']} | {sizes} |"
+        )
+
+    return [
+        "## III. Template Style Lock",
+        "",
+        "**Hard rule**: Downstream PPT generation MUST copy these colors and "
+        "typography values into the project `design_spec.md` and `spec_lock.md`. "
+        "Do not replace them during the Eight Confirmations unless the user "
+        "explicitly asks to override the locked template style.",
+        "",
+        "- Source: `llm_xml/*.xml` generated at template creation time",
+        "- Runtime scope: generated workspace content, charts, icons, and free-design "
+        "pages in the same deck",
+        "",
+        "### Colors",
+        "",
+        *color_rows,
+        "",
+        "### Typography",
+        "",
+        *type_rows,
+        "",
+        "### Extraction Evidence",
+        "",
+        "Observed palette:",
+        "",
+        *observed_color_rows,
+        "",
+        "Observed fonts:",
+        "",
+        *observed_font_rows,
+        "",
+    ]
 
 
 def _render_design_spec(
@@ -549,6 +1093,7 @@ def _render_design_spec(
     template_id: str,
     canvas_format: str,
     pages: list[SvgSummary],
+    style_lock: dict[str, Any],
 ) -> str:
     placeholders = {
         page.stem: [f"{{{{{name}}}}}" for name in sorted(page.placeholders)]
@@ -560,6 +1105,9 @@ def _render_design_spec(
         "template_engine": "locked_svg",
         "template_contract": "template_contract.json",
         "placeholder_style": "custom",
+        "style_lock": True,
+        "style_lock_source": "llm_xml",
+        "primary_color": style_lock.get("colors", {}).get("primary", ""),
         "placeholders": placeholders,
     }
     fm_lines = ["---"]
@@ -608,6 +1156,7 @@ def _render_design_spec(
             "",
             *roster,
             "",
+            *_render_style_lock(style_lock),
         ]
     )
 
@@ -672,15 +1221,19 @@ def cmd_create(args: argparse.Namespace) -> int:
     template_dir.mkdir(parents=True, exist_ok=True)
 
     for summary in summaries:
-        (template_dir / summary.file_name).write_text(summary.svg_text, encoding="utf-8")
+        svg_path = template_dir / summary.file_name
+        svg_path.write_text(summary.svg_text, encoding="utf-8")
+        summary.sha256 = hashlib.sha256(svg_path.read_bytes()).hexdigest()
     _copy_referenced_assets(summaries, template_dir)
     llm_xml_dir = template_dir / "llm_xml"
     write_llm_xml_dir(template_dir, llm_xml_dir)
+    style_lock = _infer_template_style_lock(llm_xml_dir)
 
     contract = build_contract(
         args.template_id,
         summaries,
         canvas_format=args.canvas_format,
+        style_lock=style_lock,
     )
     (template_dir / "template_contract.json").write_text(
         json.dumps(contract, ensure_ascii=False, indent=2) + "\n",
@@ -691,6 +1244,7 @@ def cmd_create(args: argparse.Namespace) -> int:
         template_id=args.template_id,
         canvas_format=args.canvas_format,
         pages=summaries,
+        style_lock=style_lock,
     )
     (template_dir / "design_spec.md").write_text(design_spec, encoding="utf-8")
 

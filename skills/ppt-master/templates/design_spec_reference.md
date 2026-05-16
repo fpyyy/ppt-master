@@ -41,6 +41,9 @@
 ### Color Scheme
 
 > Strategist: determine values from project content, industry, brand colors.
+> Template mode: if a locked SVG template is in use and its `design_spec.md` /
+> `template_contract.json` contains `style_lock.colors`, copy those values
+> verbatim instead of proposing a new palette.
 
 | Role | HEX | Purpose |
 | ---- | --- | ------- |
@@ -83,6 +86,10 @@
 > **Per-role families are expected, not optional.** Title / Body / Emphasis / Code may each use a different family (e.g., display serif title + geometric sans body). One family throughout is not required. See [strategist.md §g — Font Combinations](../references/strategist.md) for starting directions; you may propose a combination not listed.
 >
 > **⚠️ PPT-safe stack discipline (HARD rule).** PPTX stores a single `typeface` per run — no runtime fallback. Every stack MUST end with a cross-platform pre-installed font: `"Microsoft YaHei", sans-serif` / `SimSun, serif` / `Arial, sans-serif` / `"Times New Roman", serif` / `Consolas, "Courier New", monospace`. Stacks led by a non-preinstalled font (Inter / Google Fonts / brand typefaces) are allowed only when this spec notes the font-install or embedding requirement.
+>
+> Template mode: if a locked SVG template is in use and its `design_spec.md` /
+> `template_contract.json` contains `style_lock.typography`, copy those font
+> stacks and size anchors verbatim instead of proposing new combinations.
 
 **Typography direction**: [Fill in one phrase, e.g., "modern CJK sans" / "academic serif" / "brand-specific: McKinsey Bower (requires font install)"]
 
@@ -253,6 +260,14 @@ Runners-up must be genuine second-best matches for a page in this deck. If fewer
 ---
 
 ## IX. Content Outline
+
+> Template mode: for TOC / agenda pages, record the actual section count and
+> the selected layout. If the locked template exposes a different number of
+> indexed TOC placeholders than the outline needs, write
+> `Layout: Free structural redesign — TOC slot mismatch: template N, outline M`
+> and choose a safe structure such as `2x2 grid` for 4 items or `two-column
+> agenda` for 6+ items. Do not pad, duplicate, or remove real sections only to
+> fit a template.
 
 ### Part 1: [Chapter Name]
 

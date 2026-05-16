@@ -992,6 +992,40 @@ class SVGQualityChecker:
             ))
             return
 
+        if frontmatter.get("style_lock") is not True:
+            self._template_issues.append((
+                'error',
+                'style_lock_missing',
+                "design_spec.md frontmatter must declare style_lock: true",
+            ))
+
+        style_lock = contract.get("style_lock")
+        if not isinstance(style_lock, dict):
+            self._template_issues.append((
+                'error',
+                'style_lock_missing',
+                f"{contract_name} must include style_lock extracted from llm_xml",
+            ))
+        else:
+            colors = style_lock.get("colors")
+            typography = style_lock.get("typography")
+            required_colors = {"bg", "primary", "accent", "text"}
+            required_typography = {"font_family", "body", "title"}
+            if not isinstance(colors, dict) or not required_colors.issubset(colors):
+                self._template_issues.append((
+                    'error',
+                    'style_lock_colors_missing',
+                    f"{contract_name} style_lock.colors must include "
+                    f"{', '.join(sorted(required_colors))}",
+                ))
+            if not isinstance(typography, dict) or not required_typography.issubset(typography):
+                self._template_issues.append((
+                    'error',
+                    'style_lock_typography_missing',
+                    f"{contract_name} style_lock.typography must include "
+                    f"{', '.join(sorted(required_typography))}",
+                ))
+
         on_disk = {p.stem: p for p in svg_files}
         required = set(self.REQUIRED_TEMPLATE_STEMS)
         missing_stems = sorted(required - set(on_disk))

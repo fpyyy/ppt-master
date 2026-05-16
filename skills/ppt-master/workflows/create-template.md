@@ -15,7 +15,7 @@ supported.
 ## Process Overview
 
 ```
-SVG Directory Intake -> Script Inspection + LLM XML -> Template ID Confirmation -> svg_template.py create -> Content ViewBox Visualization -> Validate -> Register -> Output
+SVG Directory Intake -> Script Inspection + LLM XML -> Template Style Lock -> Template ID Confirmation -> svg_template.py create -> Content ViewBox Visualization -> Validate -> Register -> Output
 ```
 
 **Hard rule**: Agents MUST NOT manually read template SVG source with
@@ -82,6 +82,31 @@ visual density, placeholder placement, and text budgets. Do not read raw SVG.
 
 ---
 
+## Step 1.6: Template Style Lock Extraction
+
+Use `llm_xml/*.xml` to determine the template's base visual system before
+creating the locked template package.
+
+| Lock Area | Source in `llm_xml` | Output |
+|---|---|---|
+| Base colors | `fill`, `stroke`, `stop-color`, `flood-color`, `color`, geometry scale, text elements | `bg`, `secondary_bg`, `primary`, `accent`, `secondary_accent`, `text`, `text_secondary`, `border` |
+| Typography | `font-family`, `font-size`, placeholder text roles such as `{{PPTTitle}}` / `{{PageTitle}}` | `font_family`, role families, `body`, `title`, `subtitle`, `annotation`, optional `cover_title` |
+
+**Hard rule**: The base colors and typography come from the prepared SVGs via
+`llm_xml`; do not ask the user to pick a primary color or font during template
+creation, and do not invent a new palette to make the template feel more
+"complete."
+
+**Script behavior**: `svg_template.py create` automatically re-generates
+`llm_xml/`, extracts the style lock, and writes it into both `design_spec.md`
+and `template_contract.json`.
+
+**Validation**: If the extracted colors or fonts look wrong, correct the source
+SVGs and re-run the workflow. Do not patch downstream PPT generation to work
+around a bad template lock.
+
+---
+
 ## Step 2: Template ID Confirmation
 
 Compose a minimal confirmation from the user request plus `inspect` output.
@@ -94,8 +119,9 @@ Compose a minimal confirmation from the user request plus `inspect` output.
 | Runtime model | Fixed: `locked_svg` |
 
 **Hard rule**: Do not ask for or invent display name, category, summary,
-keywords, primary color, or use-case prose. The template ID is the only human
-name.
+keywords, use-case prose, or decorative metadata. The template ID is the only
+human name. Base colors and typography are determined by Step 1.6 from
+`llm_xml`.
 
 **Forbidden**:
 
@@ -135,10 +161,10 @@ Outputs:
 | File | Purpose |
 |---|---|
 | `skills/ppt-master/templates/layouts/<template_id>/*.svg` | Locked SVGs copied from source; missing root `viewBox` is inferred from `width`/`height` |
-| `llm_xml/*.xml` | Creation-time sanitized XML copies for theme / color inspection |
+| `llm_xml/*.xml` | Creation-time sanitized XML copies for theme / color / font inspection |
 | `debug/content_viewbox.svg` | Visual overlay for `content.svg` root `viewBox` and declared workspaces |
-| `design_spec.md` | Minimal runtime contract pointer and page roster |
-| `template_contract.json` | Machine-readable runtime contract |
+| `design_spec.md` | Runtime contract pointer, page roster, and template style lock |
+| `template_contract.json` | Machine-readable runtime contract, including `style_lock` |
 
 `template_contract.json` contains:
 
@@ -148,6 +174,21 @@ Outputs:
   "engine": "locked_svg",
   "template_id": "<template_id>",
   "canvas_format": "ppt169",
+  "style_lock": {
+    "source": "llm_xml",
+    "colors": {
+      "bg": "#FFFFFF",
+      "primary": "#005C30",
+      "accent": "#009944",
+      "text": "#111111"
+    },
+    "typography": {
+      "font_family": "Microsoft YaHei, sans-serif",
+      "title_family": "Microsoft YaHei, sans-serif",
+      "body": 22,
+      "title": 34
+    }
+  },
   "pages": [
     {
       "stem": "content",

@@ -1,12 +1,9 @@
 <ns0:svg xmlns:ns0="http://www.w3.org/2000/svg" width="1280" height="720" overflow="hidden" viewBox="0 0 1280 720" data-llm-sanitized="true" data-llm-omitted-paths="36" data-llm-omitted-base64-images="0">
   <ns0:defs>
-    <ns0:clipPath id="clip0">
-      <ns0:rect x="0" y="0" width="1280" height="720" />
-    </ns0:clipPath>
-  </ns0:defs>
-  <ns0:g>
+        </ns0:defs>
+  <ns0:g id="page-root">
     <ns0:rect x="0" y="0" width="1280" height="720" fill="#FFFFFF" />
-    <ns0:text fill="#A2A2A2" font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="400" font-size="21.3333" transform="translate(1202 693)">4</ns0:text>
+    <ns0:text fill="#A2A2A2" font-family="Times New Roman,Microsoft YaHei,serif" font-weight="400" font-size="21.3333" transform="translate(1202 693)">4</ns0:text>
     <ns0:path d="VECTOR_PATH_OMITTED(chars=29, commands='M Z')" fill="#057748" fill-rule="evenodd" />
     <ns0:path d="VECTOR_PATH_OMITTED(chars=35, commands='M Z')" stroke="#A13F0B" stroke-width="4" stroke-miterlimit="8" fill="#A13F0B" fill-rule="evenodd" />
     <ns0:path d="VECTOR_PATH_OMITTED(chars=31, commands='M')" stroke="#BFBFBF" stroke-width="0.666667" stroke-miterlimit="8" fill="none" fill-rule="evenodd" />
@@ -44,6 +41,7 @@
     <ns0:path d="VECTOR_PATH_OMITTED(chars=2365, commands='M C L Z')" fill="#005C30" fill-rule="evenodd" />
     <ns0:path d="VECTOR_PATH_OMITTED(chars=1978, commands='M Z C L')" fill="#FFFFFF" fill-rule="evenodd" />
     <ns0:path d="VECTOR_PATH_OMITTED(chars=43668, commands='M C L Z')" fill="#FFFFFF" fill-rule="evenodd" />
-    <ns0:text font-family="Microsoft YaHei,Microsoft YaHei_MSFontService,sans-serif" font-weight="700" font-size="37.3333" transform="translate(70.2667 63)">{{PageTitle}}</ns0:text>
+    <ns0:text font-family="Times New Roman,Microsoft YaHei,serif" font-weight="700" font-size="37.3333" transform="translate(70.2667 63)">{{PageTitle}}</ns0:text>
   </ns0:g>
+  <ns0:rect id="workspace-main-marker" data-ppt-workspace="main" data-ppt-workspace-bbox="96 104 1088 542" x="96" y="104" width="1088" height="542" fill="none" stroke="none" />
 </ns0:svg>
