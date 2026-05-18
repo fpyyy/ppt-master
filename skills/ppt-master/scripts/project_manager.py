@@ -93,15 +93,6 @@ def derive_url_basename(url: str) -> str:
     return "_".join(part for part in parts if part) or "web_source"
 
 
-def is_within_path(path: Path, parent: Path) -> bool:
-    """Return whether `path` resolves inside `parent`."""
-    try:
-        path.resolve().relative_to(parent.resolve())
-        return True
-    except ValueError:
-        return False
-
-
 class ProjectManager:
     """Create, inspect, validate, and populate project folders."""
 
@@ -454,13 +445,6 @@ class ProjectManager:
                 effective_move = False
             elif move:
                 effective_move = True
-            elif is_within_path(source_path, REPO_ROOT):
-                effective_move = True
-                print(
-                    f"note: {source_path} is inside the ppt-master repo; moved "
-                    f"(not copied) to avoid accidental commit. Pass --copy to override.",
-                    file=sys.stderr,
-                )
             else:
                 effective_move = False
             suffix = source_path.suffix.lower()
