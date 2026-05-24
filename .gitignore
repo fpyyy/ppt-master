@@ -172,3 +172,5 @@ projects/*
 
 # python env
 .venv/
+
+reference/
