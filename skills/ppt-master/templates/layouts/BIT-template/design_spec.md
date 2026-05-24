@@ -116,7 +116,10 @@ free structural page using this template's colors and typography.
 | `title` | `48px` |
 | `cover_title` | `59px` |
 | `subtitle` | `35px` |
-| `annotation` | `16px` |
+| `annotation` | `24px` |
+| `minimum_text` | `24px` |
+
+Runtime minimum: generated workspace body text, annotations, captions, and chart labels MUST NOT be smaller than `24px` in SVG (`18pt` in PowerPoint).
 
 ### Extraction Evidence
 

@@ -22,7 +22,7 @@ Typical end-to-end workflow:
 .\.venv\Scripts\python.exe scripts/source_to_md/ppt_to_md.py <deck.pptx>
 .\.venv\Scripts\python.exe scripts/source_to_md/excel_to_md.py <workbook.xlsx>
 .\.venv\Scripts\python.exe scripts/project_manager.py init <project_name> --format ppt169
-.\.venv\Scripts\python.exe scripts/project_manager.py import-sources <project_path> <source_files...> --move
+.\.venv\Scripts\python.exe scripts/project_manager.py import-sources <project_path> <source_files...> --copy
 .\.venv\Scripts\python.exe scripts/total_md_split.py <project_path>
 .\.venv\Scripts\python.exe scripts/finalize_svg.py <project_path>
 .\.venv\Scripts\python.exe scripts/animation_config.py scaffold <project_path>  # optional object-level animation overrides
@@ -64,7 +64,7 @@ Project setup:
 
 ```bash
 .\.venv\Scripts\python.exe scripts/project_manager.py init <project_name> --format ppt169
-.\.venv\Scripts\python.exe scripts/project_manager.py import-sources <project_path> <source_files...> --move
+.\.venv\Scripts\python.exe scripts/project_manager.py import-sources <project_path> <source_files...> --copy
 .\.venv\Scripts\python.exe scripts/project_manager.py validate <project_path>
 ```
 

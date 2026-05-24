@@ -9,7 +9,7 @@
     <ns0:path d="VECTOR_PATH_OMITTED(chars=19, commands='M')" stroke="#FFFFFF" stroke-width="2" stroke-miterlimit="8" fill="none" fill-rule="evenodd" />
     <ns0:path d="VECTOR_PATH_OMITTED(chars=108183, commands='M C Z L')" fill="#FFFFFF" fill-rule="evenodd" />
     <ns0:path d="VECTOR_PATH_OMITTED(chars=137, commands='M C Z')" fill="#A13F0B" fill-rule="evenodd" />
-    <ns0:text fill="#FFFFFF" font-family="Times New Roman,Microsoft YaHei,serif" font-weight="700" font-size="58.6667" transform="translate(409.202 514)">{{SectionNumber}}</ns0:text>
+    <ns0:text fill="#FFFFFF" font-family="Times New Roman,Microsoft YaHei,serif" font-weight="700" font-size="58.6667" text-anchor="middle" transform="translate(426 514)">{{SectionNumber}}</ns0:text>
     <ns0:text font-family="Times New Roman,Microsoft YaHei,serif" font-weight="700" font-size="48" transform="translate(504.827 506)">{{SectionTitle}}</ns0:text>
   </ns0:g>
 </ns0:svg>

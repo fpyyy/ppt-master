@@ -8,7 +8,7 @@ Create, inspect, validate, and import sources into project folders.
 
 ```bash
 .\.venv\Scripts\python.exe scripts/project_manager.py init <project_name> --format ppt169
-.\.venv\Scripts\python.exe scripts/project_manager.py import-sources <project_path> <source_files...> --move
+.\.venv\Scripts\python.exe scripts/project_manager.py import-sources <project_path> <source_files...> --copy
 .\.venv\Scripts\python.exe scripts/project_manager.py validate <project_path>
 .\.venv\Scripts\python.exe scripts/project_manager.py info <project_path>
 ```

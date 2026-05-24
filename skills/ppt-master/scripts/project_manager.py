@@ -3,7 +3,7 @@
 
 Usage:
     python3 scripts/project_manager.py init <project_name> [--format ppt169] [--dir projects]
-    python3 scripts/project_manager.py import-sources <project_path> <source1> [<source2> ...] [--move | --copy]
+    python3 scripts/project_manager.py import-sources <project_path> <source1> [<source2> ...] [--copy]
     python3 scripts/project_manager.py validate <project_path>
     python3 scripts/project_manager.py info <project_path>
 """
@@ -408,6 +408,10 @@ class ProjectManager:
             "notes": [],
             "skipped": [],
         }
+        if move:
+            summary["notes"].append(
+                "--move is deprecated and ignored; source files are copied to preserve originals"
+            )
         explicit_markdown_stems = {
             Path(item).stem
             for item in source_items
@@ -441,12 +445,7 @@ class ProjectManager:
                 summary["skipped"].append(f"{item}: directories are not supported")
                 continue
 
-            if copy:
-                effective_move = False
-            elif move:
-                effective_move = True
-            else:
-                effective_move = False
+            effective_move = False
             suffix = source_path.suffix.lower()
 
             if suffix in {".md", ".markdown"}:

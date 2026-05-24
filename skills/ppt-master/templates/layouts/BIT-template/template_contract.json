@@ -67,7 +67,7 @@
       "file": "toc.svg",
       "role": "toc",
       "viewBox": "0 0 1280 720",
-      "sha256": "cdd4a31bb63477a90235ae454fc33ad9f79a005863924ed78eba30d51f1d5df0",
+      "sha256": "d814dd1b8b81dfd6e3284ec3010a53aa470311a67049461632d25f8179f9c8b2",
       "placeholders": [
         {
           "name": "SectionNumber1",
@@ -230,7 +230,7 @@
       "file": "chapter.svg",
       "role": "chapter",
       "viewBox": "0 0 1280 720",
-      "sha256": "cae3279911651cf46bbbe217d6bfca44d7bbc46ab6692a1fe79a7951c1e8e99b",
+      "sha256": "d749018dd7a942af44cfd56912599421922c38d27c01b1d471a332c3ad08f1c7",
       "placeholders": [
         {
           "name": "SectionNumber",
@@ -349,7 +349,8 @@
       "body": 28,
       "title": 48,
       "subtitle": 35,
-      "annotation": 16,
+      "annotation": 24,
+      "minimum_text": 24,
       "cover_title": 59
     },
     "observed_colors": [

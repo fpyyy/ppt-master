@@ -53,7 +53,7 @@ Convenience summary only — full workflow in [`skills/ppt-master/SKILL.md`](ski
 
 # Project management
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/project_manager.py init <project_name> --format ppt169
-.\.venv\Scripts\python.exe skills/ppt-master/scripts/project_manager.py import-sources <project_path> <source_files_or_URLs...> --move
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/project_manager.py import-sources <project_path> <source_files_or_URLs...> --copy
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/project_manager.py validate <project_path>
 
 # Locked SVG template creation

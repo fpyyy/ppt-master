@@ -129,10 +129,10 @@ Import source content (choose based on the situation):
 
 | Situation | Action |
 |-----------|--------|
-| Has source files (PDF/MD/etc.) | `.\.venv\Scripts\python.exe ${SKILL_DIR}/scripts/project_manager.py import-sources <project_path> <source_files...> --move` |
+| Has source files (PDF/MD/etc.) | `.\.venv\Scripts\python.exe ${SKILL_DIR}/scripts/project_manager.py import-sources <project_path> <source_files...> --copy` |
 | User provided text directly in conversation | No import needed — content is already in conversation context; subsequent steps can reference it directly |
 
-> ⚠️ **MUST use `--move`** (not copy): all source files — Step 1's generated Markdown, original PDFs / MDs / images — go into `sources/` via `import-sources --move`. After execution they no longer exist at the original location. Intermediate artifacts (e.g., `_files/`) are handled automatically.
+> ⚠️ **MUST copy, never move**: all source files — Step 1's generated Markdown, original PDFs / MDs / images — go into `sources/` via `import-sources --copy` or the default copy behavior. The originals MUST remain at their original location. Intermediate artifacts (e.g., `_files/`) are copied automatically.
 
 **✅ Checkpoint — Confirm project structure created successfully, `sources/` contains all source files, converted materials are ready. Proceed to Step 3.**
 
