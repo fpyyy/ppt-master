@@ -339,6 +339,16 @@ Handle images by their status in the Design Spec's Image Resource List. Status e
 
 **`no-crop` images**: when a `spec_lock.md images` entry ends with ` | no-crop`, size the container to the image's native ratio (from `analyze_images.py` or file dims) and use `preserveAspectRatio="xMidYMid meet"`. Untagged entries are croppable — default to `slice`.
 
+**Hard rule - no generated-base text overlays**: Do not build hybrid slides where Image_Generator provides a blank / unlabeled framework image and Executor fills it with SVG or PPT text. If an image row is `Generated`, treat the image pixels as final visual content.
+
+| Overlay type | Action |
+|---|---|
+| Slide title, page header, caption, source attribution, section chrome outside the image | Allowed |
+| Gradient / opacity overlay for legibility on hero or atmosphere backgrounds | Allowed |
+| Node labels, step names, framework headings, legend entries, arrow labels, callouts that belong inside a generated diagram | Forbidden |
+
+**Generated diagram handling**: For `Type: Diagram` images, place the image as a complete labeled asset using normal image rules. If the slide requires editable diagram text, regenerate the page as native SVG shapes instead of using the generated image; do not combine a generated diagram base with manual text fill.
+
 ### 6.1 Inline Attribution for Sourced Images (web path)
 
 Whenever the slide uses an image with `Status: Sourced`, look up the corresponding entry in `project/images/image_sources.json` and act on `license_tier`:

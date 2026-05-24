@@ -97,6 +97,8 @@ Image 3 prompt: [Deck Style Anchor], growth chart with upward trending line...
 
 **Exception**: Background images may replace style keywords with `background`, `backdrop`, `negative space for text overlay` while keeping the same color directive. This ensures color consistency without compromising background functionality.
 
+**Hard rule - no text-fill handoff**: Only Background images may reserve negative space for later slide text. Diagram, Illustration, Photography, and Decorative Pattern rows MUST NOT ask for blank boxes, empty nodes, unlabeled frameworks, or areas intended for Executor to fill with semantic labels.
+
 **Rule**: Define the Deck Style Anchor once in the prompt document header (Section 4), then reference it in every individual prompt.
 
 ---
@@ -160,8 +162,17 @@ Image 3 prompt: [Deck Style Anchor], growth chart with upward trending line...
 | Connection representation | `arrows indicating flow`, `connecting lines` |
 | Academic / professional feel | `suitable for academic publication`, `professional diagram` |
 | Light background | `white background` or `light gray background` |
+| Final visible text | Include all node labels, legends, callouts, step names, and relationship words in the prompt |
 
-**Template**: `{diagram type} diagram showing {content description}, {component description} connected by {connection method}, {style} style with {color scheme}, white background, clear labels, professional technical diagram`
+**Hard rule - raster-final diagrams**: A generated diagram is the final artwork. The prompt MUST request a complete labeled diagram, not a background. Do not create or accept a prompt whose plan depends on SVG/PPT text being added later.
+
+| Prompt must include | Prompt must not include |
+|---|---|
+| Final visible label text from the source or design spec | `blank`, `unlabeled`, `empty boxes`, `placeholder text`, `space for labels` |
+| Connection words / arrow meanings when they appear on the slide | `without text`, `text-free`, `labels added later` |
+| Legible typography and spelling requirements | `background framework`, `diagram base`, `template to fill` |
+
+**Template**: `{diagram type} diagram showing {content description}, with final readable labels: {label list}, {component description} connected by {connection method}, {style} style with {color scheme}, white background, clear legible typography, professional technical diagram`
 
 ### 2.5 Decorative Pattern
 
@@ -191,6 +202,8 @@ For each image with `Acquire Via: ai` and `Status: Pending`:
 5. **Generate optimized prompt** → Use the §1.1 standard output format
 6. **Save prompt document** → **Must** write to `project/images/image_prompts.md`
 
+**Per-row Diagram validation**: Before invoking Codex `imagegen`, verify every `Type: Diagram` prompt names the final visible labels. If the row only describes a blank structure, rewrite the prompt to include labels from `design_spec.md`; if labels are unavailable, mark the row `Needs-Manual` and do not generate a blank base image.
+
 > `image_prompts.md` is human-readable; each `### Image N:` block is paste-ready for ChatGPT / Gemini / Midjourney. See §3.2 Offline Manual Mode for the handoff.
 
 ### 3.2 Image Generation Phase
@@ -213,6 +226,7 @@ AI-generated rows use exactly one automated implementation: the Codex `imagegen`
 - Move or copy the selected output into `project/images/<filename-from-resource-list>`
 - Match the requested aspect ratio and dimensions as closely as the Codex tool allows
 - Update the row status to `Generated` only after the expected file exists
+- For `Type: Diagram`, accept only the single-image contract: complete labeled image in `project/images/<filename>`; never hand off an unlabeled generated base for Executor text overlay
 
 **Generation pacing (mandatory)**:
 - Generate one image at a time; wait for file confirmation before the next

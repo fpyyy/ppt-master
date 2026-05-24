@@ -28,6 +28,14 @@ Defined in `design_spec.md §VIII`. Status enum: see [`svg-image-embedding.md`](
 
 **Required per non-skipped row**: `Acquire Via`, `Status`, `Reference`.
 
+**Hard rule - generated diagrams are raster-final**: If a row has `Type: Diagram` and `Acquire Via: ai`, the requested output is a complete final image. All visible node labels, step names, legend text, callouts, and relationship words MUST be included in the `Reference` / prompt and baked into the generated pixels. The Executor MUST NOT add those semantic labels later as SVG or PPT text.
+
+| Need | Route |
+|---|---|
+| Editable flowchart / framework / architecture labels | Do not create an image resource row; use chart template adaptation or custom native SVG layout |
+| Raster diagram acceptable | Use `Acquire Via: ai`, include every visible label in the prompt, then treat the generated file as a normal image |
+| Blank framework background to fill later | Forbidden |
+
 ---
 
 ## 3. Path Dispatch

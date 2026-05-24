@@ -300,7 +300,7 @@ Selections may be mixed at the row level — e.g. a deck can use C for hero illu
 |---|---|
 | `web` | "Diverse team collaborating at a modern office desk, professional editorial photography, natural light, laptop visible" |
 | `ai` | "Abstract flowing digital waves in deep navy (#1E3A5F) to midnight blue gradient, subtle particle effects, clean center area for text overlay" |
-| `ai` | "Clean flowchart showing 4 sequential steps connected by arrows, flat design, light gray background, blue accent nodes" |
+| `ai` | "Clean 4-step flowchart with final readable labels: Discover, Design, Build, Launch; arrows connecting each step; flat design; light gray background; blue accent nodes" |
 
 **Image type descriptions**:
 
@@ -309,8 +309,18 @@ Selections may be mixed at the row level — e.g. a deck can use C for hero illu
 | Background | Full-page backgrounds for covers/chapter pages; reserve text area |
 | Photography | Real scenes, people, products, architecture |
 | Illustration | Flat design, vector style, concept diagrams |
-| Diagram | Flowcharts, architecture diagrams, concept relationship maps |
+| Diagram | Raster-final flowcharts, architecture diagrams, concept relationship maps where editability is intentionally sacrificed |
 | Decorative pattern | Partial decoration, textures, borders, divider elements |
+
+**Hard rule - no hybrid diagram construction**: For any framework / flowchart / architecture / relationship map, choose exactly one construction surface.
+
+| Desired outcome | Strategist action |
+|---|---|
+| Editable labels, arrows, nodes, legends, or later PPT editing | Plan it in §VII as a chart/template/custom native SVG visualization; do not add an `Acquire Via: ai` image row |
+| AI-generated visual accepted as non-editable | Add a `Type: Diagram`, `Acquire Via: ai` row; the `Reference` MUST list every visible label and relationship word to be baked into the image |
+| Blank or unlabeled image background with Executor text to fill later | Forbidden |
+
+**Per-row diagram reference**: When `Type: Diagram` and `Acquire Via: ai`, include final label text in the `Reference` field. Do not write "empty nodes", "blank boxes", "unlabeled framework", "space for labels", or any equivalent instruction.
 
 **Image narrative intent** (decide *before* the ratio table — determines whether the image lives in a container at all):
 
@@ -375,7 +385,7 @@ When content outline pages involve **data visualization or infographic-style str
 >
 > **Fallback when no template fits**:
 > 1. Re-read the full summary list with the page's intent re-stated in plain language — "non-obvious" matches often surface on the second pass (e.g. "causal chain" → `process_flow` or `sankey_chart`).
-> 2. If still no fit: data-driven content → table layout; conceptual/illustrative → "AI-generated image" (Image_Generator handles); structural → "custom layout".
+> 2. If still no fit: data-driven content → table layout; conceptual/illustrative → "AI-generated image" (Image_Generator handles as raster-final when it contains labels); structural / editable → "custom layout".
 > 3. Mark the page `no-template-match` in section VII with the fallback chosen and why. Do NOT silently substitute a close-but-wrong chart.
 
 ### Speaker Notes Requirements (Default — no discussion needed)

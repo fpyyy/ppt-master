@@ -254,8 +254,10 @@ Runners-up must be genuine second-best matches for a page in this deck. If fewer
 - **Background** — full-page (covers / chapters); reserve text area
 - **Photography** — real scenes, people, products, architecture
 - **Illustration** — flat / vector / cartoon / concept diagrams
-- **Diagram** — flowcharts, architecture diagrams, concept maps
+- **Diagram** — raster-final flowcharts, architecture diagrams, concept maps where editability is intentionally sacrificed
 - **Decorative** — partial decorations, textures, borders, dividers
+
+**Generated Diagram Rule**: If a `Diagram` row uses AI generation, the generation description must include every visible label, legend, node name, arrow label, and callout that should appear in the final image. Do not plan a blank / unlabeled framework image for Executor to fill with SVG or PPT text. If editable diagram text is required, omit the image row and plan a native SVG visualization in §VII / §IX instead.
 
 ---
 
