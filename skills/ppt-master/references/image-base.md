@@ -57,9 +57,11 @@ For each row with `Status: Pending`:
 
 Before processing any row:
 
-1. `read_file <project_path>/design_spec.md` — extract color scheme, canvas format, target audience
+1. `read_file <project_path>/design_spec.md` — extract canvas format, target audience, image purpose, and any user-explicit image color request
 2. Group resource list rows by `Acquire Via`
 3. Confirm `project/images/` exists
+
+**Hard rule — AI color isolation**: For `Acquire Via: ai`, do not pass template colors, design-spec theme colors, brand colors, or HEX values into Image_Generator unless the user explicitly requested that exact color for the generated image. See [`image-generator.md`](./image-generator.md) §1.4.
 
 ---
 
@@ -113,7 +115,7 @@ The `Reference` field is **intent**, not a query. Strategist writes free-form in
 | ✅ Intent | ❌ Pre-processed |
 |---|---|
 | `"Diverse engineering team in modern office, natural light"` | `"team office light"` |
-| `"Abstract digital waves, deep navy gradient #0A2540"` | `"use openverse, search 'waves'"` |
+| `"Abstract signal-flow schematic for biometric sensing, clean center area for title overlay"` | `"use openverse, search 'waves'"` |
 
 ---
 

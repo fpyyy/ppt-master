@@ -25,7 +25,7 @@ Every image must be emitted into `image_prompts.md` in the following block forma
 | Original description | {Reference field from the resource list} |
 
 **Prompt**:
-{subject description}, {style directive}, {color directive}, {composition directive}, {quality directive}
+{subject description}, {global scientific schematic style anchor}, {neutral paper palette directive}, {composition directive}, {avoid directive}
 
 **Alt Text**:
 > {Description for accessibility and image captions}
@@ -36,36 +36,43 @@ Every image must be emitted into `image_prompts.md` in the following block forma
 | Component | Description | Example |
 |-----------|-------------|---------|
 | Subject description | Core content | `Abstract geometric shapes`, `Team collaboration scene` |
-| Style directive | Visual style | `flat design`, `3D isometric`, `watercolor style` |
-| Color directive | Color scheme | `color palette: navy blue (#1E3A5F), gold (#D4AF37)` |
+| Style directive | Global AI-image visual style | `paper-style scientific schematic illustration, clean vector-style, flat, non-photorealistic` |
+| Color directive | Neutral paper-figure palette, not template colors | `white or light neutral background, muted scientific accent colors only when semantically useful` |
 | Composition directive | Layout ratio | `16:9 aspect ratio`, `centered composition` |
-| Quality directive | Resolution quality | `high quality`, `4K resolution`, `sharp details` |
+| Avoid directive | Global negative style constraints | `avoid photorealistic skin texture, realistic portrait details, 3D rendering, cinematic lighting, commercial poster styling` |
 
-### 1.3 Style Keywords Quick Reference
+### 1.3 Global AI Visual Style
 
-| Design Style | Recommended Image Style | Core Keywords |
-|-------------|------------------------|---------------|
-| General Versatile | Modern illustration, flat design | `modern`, `flat design`, `gradient`, `vibrant colors` |
-| General Consulting | Clean professional, corporate | `professional`, `clean`, `corporate`, `minimalist` |
-| Top Consulting | Premium minimal, abstract geometric | `premium`, `sophisticated`, `geometric`, `abstract`, `elegant` |
-| Technology / SaaS | Futuristic, digital | `futuristic`, `digital`, `tech grid`, `circuit pattern`, `neon accents`, `dark background` |
-| Education / Training | Friendly, instructional | `friendly`, `instructional`, `whiteboard style`, `pastel colors`, `simple shapes` |
-| Marketing / Branding | Bold, energetic | `bold`, `energetic`, `dynamic composition`, `vivid colors`, `action-oriented` |
-| Healthcare / Medical | Clean, reassuring | `clean`, `clinical`, `soft blue-green palette`, `organic curves`, `reassuring` |
-| Finance / Banking | Conservative, trustworthy | `conservative`, `trustworthy`, `blue-gray palette`, `structured`, `precise` |
-| Creative / Design | Artistic, experimental | `artistic`, `experimental`, `asymmetric`, `textured`, `hand-crafted feel` |
+**Hard rule**: Every `Acquire Via: ai` prompt MUST use the same visual style, regardless of template, deck style, industry, or `design_spec.md` theme.
 
-### 1.4 Color Integration Method
+| Prompt part | Required wording / behavior |
+|---|---|
+| Style anchor | `paper-style scientific schematic illustration; clean vector-style; flat; non-photorealistic; academic figure aesthetic; suitable for a computer vision research paper; minimal; thin lines; soft gradients; clear visual hierarchy` |
+| Avoid list | `avoid photorealistic skin texture, realistic portrait details, 3D rendering, cinematic lighting, commercial poster styling` |
+| Human faces | Use simplified silhouettes, outlines, masks, landmarks, or abstract facial regions; do not request realistic portraits or realistic skin. |
+| Scientific tone | Prefer paper-figure diagram language over commercial / poster / marketing language. |
 
-Extract colors from design spec, convert to prompt directives:
+**Forbidden — style inheritance**:
+- Do not derive AI-image style from the selected template.
+- Do not use `design_spec.md` visual theme, brand tone, industry palette, or locked template style to alter the AI-image style anchor.
+- Do not request photorealistic photography, 3D / isometric rendering, cinematic lighting, commercial poster composition, or realistic portrait details for `Acquire Via: ai`.
 
-```
-Primary: #1E3A5F (Deep Navy)  →  "deep navy blue (#1E3A5F)"
-Secondary: #F8F9FA (Light Gray) →  "light gray (#F8F9FA)"
-Accent: #D4AF37 (Gold)        →  "gold accent (#D4AF37)"
+### 1.4 Color Non-Inheritance Method
 
-Full directive: "color palette: deep navy blue (#1E3A5F), light gray (#F8F9FA), gold accent (#D4AF37)"
-```
+**Hard rule**: Do not constrain AI-generated images to the template's theme colors or HEX values.
+
+| Source | AI prompt behavior |
+|---|---|
+| Locked template colors | Do not include them in image prompts. |
+| `design_spec.md` theme palette | Do not include it in image prompts. |
+| User explicitly asks for an image color | Include only that user-requested color. |
+| Scientific semantic color | Allowed when it clarifies meaning, e.g. muted red/blue heatmap, subtle green signal line. |
+
+**Default palette directive**: `neutral paper-figure palette on white or light neutral background, muted scientific accents only where semantically useful`.
+
+**Forbidden — template color leakage**:
+- Do not write prompt fragments like `BIT green #005C30`, `brand blue`, `matching the template palette`, or `color grading matching {color scheme}` unless the user explicitly requested that color for the AI image itself.
+- Do not make multi-image coherence depend on template colors.
 
 ### 1.5 Canvas Format & Aspect Ratio
 
@@ -83,19 +90,19 @@ Full directive: "color palette: deep navy blue (#1E3A5F), light gray (#F8F9FA), 
 
 When generating multiple images for a single deck, visual coherence is critical. Use a **Deck Style Anchor** — a shared prefix of 15-25 words prepended to every image prompt.
 
-**Construction**: Combine style keywords (Section 1.3) + color directive (Section 1.4) + quality directive into one reusable prefix.
+**Construction**: Use the global style anchor (§1.3) + neutral paper palette directive (§1.4) + avoid directive (§1.3).
 
 **Example**:
 ```
 Deck Style Anchor:
-"modern flat design illustration, color palette: deep navy (#1E3A5F), light gray (#F8F9FA), gold accent (#D4AF37), clean minimalist, high quality, 4K"
+"paper-style scientific schematic illustration, clean vector-style, flat, non-photorealistic, academic figure aesthetic, thin lines, soft gradients, clear visual hierarchy"
 
 Image 1 prompt: [Deck Style Anchor], abstract technology network showing connected nodes...
 Image 2 prompt: [Deck Style Anchor], team of professionals collaborating at a desk...
 Image 3 prompt: [Deck Style Anchor], growth chart with upward trending line...
 ```
 
-**Exception**: Background images may replace style keywords with `background`, `backdrop`, `negative space for text overlay` while keeping the same color directive. This ensures color consistency without compromising background functionality.
+**Exception**: Background images may add `background`, `backdrop`, and `negative space for text overlay`, but they still keep the global scientific schematic style and neutral paper palette.
 
 **Hard rule - no text-fill handoff**: Only Background images may reserve negative space for later slide text. Diagram, Illustration, Photography, and Decorative Pattern rows MUST NOT ask for blank boxes, empty nodes, unlabeled frameworks, or areas intended for Executor to fill with semantic labels.
 
@@ -124,20 +131,20 @@ Image 3 prompt: [Deck Style Anchor], growth chart with upward trending line...
 | Avoid strong subjects | Use abstract, gradient, geometric elements |
 | Low-contrast details | `subtle`, `soft`, `muted` |
 
-**Template**: `Abstract {theme element} background, {style} style, {primary color} to {secondary color} gradient, subtle {decorative elements}, clean negative space in center for text overlay, {aspect ratio} aspect ratio, high resolution, professional presentation background`
+**Template**: `Abstract {theme element} background, paper-style scientific schematic illustration, clean vector-style, flat, non-photorealistic, neutral paper-figure palette on white or light neutral background, subtle soft gradients, clean negative space for text overlay, {aspect ratio} aspect ratio, avoid photorealistic skin texture, realistic portrait details, 3D rendering, cinematic lighting, commercial poster styling`
 
 ### 2.2 Photography
 
-**Identifying characteristics**: Real scenes, people, products, architecture — photographic quality
+**Identifying characteristics**: Real scenes, people, products, architecture requested through `Acquire Via: ai`
 
 | Key Point | Description |
 |-----------|-------------|
-| Emphasize realism | `photography`, `photorealistic`, `real photo` |
-| Lighting effects | `natural lighting`, `soft shadows`, `studio lighting` |
-| Background handling | `white background` / `blurred background` / `contextual setting` |
-| People diversity | `diverse`, `professional attire` |
+| Convert to schematic | Use paper-style schematic illustration, not photography |
+| People handling | Use simplified silhouettes, facial landmarks, or abstract figures |
+| Background handling | Use white or light neutral paper background |
+| Avoid realism | Do not request realistic skin, portrait detail, lens effects, or cinematic light |
 
-**Template**: `{subject description}, professional photography, {lighting type} lighting, {background type} background, color grading matching {color scheme}, high quality, sharp focus, 8K resolution`
+**Template**: `{subject description}, paper-style scientific schematic illustration, clean vector-style, flat, non-photorealistic, academic figure aesthetic, white or light neutral paper background, minimal thin lines, soft gradients, clear visual hierarchy, avoid photorealistic skin texture, realistic portrait details, 3D rendering, cinematic lighting, commercial poster styling`
 
 ### 2.3 Illustration
 
@@ -145,12 +152,12 @@ Image 3 prompt: [Deck Style Anchor], growth chart with upward trending line...
 
 | Key Point | Description |
 |-----------|-------------|
-| Specify style | `flat design`, `isometric`, `vector style`, `hand-drawn` |
+| Specify style | `paper-style scientific schematic illustration`, `clean vector-style`, `flat`, `non-photorealistic` |
 | Simplify details | `simplified`, `clean lines`, `minimal details` |
-| Unified palette | Strictly use design spec colors |
-| Background choice | `white background` or `transparent background` |
+| Palette | Neutral paper-figure palette; do not use template colors |
+| Background choice | `white background` or light neutral background |
 
-**Template**: `{subject description}, {illustration style} illustration style, {detail level} with clean lines, color palette: {color list}, {background type} background, professional {purpose} illustration`
+**Template**: `{subject description}, paper-style scientific schematic illustration, clean vector-style, flat, non-photorealistic, academic figure aesthetic, suitable for a computer vision research paper, minimal thin lines, soft gradients, clear visual hierarchy, white or light neutral paper background, avoid photorealistic skin texture, realistic portrait details, 3D rendering, cinematic lighting, commercial poster styling`
 
 ### 2.4 Diagram
 
@@ -160,7 +167,7 @@ Image 3 prompt: [Deck Style Anchor], growth chart with upward trending line...
 |-----------|-------------|
 | Clear structure | `clear structure`, `organized layout`, `logical flow` |
 | Connection representation | `arrows indicating flow`, `connecting lines` |
-| Academic / professional feel | `suitable for academic publication`, `professional diagram` |
+| Academic / professional feel | `academic figure aesthetic`, `suitable for a computer vision research paper` |
 | Light background | `white background` or `light gray background` |
 | Final visible text | Include all node labels, legends, callouts, step names, and relationship words in the prompt |
 
@@ -172,7 +179,7 @@ Image 3 prompt: [Deck Style Anchor], growth chart with upward trending line...
 | Connection words / arrow meanings when they appear on the slide | `without text`, `text-free`, `labels added later` |
 | Legible typography and spelling requirements | `background framework`, `diagram base`, `template to fill` |
 
-**Template**: `{diagram type} diagram showing {content description}, with final readable labels: {label list}, {component description} connected by {connection method}, {style} style with {color scheme}, white background, clear legible typography, professional technical diagram`
+**Template**: `{diagram type} diagram showing {content description}, with final readable labels: {label list}, {component description} connected by {connection method}, paper-style scientific schematic illustration, clean vector-style, flat, non-photorealistic, academic figure aesthetic, suitable for a computer vision research paper, minimal thin lines, soft gradients, clear visual hierarchy, white or light neutral paper background, avoid photorealistic skin texture, realistic portrait details, 3D rendering, cinematic lighting, commercial poster styling`
 
 ### 2.5 Decorative Pattern
 
@@ -185,7 +192,7 @@ Image 3 prompt: [Deck Style Anchor], growth chart with upward trending line...
 | Transparency-friendly | `transparent background` or `isolated element` |
 | Small-size readability | Consider legibility at small dimensions |
 
-**Template**: `{pattern type} decorative pattern, {style} style, {color scheme}, {background type} background, subtle and elegant, suitable for {purpose}`
+**Template**: `{pattern type} decorative pattern, paper-style scientific schematic illustration, clean vector-style, flat, non-photorealistic, neutral paper-figure palette, white or light neutral background, minimal thin lines, soft gradients, clear visual hierarchy, suitable for {purpose}, avoid 3D rendering, cinematic lighting, commercial poster styling`
 
 ---
 
@@ -284,7 +291,7 @@ Use the following structure when creating `project/images/image_prompts.md`:
 
 > Project: {project_name}
 > Generated: {date}
-> Color scheme: Primary {#HEX} | Secondary {#HEX} | Accent {#HEX}
+> AI image color rule: Do not inherit template or design-spec colors; use a neutral paper-figure palette unless the user explicitly requests image colors.
 > Deck Style Anchor: {15–25 word prefix per §1.6}
 
 ---
@@ -306,13 +313,13 @@ Use the following structure when creating `project/images/image_prompts.md`:
 | Purpose | Cover background |
 | Type | Background |
 | Dimensions | 1920x1080 (16:9) |
-| Original description | Modern tech abstract background, deep blue gradient |
+| Original description | Modern tech abstract background |
 
 **Prompt**:
-[Deck Style Anchor], Abstract futuristic background with flowing digital waves...
+[Deck Style Anchor], abstract technical background with flowing signal lines, neutral paper-figure palette on white or light neutral background, no template HEX colors...
 
 **Alt Text**:
-> Modern tech abstract background with deep blue gradient, digital waves, and particle effects
+> Scientific schematic background with flowing signal lines and a neutral paper-figure style
 
 ---
 
@@ -344,11 +351,11 @@ Diagnose the problem category and apply a targeted prompt fix:
 
 | Problem | Diagnosis | Prompt Adjustment |
 |---------|-----------|-------------------|
-| Wrong style | Image looks photorealistic when flat design was intended | Change style directive: replace `photography` with `flat design illustration` |
-| Wrong colors | Colors don't match the design spec palette | Strengthen color directive: add explicit HEX codes, repeat color names |
+| Wrong style | Image looks photorealistic, 3D-rendered, cinematic, or poster-like | Strengthen style directive with the full global style anchor and avoid list from §1.3 |
+| Wrong colors | Image inherited template or brand colors | Remove template / design-spec HEX codes; use neutral paper-figure palette |
 | Wrong composition | Subject is off-center or layout doesn't fit the slide | Adjust composition directive: add `centered composition`, `rule of thirds`, or `wide negative space on left` |
 | Wrong subject | Image depicts something different from what was described | Rewrite subject description with more specificity and concrete details |
-| Low quality | Image is blurry, has artifacts, or lacks detail | Add `highly detailed, sharp focus, professional quality, 8K resolution` |
+| Low quality | Image is blurry, cluttered, or visually ambiguous | Add `minimal thin lines, soft gradients, clear visual hierarchy, academic figure aesthetic` |
 
 **Variant workflow**:
 1. Keep the original prompt as "Variant A" in `image_prompts.md`
@@ -361,6 +368,6 @@ Diagnose the problem category and apply a targeted prompt fix:
 ## 6. Forbidden
 
 - Generating prompts for `web` rows — those go through [`image-searcher.md`](./image-searcher.md)
-- Brand names or HEX codes inside the subject description (degrades output)
+- Brand names or HEX codes in AI prompts unless explicitly requested by the user for the image itself
 - Mixed Deck Style Anchors across images in the same deck (breaks coherence)
 - Placing an image without updating `image_prompts.md` and the resource list status

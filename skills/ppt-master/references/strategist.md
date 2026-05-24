@@ -275,15 +275,17 @@ Selections may be mixed at the row level — e.g. a deck can use C for hero illu
 | ✅ Intent description | ❌ Avoid |
 |---|---|
 | "Diverse engineering team collaborating around a laptop, modern office, natural light" | "team laptop office" |
-| "Abstract flowing digital waves in deep navy (#1E3A5F) to midnight blue gradient, subtle particle effects, clean center area for text overlay" | "use openverse, search 'office'" |
+| "Abstract signal-flow schematic for biometric sensing, clean center area for text overlay, academic figure composition" | "use openverse, search 'office'" |
 | "Sunlit forest path in autumn" | "team photo" |
 
 **Per-row Reference grammar**:
 
 | Acquire Via | Reference pattern |
 |---|---|
-| `ai` | Subject + style + colors (HEX) + composition |
+| `ai` | Subject + scientific schematic intent + composition; do NOT include template colors, brand colors, or HEX values |
 | `web` | Concrete subject/place/object first, then 1-3 quality descriptors |
+
+**Hard rule — AI image style**: All `Acquire Via: ai` rows are later rendered by Image_Generator in the global paper-style scientific schematic style. Strategist MUST NOT encode template-specific colors, brand palettes, commercial poster tone, photorealism, 3D rendering, cinematic lighting, or realistic portrait detail into the Reference field.
 
 **Allowed web quality descriptors**:
 
@@ -299,8 +301,8 @@ Selections may be mixed at the row level — e.g. a deck can use C for hero illu
 | Mode | Good Reference |
 |---|---|
 | `web` | "Diverse team collaborating at a modern office desk, professional editorial photography, natural light, laptop visible" |
-| `ai` | "Abstract flowing digital waves in deep navy (#1E3A5F) to midnight blue gradient, subtle particle effects, clean center area for text overlay" |
-| `ai` | "Clean 4-step flowchart with final readable labels: Discover, Design, Build, Launch; arrows connecting each step; flat design; light gray background; blue accent nodes" |
+| `ai` | "Abstract signal-flow schematic for biometric sensing, clean center area for title overlay, minimal academic figure composition" |
+| `ai` | "4-step research workflow schematic with final readable labels: Discover, Design, Build, Launch; arrows connecting each step; academic paper-style figure composition" |
 
 **Image type descriptions**:
 
