@@ -241,15 +241,14 @@ Baseline choice follows **content density**, not style. Common: `18px` (dense) /
 | **D** | Web-sourced | Real-world reference imagery, editorial support, stock-style needs (no API key required for default providers) |
 | **E** | Placeholders | Images to be added later |
 
-**When recommending C** — surface its three implementation modes so the user knows "no API key" is a supported state:
+**When recommending C** — state that AI-generated images use Codex `imagegen` by default and do not require `IMAGE_BACKEND` or a custom provider configuration:
 
 | Mode | Trigger | Mechanism |
 |---|---|---|
-| **Path A** | `IMAGE_BACKEND` configured (default) | `image_gen.py` runs in Step 5 |
-| **Path B** | User explicitly names host's image tool (Codex / Antigravity) | Host-native generation |
-| **Offline Manual** | Path A unavailable AND Path B not in use | Prompts written to `images/image_prompts.md`; user generates externally and places files in `project/images/` |
+| **Codex imagegen** | Default for `Acquire Via: ai` rows | Codex generates from `images/image_prompts.md`; outputs land in `project/images/` |
+| **Offline Manual** | Codex `imagegen` unavailable or fails after retry, or user requested manual generation up front | Prompts remain in `images/image_prompts.md`; user generates externally and places files in `project/images/` |
 
-Selection is automatic in Step 5 (A → B → Manual). Detailed contract: [`image-generator.md`](./image-generator.md) §3.2.
+Selection is automatic in Step 5 (Codex imagegen → Manual). Detailed contract: [`image-generator.md`](./image-generator.md) §3.2.
 
 Selections may be mixed at the row level — e.g. a deck can use C for hero illustrations while sourcing D for supporting team photos.
 

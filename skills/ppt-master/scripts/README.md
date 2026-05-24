@@ -1,12 +1,12 @@
 # PPT Master Toolset
 
-This directory contains user-facing scripts for conversion, project setup, SVG processing, export, recorded narration, and image generation.
+This directory contains user-facing scripts for conversion, project setup, SVG processing, export, recorded narration, and image utilities.
 
 ## Directory Layout
 
 - Top-level `scripts/`: runnable entry scripts
 - `scripts/source_to_md/`: source-document → Markdown converters (`pdf_to_md.py`, `doc_to_md.py`, `excel_to_md.py`, `ppt_to_md.py`, `web_to_md.py`)
-- `scripts/image_backends/`: internal provider implementations used by `image_gen.py`
+- `scripts/image_backends/`: internal provider implementations used by the legacy `image_gen.py` utility
 - `scripts/tts_backends/`: internal TTS provider implementations used by `notes_to_audio.py`
 - `scripts/svg_finalize/`: internal post-processing helpers used by `finalize_svg.py`
 - `scripts/docs/`: topic-focused script documentation
@@ -44,7 +44,7 @@ Repository update:
 | SVG pipeline | `finalize_svg.py`, `svg_to_pptx.py`, `total_md_split.py`, `svg_quality_checker.py`, `animation_config.py`, `notes_to_audio.py` | [docs/svg-pipeline.md](./docs/svg-pipeline.md) |
 | Locked templates | `svg_template.py`, `svg_llm_xml.py`, `register_template.py` | [docs/project.md](./docs/project.md) |
 | Spec maintenance | `update_spec.py` | [docs/update_spec.md](./docs/update_spec.md) |
-| Image tools | `image_gen.py`, `analyze_images.py`, `gemini_watermark_remover.py` | [docs/image.md](./docs/image.md) |
+| Image tools | `analyze_images.py`, `image_search.py`, `gemini_watermark_remover.py`; legacy `image_gen.py` | [docs/image.md](./docs/image.md) |
 | Repo maintenance | `update_repo.py` | README install/update section |
 | Troubleshooting | validation, preview, export, dependency issues | [docs/troubleshooting.md](./docs/troubleshooting.md) |
 
@@ -86,13 +86,13 @@ Post-processing and export:
 .\.venv\Scripts\python.exe scripts/svg_to_pptx.py <project_path>
 ```
 
-Image generation:
+Image tools:
 
 ```bash
-.\.venv\Scripts\python.exe scripts/image_gen.py "A modern futuristic workspace"
-.\.venv\Scripts\python.exe scripts/image_gen.py --list-backends
 .\.venv\Scripts\python.exe scripts/analyze_images.py <project_path>/images
 ```
+
+AI-generated rows in the PPT Master workflow use the Codex `imagegen` skill, not `image_gen.py`.
 
 Repository update:
 
@@ -105,7 +105,7 @@ Repository update:
 
 - Keep one user-facing entry point per workflow at the top level of `scripts/`
 - Move provider-specific or helper internals into subdirectories
-- Prefer the unified entry points `project_manager.py`, `finalize_svg.py`, and `image_gen.py`
+- Prefer the unified entry points `project_manager.py` and `finalize_svg.py`
 - Prefer `svg_final/` over `svg_output/` when exporting
 
 ## Related Docs

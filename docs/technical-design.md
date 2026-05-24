@@ -171,9 +171,9 @@ The tool refuses to back up: it relies on git for revert. Adding a backup mechan
 
 ## Image Acquisition & Embedding
 
-Two architectural decisions shape this phase:
+Three architectural decisions shape this phase:
 
-**Provider-specific config keys, not a generic `IMAGE_API_KEY`.** Every backend takes its own `OPENAI_API_KEY` / `MINIMAX_API_KEY` / etc. and the active one is selected by an explicit `IMAGE_BACKEND=<name>`. A unified `IMAGE_API_KEY` field looks tidier on first glance but causes silent confusion when a user has multiple providers configured at once and isn't sure which one is active — the kind of fault that surfaces only as "image generation gives weird results" with no clear failure point. Forcing per-provider keys makes "which backend am I using" a config-readable fact, not an inference.
+**Codex imagegen for generated assets.** `Acquire Via: ai` rows use the Codex `imagegen` skill as the only automated generation path. PPT Master no longer routes generated images through a custom `IMAGE_BACKEND` dispatcher; failures fall back to prompt handoff in `images/image_prompts.md`.
 
 **Permissive-by-default license filter, with strict mode for credit-incompatible layouts.** Web image search defaults to allowing CC BY / CC BY-SA images with inline attribution — most slides have visual room for a credit element. `--strict-no-attribution` is the escape hatch for full-bleed hero images and tight composition where there's no place to put a credit without breaking the design. Non-commercial (CC BY-NC*) and no-derivatives (CC BY-ND*) licenses are auto-rejected because the typical PPT Master output is shared in commercial or modified contexts; a permissive default with that floor is the failure mode users actually want.
 

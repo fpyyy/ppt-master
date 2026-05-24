@@ -63,7 +63,7 @@ Convenience summary only — full workflow in [`skills/ppt-master/SKILL.md`](ski
 
 # Image tools and SVG quality check
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/analyze_images.py <project_path>/images
-.\.venv\Scripts\python.exe skills/ppt-master/scripts/image_gen.py "prompt" --aspect_ratio 16:9 --image_size 1K -o <project_path>/images
+# AI-generated rows use the Codex imagegen skill per SKILL.md Step 5; no script command is required.
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_quality_checker.py <project_path>
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/animation_config.py scaffold <project_path>  # optional, only for custom object-level animation
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/animation_config.py validate <project_path>  # optional, before re-export

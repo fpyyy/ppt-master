@@ -197,87 +197,32 @@ For each image with `Acquire Via: ai` and `Status: Pending`:
 
 > Prerequisite: §3.1 must be complete; `images/image_prompts.md` must exist.
 
-#### Path Selection (Deterministic)
+#### Codex Imagegen Path (Default and Only Automated Path)
 
-C (AI-generated) supports three implementation modes sharing one `image_prompts.md` source:
+AI-generated rows use exactly one automated implementation: the Codex `imagegen` skill.
 
 | Trigger | Mode | Mechanism |
 |---|---|---|
-| **Default** — `IMAGE_BACKEND` configured | **Path A**: `image_gen.py` CLI | Agent runs the script; outputs land at `project/images/<filename>` |
-| **Path A unavailable/fails OR User explicitly names host tool** | **Path B**: Host-native tool | Agent invokes the host's image capability; outputs land at `project/images/<filename>` |
-| **Both Path A and Path B fail/unavailable** | **Offline Manual Mode** | Agent writes prompts to `image_prompts.md`; user generates externally and places files at `project/images/<filename>` |
+| `Acquire Via: ai` + `Status: Pending` | Codex `imagegen` | Agent invokes Codex image generation from `image_prompts.md`; final files are placed at `project/images/<filename>` |
+| Codex `imagegen` unavailable or fails after retry | Offline Manual Mode | Agent keeps prompts in `image_prompts.md`; user generates externally and places files at `project/images/<filename>` |
 
-**Selection logic** (automatic, no user prompting):
+**Hard rule**: Do not run `scripts/image_gen.py`, do not check `IMAGE_BACKEND`, and do not present backend choices. Custom image backends are not part of the PPT Master image acquisition path.
 
-1. User explicitly named Path B → use Path B
-2. Otherwise check `IMAGE_BACKEND` (env or `.env`)
-   - configured → use Path A. If Path A fails twice in a row, automatically fall back to Path B.
-   - not configured → skip Path A, automatically fall back to Path B.
-3. If Path B also fails or the host lacks native image generation → fall through to Offline Manual Mode.
-
-**Hard rule**: Step 5 is execution, not re-decision. Never present an interactive choice between paths here — image strategy was locked in Strategist Step 4 h item.
-
-> All three modes share one output contract: file at `project/images/<filename>`. Step 6 SVG references are mode-agnostic.
-
-#### Path A — `image_gen.py` CLI (Default)
-
-```bash
-.\.venv\Scripts\python.exe scripts/image_gen.py "your prompt" \
-  --aspect_ratio 16:9 --image_size 1K \
-  --output project/images --filename cover_bg
-```
-
-**Parameters**:
-
-| Parameter | Short | Description | Default |
-|-----------|-------|-------------|---------|
-| `prompt` | - | Prompt (positional arg) | - |
-| `--aspect_ratio` | - | Image aspect ratio | `1:1` |
-| `--image_size` | - | Size (`1K`/`2K`/`4K`) | `1K` |
-| `--output` | `-o` | Output directory | Current directory |
-| `--filename` | `-f` | Output filename (no extension) | Auto-named |
-| `--backend` | `-b` | Override backend (see `--list-backends` for options) | None |
-| `--model` | `-m` | Model name | Backend default |
-| `--list-backends` | - | Print support tiers and exit | `false` |
-
-**Configuration sources**:
-- Current process environment variables
-- First `.env` found in this order: current working directory, clone repo root, `~/.ppt-master/.env`
-
-Precedence:
-- Current process environment wins
-- `.env` fills missing values only
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `IMAGE_BACKEND` | Required | Backend identifier; run `image_gen.py --list-backends` for the current set |
-| `{PROVIDER}_API_KEY` | Required | Provider-specific API key, e.g. `GEMINI_API_KEY`, `ZHIPU_API_KEY` |
-| `{PROVIDER}_BASE_URL` | Optional | Provider-specific custom endpoint |
-| `{PROVIDER}_MODEL` | Optional | Provider-specific model override |
-
-> Use provider-specific names only (e.g. `GEMINI_API_KEY`, `OPENAI_API_KEY`). See `.env.example` in clone mode or `${SKILL_DIR}/.env.example` in skill-install mode for the full set per backend.
-
-> `IMAGE_API_KEY`, `IMAGE_MODEL`, and `IMAGE_BASE_URL` are intentionally unsupported.
-
-> If `.env` or the current environment contains multiple provider configs, `IMAGE_BACKEND` explicitly selects the active one.
-
-**Support tiers (recommended usage)**: Core / Extended / Experimental. Run `image_gen.py --list-backends` for the current assignments.
+**Execution contract**:
+- Invoke Codex `imagegen` once per pending ai row using that row's prompt block
+- Move or copy the selected output into `project/images/<filename-from-resource-list>`
+- Match the requested aspect ratio and dimensions as closely as the Codex tool allows
+- Update the row status to `Generated` only after the expected file exists
 
 **Generation pacing (mandatory)**:
-- Execute only one generation command at a time; wait for file confirmation before the next
-- Recommend 2-5 second intervals between images to avoid concurrency failures
+- Generate one image at a time; wait for file confirmation before the next
+- Retry a failed Codex generation once with a targeted prompt adjustment
 
-#### Path B — Host-Native Image Tool (On Explicit User Request)
+> All modes share one output contract: file at `project/images/<filename>`. Step 6 SVG references are mode-agnostic.
 
-Triggered only when the user explicitly asks the skill to use the host's built-in image generation (e.g. Codex, Antigravity, or any other host that provides a native image tool).
+#### Offline Manual Mode
 
-- Agent invokes the host's native image tool directly; prompts come from the same `image_prompts.md`
-- Outputs **must** land at `project/images/<filename-from-resource-list>` with dimensions matching the Image Resource List
-- Executor downstream is path-agnostic — no spec change required between Path A and Path B
-
-#### Offline Manual Mode (C's third implementation mode)
-
-**Trigger**: Both Path A and Path B fail or are unavailable.
+**Trigger**: Codex `imagegen` is unavailable or fails after one retry.
 
 **Workflow** (no user prompting; system enters this mode automatically):
 
@@ -290,16 +235,16 @@ Triggered only when the user explicitly asks the skill to use the host's built-i
    - Target placement: `project/images/<filename>` matching the resource list exactly
    - Resume command: re-run Step 7 once all expected files exist
 
-**User-initiated**: When Strategist Step 4 captured "user wants manual generation" up front, Path A is skipped from the start; the workflow above runs as a planned mode.
+**User-initiated**: When Strategist Step 4 captured "user wants manual generation" up front, Codex generation is skipped from the start; the workflow above runs as a planned mode.
 
 > The pipeline tolerates `Needs-Manual` rows end-to-end. The user can leave the project, generate offline at their own pace, then resume Step 7.
 
 #### AI-specific Failure Handling (extends image-base.md §6)
 
-If Path A's backend fails twice in a row:
+If Codex `imagegen` fails:
 
-1. Do not halt. Automatically attempt to fall back to **Path B (Host-Native Tool)**.
-2. If Path B also fails or is unavailable, mark the row `Needs-Manual`.
+1. Do not halt. Retry once with a targeted prompt adjustment.
+2. If the retry fails or Codex `imagegen` is unavailable, mark the row `Needs-Manual`.
 3. Report to user: filename, prompt used, error message.
 4. Fall through to **Offline Manual Mode** above.
 
@@ -312,6 +257,7 @@ If Path A's backend fails twice in a row:
 - Do not claim an image is generated without an actual file at the expected path
 - `Needs-Manual` is set after a failed attempt OR on entering Offline Manual Mode — not as a way to skip work that automation could have done
 - Status transitions are evidence-driven: `Pending` → `Generated` (file exists) or `Pending` → `Needs-Manual` (no automation, or attempt failed once)
+- Custom backend routing is forbidden for PPT Master image acquisition: no `IMAGE_BACKEND`, no provider selection, no `scripts/image_gen.py`
 
 ---
 

@@ -173,7 +173,7 @@ Strategist 阶段产出两份看起来冗余但服务不同对象的产物：
 
 这一阶段有三个架构层面的决策：
 
-**provider 专属 config key，不用通用 `IMAGE_API_KEY`。** 每个 backend 用自己的 `OPENAI_API_KEY` / `MINIMAX_API_KEY` 等等，当前 backend 由显式的 `IMAGE_BACKEND=<name>` 选定。统一的 `IMAGE_API_KEY` 字段第一眼看着干净，但当用户同时配了多个 provider 又不确定哪个在生效时会造成静默混乱——这种 fault 通常只表现为「图像生成结果怪怪的」，找不到清晰失败点。强制 per-provider key 让「我现在用的是哪个 backend」从推理变成可读配置。
+**AI 生图统一走 Codex imagegen。** `Acquire Via: ai` 行只使用 Codex `imagegen` 技能作为自动生成路径。PPT Master 不再通过自定义 `IMAGE_BACKEND` 分发器路由生成图片；失败时降级为 `images/image_prompts.md` 的手动提示词交付。
 
 **默认宽松 license 过滤，配以严格模式应对没法放致谢的版面。** 网络图片搜索默认允许 CC BY / CC BY-SA 加内联致谢——大部分幻灯片都有视觉空间放一个致谢元素。`--strict-no-attribution` 是给全屏 hero image 和紧凑构图的逃生口，那些场景没法放致谢又不打破设计。NC（CC BY-NC*）和 ND（CC BY-ND*）自动拒绝，因为 PPT Master 的典型产物会用于商用或修改场景；宽松默认 + 这个底线正好对应用户实际想要的 fail-mode。
 

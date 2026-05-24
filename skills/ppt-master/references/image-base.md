@@ -36,7 +36,7 @@ For each row with `Status: Pending`:
 
 | Acquire Via | Load reference | Run | Success status |
 |---|---|---|---|
-| `ai` | [`image-generator.md`](./image-generator.md) | `image_gen.py` | `Generated` |
+| `ai` | [`image-generator.md`](./image-generator.md) | Codex `imagegen` skill | `Generated` |
 | `web` | [`image-searcher.md`](./image-searcher.md) | `image_search.py` | `Sourced` |
 | `user` | — | — | (already `Existing`) |
 | `placeholder` | — | — | (already `Placeholder`) |
@@ -77,9 +77,9 @@ After all rows reach terminal status:
 3. On second failure, set `Status: Needs-Manual`, log the reason in conversation, continue
 4. After the phase completes, summarize all `Needs-Manual` rows for the user — list filenames, where prompts live (`images/image_prompts.md` for ai rows), and where to place generated files (`project/images/<filename>`)
 
-`Needs-Manual` is also the entry status for **Offline Manual Mode** (no `IMAGE_BACKEND` configured, no host-native image tool in use). Affected ai rows are marked `Needs-Manual` from the start without a failed attempt — see [`image-generator.md`](./image-generator.md) §3.2.
+`Needs-Manual` is also the entry status for **Offline Manual Mode** when Codex `imagegen` is unavailable or fails after retry. Affected ai rows are marked `Needs-Manual` only after the Codex image path cannot produce the required file — see [`image-generator.md`](./image-generator.md) §3.2.
 
-Path-specific retry policies (provider chain, backend chain) live in the path's own reference.
+Path-specific retry policies live in the path's own reference.
 
 ---
 
@@ -118,7 +118,7 @@ Executor consumes the resource list plus:
 | Image files | `project/images/*.{jpg,png,webp}` | `<image>` references |
 | Manifest | `project/images/image_sources.json` | `license_tier` per Sourced image |
 
-Executor does NOT invoke `image_gen.py` / `image_search.py`.
+Executor does NOT invoke Codex `imagegen` / `image_search.py`.
 
 ---
 
