@@ -67,7 +67,7 @@
       "file": "toc.svg",
       "role": "toc",
       "viewBox": "0 0 1280 720",
-      "sha256": "d814dd1b8b81dfd6e3284ec3010a53aa470311a67049461632d25f8179f9c8b2",
+      "sha256": "8cfc92fdc679091bdb2a06e5414686df84292824846bf283c16b7a96b968ec8b",
       "placeholders": [
         {
           "name": "SectionNumber1",
@@ -134,11 +134,13 @@
           "token": "{{SectionTitle1}}",
           "count": 1,
           "text_fit": {
-            "estimated_width": 942.08,
+            "estimated_width": 507.996,
             "font_size": 32,
-            "max_cjk_chars": 29,
-            "max_latin_chars": 53,
-            "source": "estimated"
+            "max_cjk_chars": 15,
+            "max_latin_chars": 27,
+            "source": "calculated",
+            "enforce": "always",
+            "calculation": "right_boundary(1234.5) - x(726.504) = 507.996; max_cjk=floor(width/(32*1.05)); max_latin=floor(width/(32*0.55*1.05)); font_weight=700"
           }
         },
         {
@@ -146,11 +148,13 @@
           "token": "{{SectionTitle2}}",
           "count": 1,
           "text_fit": {
-            "estimated_width": 942.08,
+            "estimated_width": 507.795,
             "font_size": 32,
-            "max_cjk_chars": 29,
-            "max_latin_chars": 53,
-            "source": "estimated"
+            "max_cjk_chars": 15,
+            "max_latin_chars": 27,
+            "source": "calculated",
+            "enforce": "always",
+            "calculation": "right_boundary(1234.5) - x(726.705) = 507.795; max_cjk=floor(width/(32*1.05)); max_latin=floor(width/(32*0.55*1.05)); font_weight=700"
           }
         },
         {
@@ -158,11 +162,13 @@
           "token": "{{SectionTitle3}}",
           "count": 1,
           "text_fit": {
-            "estimated_width": 942.08,
+            "estimated_width": 508.24,
             "font_size": 32,
-            "max_cjk_chars": 29,
-            "max_latin_chars": 53,
-            "source": "estimated"
+            "max_cjk_chars": 15,
+            "max_latin_chars": 27,
+            "source": "calculated",
+            "enforce": "always",
+            "calculation": "right_boundary(1234.5) - x(726.260) = 508.240; max_cjk=floor(width/(32*1.05)); max_latin=floor(width/(32*0.55*1.05)); font_weight=700"
           }
         },
         {
@@ -170,11 +176,13 @@
           "token": "{{SectionTitle4}}",
           "count": 1,
           "text_fit": {
-            "estimated_width": 942.08,
+            "estimated_width": 507.996,
             "font_size": 32,
-            "max_cjk_chars": 29,
-            "max_latin_chars": 53,
-            "source": "estimated"
+            "max_cjk_chars": 15,
+            "max_latin_chars": 27,
+            "source": "calculated",
+            "enforce": "always",
+            "calculation": "right_boundary(1234.5) - x(726.504) = 507.996; max_cjk=floor(width/(32*1.05)); max_latin=floor(width/(32*0.55*1.05)); font_weight=700"
           }
         },
         {
@@ -182,11 +190,13 @@
           "token": "{{SectionTitle5}}",
           "count": 1,
           "text_fit": {
-            "estimated_width": 942.08,
+            "estimated_width": 507.996,
             "font_size": 32,
-            "max_cjk_chars": 29,
-            "max_latin_chars": 53,
-            "source": "estimated"
+            "max_cjk_chars": 15,
+            "max_latin_chars": 27,
+            "source": "calculated",
+            "enforce": "always",
+            "calculation": "right_boundary(1234.5) - x(726.504) = 507.996; max_cjk=floor(width/(32*1.05)); max_latin=floor(width/(32*0.55*1.05)); font_weight=700"
           }
         }
       ],
@@ -230,7 +240,7 @@
       "file": "chapter.svg",
       "role": "chapter",
       "viewBox": "0 0 1280 720",
-      "sha256": "d749018dd7a942af44cfd56912599421922c38d27c01b1d471a332c3ad08f1c7",
+      "sha256": "d91bfd19bbfb26ffc0eeb534d07af21875e8642cc60ad9ae4104553e40507bd8",
       "placeholders": [
         {
           "name": "SectionNumber",
@@ -249,11 +259,13 @@
           "token": "{{SectionTitle}}",
           "count": 1,
           "text_fit": {
-            "estimated_width": 942.08,
+            "estimated_width": 729.673,
             "font_size": 48,
-            "max_cjk_chars": 19,
-            "max_latin_chars": 35,
-            "source": "estimated"
+            "max_cjk_chars": 14,
+            "max_latin_chars": 26,
+            "source": "calculated",
+            "enforce": "always",
+            "calculation": "right_boundary(1234.5) - x(504.827) = 729.673; max_cjk=floor(width/(48*1.05)); max_latin=floor(width/(48*0.55*1.05)); font_weight=700"
           }
         }
       ],

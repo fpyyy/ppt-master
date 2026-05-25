@@ -9,9 +9,16 @@ These tools cover SVG validation, post-processing, speaker notes, recorded narra
 Run these steps in order from the repository root:
 
 ```bash
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/layout_compile.py <project_path>
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_text_fit.py <project_path> --from-layout
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_layout_checker.py <project_path> --from-layout
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_text_fit.py <project_path> --fix
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_layout_checker.py <project_path>
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_quality_checker.py <project_path>
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/total_md_split.py <project_path>
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/finalize_svg.py <project_path>
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_to_pptx.py <project_path>
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/pptx_postprocess.py <project_path>
 ```
 
 Locked SVG templates add one pre-finalization step per templated page:
@@ -37,6 +44,10 @@ Create and apply locked SVG templates.
 `create` requires `title.svg`, `toc.svg`, `chapter.svg`, `content.svg`, and `ending.svg`; it copies the source SVGs, infers any missing root `viewBox` from `width`/`height`, and writes `llm_xml/`, `design_spec.md`, and `template_contract.json`.
 `visualize-content` writes `debug/content_viewbox.svg` under the template directory so the `content.svg` root `viewBox` and workspace boxes can be inspected without adding a sixth top-level SVG.
 `apply` replaces custom placeholders such as `{{PPTTitle}}`; it injects workspace fragments only for `content.svg`.
+`apply` checks placeholder `text_fit` budgets. Entries marked
+`enforce: always` are hard constraints and are still checked if
+`--no-fit-check` is used for template debugging; this is intended for
+direct-fill TOC / chapter section titles.
 
 ## `finalize_svg.py`
 
@@ -49,6 +60,54 @@ It aggregates:
 - `embed_images.py`
 - `flatten_tspan.py`
 - `svg_rect_to_path.py`
+
+## `svg_text_fit.py`
+
+Detect SVG text overflow before export.
+
+```bash
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_text_fit.py <project_path>
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_text_fit.py <project_path> --fix
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_text_fit.py <svg_file> --fix
+```
+
+Behavior:
+- Measures text bounding boxes against containing rectangles, template workspaces, and the canvas.
+- `--fix` wraps simple single-style text in place, but never splits Latin words into letters.
+- `font-size` is never changed.
+- Remaining overflow is a hard gate; repair by wrapping, expanding containers, shortening wording, or re-layout.
+
+## `svg_layout_checker.py`
+
+Detect structural geometry defects before export.
+
+```bash
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_layout_checker.py <project_path>
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_layout_checker.py <svg_file>
+```
+
+Behavior:
+- Recognizes `data-layout` and common group ids such as `hub-spoke`.
+- Checks hub-spoke center alignment, card size, connector count, and opposite-card symmetry.
+- Checks card/icon grid size alignment and timeline axis alignment.
+- `--from-layout` validates deterministic compile output from `layout_v2_compiled.json` (bbox validity, overlap, and simple alignment constraints).
+- Remaining structural issues are a hard gate; repair by recomputing the geometry model and re-layout.
+
+## `layout_compile.py`
+
+Compile `layout_v2.json` semantic content to deterministic geometry and render SVG pages.
+
+```bash
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/layout_compile.py <project_path>
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/layout_compile.py <project_path> --strict
+```
+
+Behavior:
+- Enforces LayoutSpec v2 required fields (`slide_type`, `content`, `constraints`, `capacity`, `overflow_policy`)
+- Rejects free coordinate keys in semantic input
+- Uses fixed internal canvas (1920x1080) and design tokens
+- Applies deterministic text fitting and emits `layout_v2_compiled.json`
+- Writes SVG files to `svg_output/` from compiled geometry
 
 ## `svg_to_pptx.py`
 
@@ -87,6 +146,23 @@ Dependency:
 ```bash
 .\.venv\Scripts\python.exe -m pip install python-pptx
 ```
+
+## `pptx_postprocess.py`
+
+Apply PPTX-level DrawingML fixes after export.
+
+```bash
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/pptx_postprocess.py <project_path>
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/pptx_postprocess.py <pptx_file>
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/pptx_postprocess.py <project_path> --all
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/pptx_postprocess.py <project_path> --no-backup
+```
+
+Behavior:
+- Project mode processes the newest PPTX in `exports/` by default.
+- File mode processes the specified `.pptx`.
+- Numeric-only text boxes are changed from top alignment to middle alignment with `a:bodyPr anchor="ctr"`.
+- A `.pptx.bak` backup is created unless `--no-backup` is passed.
 
 ## `total_md_split.py`
 

@@ -573,6 +573,12 @@ class ProjectManager:
     def validate_project(self, project_path: str) -> tuple[bool, list[str], list[str]]:
         project_path_obj = Path(project_path)
         is_valid, errors, warnings = validate_project_structure(str(project_path_obj))
+        layout_spec = project_path_obj / "layout_v2.json"
+        layout_compiled = project_path_obj / "layout_v2_compiled.json"
+        if not layout_spec.exists():
+            errors.append("missing layout_v2.json (LayoutSpec v2 is mandatory)")
+        if layout_spec.exists() and not layout_compiled.exists():
+            errors.append("missing layout_v2_compiled.json (run scripts/layout_compile.py)")
 
         if project_path_obj.exists() and project_path_obj.is_dir():
             info = get_project_info_common(str(project_path_obj))

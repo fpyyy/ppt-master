@@ -23,10 +23,17 @@ Typical end-to-end workflow:
 .\.venv\Scripts\python.exe scripts/source_to_md/excel_to_md.py <workbook.xlsx>
 .\.venv\Scripts\python.exe scripts/project_manager.py init <project_name> --format ppt169
 .\.venv\Scripts\python.exe scripts/project_manager.py import-sources <project_path> <source_files...> --copy
+.\.venv\Scripts\python.exe scripts/layout_compile.py <project_path>
+.\.venv\Scripts\python.exe scripts/svg_text_fit.py <project_path> --from-layout
+.\.venv\Scripts\python.exe scripts/svg_layout_checker.py <project_path> --from-layout
+.\.venv\Scripts\python.exe scripts/svg_text_fit.py <project_path> --fix
+.\.venv\Scripts\python.exe scripts/svg_layout_checker.py <project_path>
+.\.venv\Scripts\python.exe scripts/svg_quality_checker.py <project_path>
 .\.venv\Scripts\python.exe scripts/total_md_split.py <project_path>
 .\.venv\Scripts\python.exe scripts/finalize_svg.py <project_path>
 .\.venv\Scripts\python.exe scripts/animation_config.py scaffold <project_path>  # optional object-level animation overrides
 .\.venv\Scripts\python.exe scripts/svg_to_pptx.py <project_path>
+.\.venv\Scripts\python.exe scripts/pptx_postprocess.py <project_path>
 ```
 
 Repository update:
@@ -41,7 +48,8 @@ Repository update:
 |------|-----------------|---------------|
 | Conversion | `source_to_md/pdf_to_md.py`, `source_to_md/doc_to_md.py`, `source_to_md/excel_to_md.py`, `source_to_md/ppt_to_md.py`, `source_to_md/web_to_md.py` | [docs/conversion.md](./docs/conversion.md) |
 | Project management | `project_manager.py`, `batch_validate.py`, `generate_examples_index.py`, `error_helper.py` | [docs/project.md](./docs/project.md) |
-| SVG pipeline | `finalize_svg.py`, `svg_to_pptx.py`, `total_md_split.py`, `svg_quality_checker.py`, `animation_config.py`, `notes_to_audio.py` | [docs/svg-pipeline.md](./docs/svg-pipeline.md) |
+| SVG pipeline | `svg_text_fit.py`, `svg_layout_checker.py`, `finalize_svg.py`, `svg_to_pptx.py`, `pptx_postprocess.py`, `total_md_split.py`, `svg_quality_checker.py`, `animation_config.py`, `notes_to_audio.py` | [docs/svg-pipeline.md](./docs/svg-pipeline.md) |
+| LayoutSpec v2 | `layout_compile.py`, `migrate_layout_v2.py`, `layout_v2_schema.json` | [docs/svg-pipeline.md](./docs/svg-pipeline.md) |
 | Locked templates | `svg_template.py`, `svg_llm_xml.py`, `register_template.py` | [docs/project.md](./docs/project.md) |
 | Spec maintenance | `update_spec.py` | [docs/update_spec.md](./docs/update_spec.md) |
 | Image tools | `analyze_images.py`, `image_search.py`, `gemini_watermark_remover.py`; legacy `image_gen.py` | [docs/image.md](./docs/image.md) |
@@ -81,9 +89,20 @@ Locked SVG templates:
 Post-processing and export:
 
 ```bash
+.\.venv\Scripts\python.exe scripts/svg_text_fit.py <project_path> --fix
+.\.venv\Scripts\python.exe scripts/svg_layout_checker.py <project_path>
+.\.venv\Scripts\python.exe scripts/svg_quality_checker.py <project_path>
 .\.venv\Scripts\python.exe scripts/total_md_split.py <project_path>
 .\.venv\Scripts\python.exe scripts/finalize_svg.py <project_path>
 .\.venv\Scripts\python.exe scripts/svg_to_pptx.py <project_path>
+.\.venv\Scripts\python.exe scripts/pptx_postprocess.py <project_path>
+```
+
+LayoutSpec v2 migration:
+
+```bash
+.\.venv\Scripts\python.exe scripts/migrate_layout_v2.py <project_path>
+.\.venv\Scripts\python.exe scripts/layout_compile.py <project_path> --strict
 ```
 
 Image tools:

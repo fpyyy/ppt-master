@@ -56,6 +56,24 @@ toc_contract:
 - Do not use leading zeros (`01`, `02`), Chinese numerals, Roman numerals, prefixes, suffixes, or punctuation for section numbers.
 - The `content.svg` workspace `main` is fixed at x=`96`, y=`104`, width=`1088`, height=`542`.
 
+### Direct-Fill Section Title Budgets
+
+TOC and chapter section titles are direct placeholder replacements, not wrapped
+text blocks. The limits below are template geometry constraints and must be
+enforced before `svg_template.py apply`.
+
+| Placeholder | Calculation | Hard title budget |
+|---|---|---|
+| `{{SectionTitle1}}`, `{{SectionTitle4}}`, `{{SectionTitle5}}` | right boundary `1234.5` - x `726.504` = `507.996`; `floor(width / (32 * 1.05))` | max `15` CJK/full-width units or `27` Latin chars |
+| `{{SectionTitle2}}` | right boundary `1234.5` - x `726.705` = `507.795`; `floor(width / (32 * 1.05))` | max `15` CJK/full-width units or `27` Latin chars |
+| `{{SectionTitle3}}` | right boundary `1234.5` - x `726.260` = `508.240`; `floor(width / (32 * 1.05))` | max `15` CJK/full-width units or `27` Latin chars |
+| `{{SectionTitle}}` in `chapter.svg` | right boundary `1234.5` - x `504.827` = `729.673`; `floor(width / (48 * 1.05))` | max `14` CJK/full-width units or `26` Latin chars |
+
+For mixed Latin/CJK text, count CJK/full-width chars as `1.0`, Latin chars as
+`0.55`, and spaces as `0.35`; the weighted total must not exceed
+`max_cjk_chars` in `template_contract.json`. Do not lower font size to fit a
+longer section title; shorten the title wording instead.
+
 ### TOC Slot Contract
 
 | Field | Value |

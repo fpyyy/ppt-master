@@ -57,6 +57,38 @@ within `max_cjk_chars` / `max_latin_chars`; if `svg_template.py apply` reports
 a fit error, shorten the wording and rerun. Do not lower font size or add new
 workspace fragments to make long text fit.
 
+**Special rule — direct-fill TOC / chapter titles**: For locked `toc` and
+`chapter` pages, `SectionTitle*` placeholders are direct text replacements. Read
+their `text_fit` budgets before writing the fill JSON and shorten section titles
+up front. Budgets marked `enforce: always` are calculated from template
+geometry and remain active even when estimated checks are disabled for template
+debugging. Do not use wrapping, font-size reduction, or manual SVG edits to
+force a longer section title into these locked placeholders.
+
+**Forbidden — bypassing fit checks**: Do not pass `--no-fit-check` to
+`svg_template.py apply` during normal deck generation. That flag is only for
+template debugging and masks locked-page text overflow.
+
+**Text fit repair loop**: After all SVGs are written, run
+`svg_text_fit.py <project_path> --fix`. If it reports remaining overflow, edit
+the affected SVG page and rerun the command until it passes. Allowed repairs:
+wrap text, expand the container, shorten wording, or re-layout the page.
+Forbidden repair: reducing `font-size`.
+
+**Structural layout metadata**: For generated structural diagrams, add stable
+metadata to the top-level group so geometry can be checked automatically.
+
+| Structure | Required group metadata | Geometry rule |
+|---|---|---|
+| Hub-spoke / radial cue map | `id="hub-spoke"` and `data-layout="hub_spoke"`; include `data-center="x y"` when a model center is planned | Hub circle, spoke ring, card pairs, and connector lines share one declared center |
+| Card or icon grid | `data-layout="card_grid"` or `data-layout="icon_grid"` | Cards in the same grid share one size and aligned rows / columns |
+| Timeline | `data-layout="timeline"` | Nodes align on one horizontal or vertical axis |
+
+**Layout structure gate**: After `svg_text_fit.py` passes and before
+`svg_quality_checker.py`, run `svg_layout_checker.py <project_path>`. If it
+reports a structural issue, re-layout the page from the geometry model. Do not
+hide structural problems with one-off offsets.
+
 ### 1.2 Structural Page Replanning
 
 **Mandatory**: For TOC / agenda pages and other non-content pages with repeated
@@ -106,6 +138,23 @@ Before generating each page, output which contract page is used:
 ## 2. Design Parameter Confirmation (Mandatory Step)
 
 Before the first SVG page, output a confirmation listing: canvas dimensions, body font size, color scheme (primary/secondary/accent HEX), font plan. Prevents spec/execution drift.
+
+### 2.0 LayoutSpec v2 First (Mandatory)
+
+**Hard rule**: Executor MUST generate `layout_v2.json` semantic content first, then run deterministic compile:
+
+```bash
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/layout_compile.py <project_path>
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_text_fit.py <project_path> --from-layout
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_layout_checker.py <project_path> --from-layout
+```
+
+**Forbidden — direct coordinate authoring in prompts/spec**:
+- Free-form absolute geometry fields in content spec: `x/y/w/h/left/right/top/bottom/cx/cy`
+- Letting LLM output final placement coordinates for page objects
+- Skipping `layout_compile.py` and writing final SVG geometry directly as the primary path
+
+**Mandatory**: LLM outputs only `slide_type + content + component props + constraints + capacity + overflow_policy`; geometry is compiled programmatically.
 
 ### 2.1 Per-page spec_lock re-read (Mandatory)
 

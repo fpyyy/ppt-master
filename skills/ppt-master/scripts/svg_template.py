@@ -1431,8 +1431,6 @@ def _check_placeholder_fit(
     *,
     enabled: bool,
 ) -> None:
-    if not enabled:
-        return
     fit_by_name = {}
     for placeholder in page.get("placeholders", []):
         if isinstance(placeholder, dict) and isinstance(placeholder.get("text_fit"), dict):
@@ -1448,13 +1446,17 @@ def _check_placeholder_fit(
         fit = fit_by_name.get(name)
         if not fit:
             continue
+        enforce_always = str(fit.get("enforce") or "").lower() == "always"
+        if not enabled and not enforce_always:
+            continue
         max_units = float(fit.get("max_cjk_chars") or 0)
         if max_units <= 0:
             continue
         used_units = _weighted_text_units(value)
         if used_units > max_units:
+            scope = "hard limit" if enforce_always else "limit"
             too_long.append(
-                f"{name} uses {used_units:.1f} width units, limit {max_units:g} "
+                f"{name} uses {used_units:.1f} width units, {scope} {max_units:g} "
                 f"(max_cjk_chars={fit.get('max_cjk_chars')}, "
                 f"max_latin_chars={fit.get('max_latin_chars')})"
             )
@@ -1625,7 +1627,7 @@ def build_parser() -> argparse.ArgumentParser:
     apply_parser.add_argument(
         "--no-fit-check",
         action="store_true",
-        help="Disable estimated placeholder length checks.",
+        help="Disable estimated placeholder length checks; enforce=always budgets still run.",
     )
     apply_parser.set_defaults(func=cmd_apply)
 

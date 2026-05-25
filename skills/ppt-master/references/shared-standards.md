@@ -289,7 +289,7 @@ Wrap logically related elements in top-level `<g id="...">` groups. Produces Pow
 
 ---
 
-## 5. Post-processing Pipeline (3 Steps)
+## 5. Post-processing Pipeline (4 Steps)
 
 Must be executed in order — skipping or adding extra flags is FORBIDDEN:
 
@@ -306,7 +306,12 @@ Must be executed in order — skipping or adding extra flags is FORBIDDEN:
 #   exports/<project_name>_<timestamp>.pptx           ← main native pptx
 #   backup/<timestamp>/<project_name>_svg.pptx        ← SVG snapshot
 #   backup/<timestamp>/svg_output/                    ← Executor SVG source backup
+
+# 4. PPTX post-processing (DrawingML text-box alignment fixes)
+.\.venv\Scripts\python.exe scripts/pptx_postprocess.py <project_path>
 ```
+
+**Mandatory**: Run `pptx_postprocess.py` after every `svg_to_pptx.py` export. It changes numeric-only PPTX text boxes to middle vertical alignment (`a:bodyPr anchor="ctr"`), fixing locked-template circle/badge numbers whose SVG text boxes are positioned correctly but whose PowerPoint text content defaults to top alignment.
 
 **Optional animation flags** (only when the user asks):
 - `-t <effect>` — page transition (`fade` / `push` / `wipe` / `split` / `strips` / `cover` / `random` / `none`; default `fade`)
@@ -337,7 +342,56 @@ Full reference: [`animations.md`](animations.md).
 
 > Source-directory split: by default `svg_to_pptx.py` reads `svg_output/` for the native pptx (preserves icon `<use>`, image `preserveAspectRatio` → `srcRect`, rounded rect `rx/ry` → `prstGeom roundRect`) and `svg_final/` for the legacy/preview pptx (PowerPoint's internal SVG parser needs the flattened form). Pass `-s output` or `-s final` only when you specifically want both products to read from a single source.
 
-**Re-run rule**: Any change to `svg_output/` after post-processing requires re-running Steps 2-3. Step 1 only re-runs if `notes/total.md` changed.
+**Re-run rule**: Any change to `svg_output/` after post-processing requires re-running Steps 2-4. Step 1 only re-runs if `notes/total.md` changed.
+
+---
+
+## 5.1 SVG Text Fit Gate
+
+Run before speaker notes and before `svg_quality_checker.py`:
+
+```bash
+.\.venv\Scripts\python.exe scripts/svg_text_fit.py <project_path> --fix
+```
+
+**Mandatory**: The command must exit with 0 overflow issues before export. It measures SVG text against card rectangles, locked-template workspaces, and the canvas. `--fix` may wrap simple single-style text without changing `font-size`; it must not split Latin words into letter fragments.
+
+For locked TOC / chapter templates, section titles are handled earlier as
+direct placeholder fills. Their `template_contract.json` `text_fit` budgets,
+especially entries marked `enforce: always`, must pass before SVG output exists;
+the SVG text fit gate is not a substitute for those title budgets.
+
+**Allowed repairs**:
+- Wrap text into more lines
+- Expand the containing rectangle when the layout has room
+- Shorten wording
+- Re-layout the page
+
+**Forbidden — font-size workaround**: Do not reduce `font-size` to pass the text fit gate.
+
+---
+
+## 5.2 SVG Layout Structure Gate
+
+Run after the text fit gate and before `svg_quality_checker.py`:
+
+```bash
+.\.venv\Scripts\python.exe scripts/svg_layout_checker.py <project_path>
+```
+
+**Mandatory**: The command must exit with 0 structural issues before export. It
+checks generated structure groups such as hub-spoke diagrams, card grids, icon
+grids, and timelines.
+
+| Structure | Required metadata | Checked geometry |
+|---|---|---|
+| Hub-spoke | `id="hub-spoke"` or `data-layout="hub_spoke"`; use `data-center="x y"` when planned | Hub center, spoke ring center, card size, connector count, opposite-card symmetry |
+| Card / icon grid | `data-layout="card_grid"` or `data-layout="icon_grid"` | Card size and row alignment |
+| Timeline | `data-layout="timeline"` | Node axis alignment |
+
+**Forbidden — visual offsets**: Do not pass the gate by nudging individual
+objects until they look acceptable. Recompute the layout from a shared geometry
+model.
 
 ---
 

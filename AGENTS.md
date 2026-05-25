@@ -8,7 +8,7 @@ Before any PPT generation task, **you MUST first read [`skills/ppt-master/SKILL.
 
 PPT Master is an AI-driven presentation generation system. Multi-role collaboration (Strategist → Image_Generator → Executor) converts source documents (PDF/DOCX/URL/Markdown) into natively editable PPTX with real PowerPoint shapes (DrawingML).
 
-**Core Pipeline**: `Source Document → Create Project → [Template] → Strategist Eight Confirmations → [Image_Generator] → Executor → Quality Check → Post-processing → Export PPTX`
+**Core Pipeline**: `Source Document → Create Project → [Template] → Strategist Eight Confirmations → [Image_Generator] → Executor → Quality Check → Post-processing → Export PPTX → PPTX Post-processing`
 
 > Topic-only requests with no source material: run the standalone [`topic-research`](skills/ppt-master/workflows/topic-research.md) workflow before SKILL.md Step 1 to gather web materials.
 >
@@ -64,6 +64,8 @@ Convenience summary only — full workflow in [`skills/ppt-master/SKILL.md`](ski
 # Image tools and SVG quality check
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/analyze_images.py <project_path>/images
 # AI-generated rows use the Codex imagegen skill per SKILL.md Step 5; no script command is required.
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_text_fit.py <project_path> --fix
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_layout_checker.py <project_path>
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_quality_checker.py <project_path>
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/animation_config.py scaffold <project_path>  # optional, only for custom object-level animation
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/animation_config.py validate <project_path>  # optional, before re-export
@@ -72,6 +74,7 @@ Convenience summary only — full workflow in [`skills/ppt-master/SKILL.md`](ski
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/total_md_split.py <project_path>
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/finalize_svg.py <project_path>
 .\.venv\Scripts\python.exe skills/ppt-master/scripts/svg_to_pptx.py <project_path>
+.\.venv\Scripts\python.exe skills/ppt-master/scripts/pptx_postprocess.py <project_path>
 ```
 
 ## Core Directories
